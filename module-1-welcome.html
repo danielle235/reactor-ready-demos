@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 1: Welcome to Nuclear Technology — Reactor Ready</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --blue: #1a3a5c;
+      --teal: #00b4d8;
+      --teal-light: #90e0ef;
+      --gold: #f4a261;
+      --white: #f8fafc;
+      --gray: #94a3b8;
+      --dark-card: #111f35;
+      --success: #22c55e;
+      --border: rgba(0,180,216,0.2);
+      --error: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: var(--dark-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--teal);
+    }
+    .nav-logo .atom { font-size: 1.5rem; }
+    .nav-badge {
+      font-size: 0.7rem;
+      background: var(--teal);
+      color: var(--navy);
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    .container { display: flex; height: calc(100vh - 65px); }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 280px;
+      background: var(--dark-card);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 1.5rem 1rem;
+    }
+    .sidebar h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+    .module-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 1px solid transparent;
+    }
+    .module-item.active { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .module-item.locked { opacity: 0.5; cursor: not-allowed; }
+    .module-item:not(.locked):hover { background: rgba(0,180,216,0.05); }
+    .module-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--blue);
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .module-item.active .module-number { background: var(--teal); color: var(--navy); }
+    .module-info { flex: 1; }
+    .module-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .module-meta { font-size: 0.75rem; color: var(--gray); }
+    .module-lock { font-size: 1.2rem; color: var(--gray); }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem 3rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .progress-section { margin-bottom: 2rem; }
+    .progress-label { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem; }
+    .progress-bar { height: 8px; background: var(--blue); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-light)); transition: width 0.3s; }
+
+    .module-header { margin-bottom: 2.5rem; }
+    .module-title-main { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--teal); }
+    .module-subtitle { font-size: 1.3rem; color: var(--gray); margin-bottom: 1rem; }
+    .module-meta-main { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--gray); }
+
+    .objectives {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .objectives h3 { font-size: 1.1rem; color: var(--teal); margin-bottom: 1rem; }
+    .objectives ol { margin-left: 1.5rem; }
+    .objectives li { margin-bottom: 0.75rem; line-height: 1.6; }
+
+    .content-card {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1rem; }
+    .card-text { line-height: 1.7; margin-bottom: 1rem; }
+    .callout {
+      background: rgba(0,180,216,0.1);
+      border-left: 3px solid var(--teal);
+      padding: 1rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+    .callout strong { color: var(--teal); }
+
+    /* INTERACTIVE: Is This Nuclear? */
+    .itn-container {
+      background: rgba(0,180,216,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .itn-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .itn-badge {
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .itn-label { font-size: 0.95rem; font-weight: 600; color: var(--teal); }
+    .itn-item-display {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .itn-emoji { font-size: 3.5rem; margin-bottom: 0.75rem; }
+    .itn-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .itn-prompt { font-size: 0.95rem; color: var(--gray); margin-bottom: 1.5rem; }
+    .itn-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .itn-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .itn-btn.yes { background: rgba(34,197,94,0.15); color: var(--success); border-color: var(--success); }
+    .itn-btn.yes:hover { background: rgba(34,197,94,0.3); }
+    .itn-btn.no { background: rgba(239,68,68,0.15); color: var(--error); border-color: var(--error); }
+    .itn-btn.no:hover { background: rgba(239,68,68,0.3); }
+    .itn-btn:disabled { opacity: 0.4; cursor: default; }
+    .itn-feedback {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+    }
+    .itn-feedback.show { display: block; }
+    .itn-feedback.right { background: rgba(34,197,94,0.1); border: 1px solid var(--success); color: var(--success); }
+    .itn-feedback.wrong { background: rgba(239,68,68,0.1); border: 1px solid var(--error); color: var(--error); }
+    .itn-feedback .explain { color: var(--white); margin-top: 0.5rem; }
+    .itn-score {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+    .itn-progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .itn-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--blue);
+      transition: background 0.3s;
+    }
+    .itn-dot.current { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+    .itn-dot.correct { background: var(--success); }
+    .itn-dot.incorrect { background: var(--error); }
+    .itn-next {
+      display: none;
+      margin: 1rem auto 0;
+      padding: 0.6rem 1.5rem;
+      background: var(--teal);
+      color: var(--navy);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .itn-next:hover { opacity: 0.9; }
+    .itn-summary {
+      text-align: center;
+      padding: 2rem 1rem;
+      display: none;
+    }
+    .itn-summary h3 { font-size: 1.3rem; color: var(--teal); margin-bottom: 0.5rem; }
+    .itn-summary .big-score { font-size: 2.5rem; font-weight: 800; color: var(--gold); margin: 0.5rem 0; }
+    .itn-summary p { color: var(--gray); line-height: 1.6; }
+
+    /* INTERACTIVE: Energy Density Visualizer */
+    .edv-container {
+      background: rgba(0,180,216,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .edv-selector {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .edv-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--dark-card);
+      color: var(--white);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .edv-btn:hover { border-color: var(--teal); }
+    .edv-btn.active { background: rgba(0,180,216,0.15); border-color: var(--teal); color: var(--teal); }
+    .edv-visual {
+      display: flex;
+      align-items: flex-end;
+      gap: 2rem;
+      justify-content: center;
+      padding: 1rem 0 0.5rem;
+      min-height: 260px;
+    }
+    .edv-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .edv-bar-wrap {
+      width: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 200px;
+    }
+    .edv-bar {
+      width: 60px;
+      border-radius: 6px 6px 0 0;
+      transition: height 0.6s ease;
+    }
+    .edv-amount {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--gold);
+      text-align: center;
+    }
+    .edv-unit {
+      font-size: 0.75rem;
+      color: var(--gray);
+      text-align: center;
+    }
+    .edv-fuel-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .edv-insight {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: rgba(244,162,97,0.1);
+      border: 1px solid rgba(244,162,97,0.3);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--white);
+      text-align: center;
+    }
+
+    /* APPLICATION GRID */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .app-card {
+      background: rgba(0,180,216,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .app-card:hover { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .app-card-title { font-weight: 600; color: var(--teal); margin-bottom: 0.5rem; }
+    .app-card-detail {
+      display: none;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--gray);
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .app-card.expanded .app-card-detail { display: block; }
+    .app-card-summary { font-size: 0.85rem; color: var(--gray); }
+
+    /* WORKFORCE STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .stat-box {
+      background: rgba(244,162,97,0.1);
+      border: 1px solid rgba(244,162,97,0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat-number { font-size: 1.8rem; font-weight: 700; color: var(--gold); margin-bottom: 0.25rem; }
+    .stat-label { font-size: 0.85rem; color: var(--gray); }
+
+    /* INTERACTIVE: Career Path Explorer */
+    .cpe-container {
+      background: rgba(0,180,216,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .cpe-trades {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .cpe-trade {
+      padding: 0.75rem 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--dark-card);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .cpe-trade:hover { border-color: var(--teal); }
+    .cpe-trade.active { background: rgba(0,180,216,0.15); border-color: var(--teal); }
+    .cpe-trade-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+    .cpe-trade-name { font-size: 0.8rem; font-weight: 600; }
+    .cpe-pathway {
+      display: none;
+    }
+    .cpe-pathway.active { display: block; }
+    .cpe-step {
+      display: flex;
+      align-items: stretch;
+      gap: 1rem;
+      margin-bottom: 0;
+    }
+    .cpe-timeline {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 24px;
+      flex-shrink: 0;
+    }
+    .cpe-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--blue);
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+    .cpe-step.lit .cpe-dot { background: var(--teal); border-color: var(--teal); box-shadow: 0 0 8px rgba(0,180,216,0.5); }
+    .cpe-line {
+      width: 2px;
+      flex: 1;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .cpe-step.lit .cpe-line { background: var(--teal); }
+    .cpe-content {
+      flex: 1;
+      padding: 0 0 1.25rem;
+      opacity: 0.4;
+      transition: opacity 0.3s;
+    }
+    .cpe-step.lit .cpe-content { opacity: 1; }
+    .cpe-role { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+    .cpe-salary { color: var(--gold); font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .cpe-desc { font-size: 0.85rem; color: var(--gray); line-height: 1.5; }
+
+    /* QUIZ */
+    .quiz-container {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .quiz-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1.5rem; }
+    .quiz-question { margin-bottom: 2rem; }
+    .question-text { font-weight: 600; margin-bottom: 1rem; line-height: 1.6; }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .quiz-option {
+      background: rgba(0,180,216,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .quiz-option:hover { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .quiz-option.correct { background: rgba(34,197,94,0.1); border-color: var(--success); }
+    .quiz-option.incorrect { background: rgba(239,68,68,0.1); border-color: var(--error); }
+    .option-letter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--blue);
+      font-weight: 600;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .quiz-option.correct .option-letter { background: var(--success); }
+    .quiz-option.incorrect .option-letter { background: var(--error); }
+    .quiz-feedback {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid var(--success); }
+    .quiz-feedback.incorrect { background: rgba(239,68,68,0.1); color: var(--error); border: 1px solid var(--error); }
+
+    /* AI TUTOR */
+    .tutor-container {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .tutor-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .tutor-icon { font-size: 1.5rem; }
+    .tutor-title { font-size: 1.1rem; font-weight: 600; color: var(--teal); }
+    .tutor-input { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    #tutor-question {
+      flex: 1;
+      background: var(--blue);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: var(--white);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+    #tutor-question::placeholder { color: var(--gray); }
+    #ask-tutor {
+      background: var(--teal);
+      color: var(--navy);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #ask-tutor:hover { opacity: 0.9; }
+    #tutor-response {
+      background: rgba(0,180,216,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      line-height: 1.7;
+      display: none;
+    }
+    #tutor-response.show { display: block; }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .nav-btn {
+      background: var(--teal);
+      color: var(--navy);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    .nav-btn:hover { opacity: 0.9; }
+
+    @media(max-width:768px) {
+      .sidebar { display: none; }
+      .main { padding: 1.5rem; }
+      .app-grid, .stats-grid { grid-template-columns: 1fr; }
+      .cpe-trades { grid-template-columns: repeat(2, 1fr); }
+      .edv-visual { flex-wrap: wrap; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo">
+      <span class="atom">&#9883;</span>
+      <span>Reactor Ready</span>
+    </div>
+    <div class="nav-right">
+      <span>by Naked Nuclear</span>
+      <span style="color:var(--border)">|</span>
+      <span>MIT OCW Nuclear Technology</span>
+      <span style="color:var(--border)">|</span>
+      <span class="nav-badge">DEMO BUILD</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar">
+      <h3>Course Modules</h3>
+      <div class="module-item active">
+        <div class="module-number">1</div>
+        <div class="module-info">
+          <div class="module-title">Welcome to Nuclear</div>
+          <div class="module-meta">35 min</div>
+        </div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">2</div>
+        <div class="module-info">
+          <div class="module-title">How Reactors Work</div>
+          <div class="module-meta">45 min</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">3</div>
+        <div class="module-info">
+          <div class="module-title">Radiation Safety</div>
+          <div class="module-meta">40 min</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">4</div>
+        <div class="module-info">
+          <div class="module-title">Plant Systems</div>
+          <div class="module-meta">50 min</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">5</div>
+        <div class="module-info">
+          <div class="module-title">Your Career Path</div>
+          <div class="module-meta">35 min</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">6</div>
+        <div class="module-info">
+          <div class="module-title">Citations & Sources</div>
+          <div class="module-meta">Reference</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="progress-section">
+        <div class="progress-label">Course Progress: Module 1 of 6</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 16%"></div>
+        </div>
+      </div>
+
+      <div class="module-header">
+        <h1 class="module-title-main">Welcome to Nuclear Technology</h1>
+        <p class="module-subtitle">Why Nuclear Matters and Where You Come In</p>
+        <div class="module-meta-main">
+          <div>&#9201; 35 min</div>
+          <div>&#128214; Reading + 3 Interactives</div>
+          <div>&#10003; 1 Knowledge Check</div>
+        </div>
+      </div>
+
+      <div class="objectives">
+        <h3>Learning Objectives</h3>
+        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">By the end of this module, you will be able to:</p>
+        <ol>
+          <li>Identify at least 5 applications of nuclear technology beyond electricity generation</li>
+          <li>Explain why nuclear power is uniquely valuable to grid reliability</li>
+          <li>Recognize nuclear technology in everyday life (medicine, food safety, industrial inspection)</li>
+          <li>Describe the workforce opportunity: why nuclear needs YOUR trade skills right now</li>
+        </ol>
+      </div>
+
+      <!-- SECTION 1 -->
+      <div class="content-card">
+        <h2 class="card-title">Nuclear Is Not What You Think</h2>
+        <p class="card-text">
+          Most people hear "nuclear" and think bombs or Chernobyl. Reality: nuclear technology touches your life every day. Your doctor uses it, your food is safer because of it, and the infrastructure that powers Texas relies on it. This module shows you the full picture.
+        </p>
+        <div class="callout">
+          <strong>Key concept:</strong> Nuclear technology is not one thing. It's a family of tools: fission reactors, radiation sources, detectors, isotope production facilities. All built and maintained by people with exactly your skills.
+        </div>
+
+        <!-- INTERACTIVE 1: Is This Nuclear? -->
+        <div class="itn-container">
+          <div class="itn-header">
+            <span class="itn-badge">Interactive</span>
+            <span class="itn-label">Is This Nuclear?</span>
+          </div>
+          <div class="itn-progress-dots" id="itn-dots"></div>
+          <div class="itn-item-display" id="itn-display">
+            <div class="itn-emoji" id="itn-emoji"></div>
+            <div class="itn-name" id="itn-name"></div>
+            <div class="itn-prompt">Does this use nuclear technology?</div>
+            <div class="itn-buttons">
+              <button class="itn-btn yes" id="itn-yes" onclick="itnAnswer(true)">Yes</button>
+              <button class="itn-btn no" id="itn-no" onclick="itnAnswer(false)">No</button>
+            </div>
+            <div class="itn-feedback" id="itn-feedback"></div>
+            <button class="itn-next" id="itn-next" onclick="itnNext()">Next Item &#8594;</button>
+          </div>
+          <div class="itn-summary" id="itn-summary">
+            <h3>Challenge Complete!</h3>
+            <div class="big-score" id="itn-final-score"></div>
+            <p id="itn-takeaway"></p>
+          </div>
+          <div class="itn-score" id="itn-score"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 2 -->
+      <div class="content-card">
+        <h2 class="card-title">Where Nuclear Technology Is Used</h2>
+        <p class="card-text">
+          Nuclear technology appears in 6 major application areas. Click each card to explore how nuclear technology works in that domain.
+        </p>
+        <div class="app-grid">
+          <div class="app-card" onclick="toggleApp(this)">
+            <div class="app-card-title">&#9889; Power Generation</div>
+            <div class="app-card-summary">Click to expand</div>
+            <div class="app-card-detail">93 reactors across the US generate ~20% of our electricity. Nuclear provides 24/7 baseload power. It doesn't depend on wind, sun, or fuel deliveries. When the grid needs reliable power, nuclear delivers. (Source: EIA, 2024)</div>
+          </div>
+          <div class="app-card" onclick="toggleApp(this)">
+            <div class="app-card-title">&#127973; Medical Imaging & Treatment</div>
+            <div class="app-card-summary">Click to expand</div>
+            <div class="app-card-detail">PET scans use positron-emitting isotopes to image metabolic activity. Radiation therapy kills cancer tumors while sparing healthy tissue. The US performs ~40 million nuclear medicine procedures per year. (Source: SNMMI)</div>
+          </div>
+          <div class="app-card" onclick="toggleApp(this)">
+            <div class="app-card-title">&#127822; Food Safety</div>
+            <div class="app-card-summary">Click to expand</div>
+            <div class="app-card-detail">Irradiation uses gamma rays (typically Co-60 sources) or electron beams to kill pathogens in food without chemicals or making it radioactive. FDA-approved for spices, produce, poultry, and meat. (Source: FDA, CDC)</div>
+          </div>
+          <div class="app-card" onclick="toggleApp(this)">
+            <div class="app-card-title">&#128295; Industrial Inspection (NDT)</div>
+            <div class="app-card-summary">Click to expand</div>
+            <div class="app-card-detail">Radiography inspects welds and pipelines without cutting them open. Uses gamma sources (Ir-192, Co-60) or X-rays to image internal structures. Every safety-related weld at a nuclear plant gets RT or UT inspection. (Source: ASNT)</div>
+          </div>
+          <div class="app-card" onclick="toggleApp(this)">
+            <div class="app-card-title">&#128640; Space Exploration</div>
+            <div class="app-card-summary">Click to expand</div>
+            <div class="app-card-detail">RTGs (radioisotope thermoelectric generators) use heat from Pu-238 decay to generate electricity. No moving parts. Powers Voyager (launched 1977, still operating), Curiosity, and Perseverance rovers on Mars. (Source: NASA/DOE)</div>
+          </div>
+          <div class="app-card" onclick="toggleApp(this)">
+            <div class="app-card-title">&#128738; Resource Exploration</div>
+            <div class="app-card-summary">Click to expand</div>
+            <div class="app-card-detail">Well logging uses radiation detectors lowered into drill holes to measure rock formations. Helps identify oil and gas deposits without drilling exploratory wells. Nuclear technology makes energy exploration more efficient. (Source: SPE)</div>
+          </div>
+        </div>
+
+        <!-- INTERACTIVE 2: Energy Density Visualizer -->
+        <div class="edv-container">
+          <div class="itn-header">
+            <span class="itn-badge">Interactive</span>
+            <span class="itn-label">Energy Density Visualizer</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem;">One uranium fuel pellet (the size of your pinky tip, ~7 grams) contains as much energy as...</p>
+          <div class="edv-selector" id="edv-selector">
+            <button class="edv-btn active" onclick="edvSelect('coal')">vs Coal</button>
+            <button class="edv-btn" onclick="edvSelect('gas')">vs Natural Gas</button>
+            <button class="edv-btn" onclick="edvSelect('oil')">vs Oil</button>
+            <button class="edv-btn" onclick="edvSelect('wind')">vs Wind</button>
+          </div>
+          <div class="edv-visual" id="edv-visual"></div>
+          <div class="edv-insight" id="edv-insight"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 3 -->
+      <div class="content-card">
+        <h2 class="card-title">Why Nuclear Needs YOU</h2>
+        <p class="card-text">
+          The nuclear workforce is aging out and new construction is ramping up. The industry needs skilled trades workers: electricians, pipefitters, welders, millwrights, and I&C technicians. You already have the core skills. This course adds only the nuclear layer.
+        </p>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-number">375,000</div>
+            <div class="stat-label">Net new workers needed by 2050 (DOE Liftoff Report 2024)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">40%</div>
+            <div class="stat-label">Current nuclear workforce retiring within a decade</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">10,000</div>
+            <div class="stat-label">Skilled craft workers needed for new construction by 2030</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">$102,674</div>
+            <div class="stat-label">Nuclear electrician median salary (Texas)</div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>The key insight:</strong> Nuclear plants don't run on nuclear physicists. They run on electricians, pipefitters, welders, millwrights, and I&C technicians. You already have the core skills. This course adds only the nuclear layer.
+        </div>
+
+        <!-- INTERACTIVE 3: Career Path Explorer -->
+        <div class="cpe-container">
+          <div class="itn-header">
+            <span class="itn-badge">Interactive</span>
+            <span class="itn-label">Career Path Explorer</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem;">Select your trade to see the nuclear career pathway:</p>
+          <div class="cpe-trades" id="cpe-trades"></div>
+          <div id="cpe-pathways"></div>
+        </div>
+      </div>
+
+      <!-- KNOWLEDGE CHECK -->
+      <div class="quiz-container">
+        <h2 class="quiz-title">Knowledge Check</h2>
+        <div class="quiz-question">
+          <p class="question-text">1. Which of the following is NOT a common application of nuclear technology?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="checkAnswer(this, false, 1)"><div class="option-letter">A</div><div>Treating cancer with radiation</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, false, 1)"><div class="option-letter">B</div><div>Inspecting welds without cutting them open</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, false, 1)"><div class="option-letter">C</div><div>Generating electrical power 24/7</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, true, 1)"><div class="option-letter">D</div><div>Creating plastic polymers for manufacturing</div></div>
+          </div>
+          <div class="quiz-feedback" id="fb-1"></div>
+        </div>
+        <div class="quiz-question">
+          <p class="question-text">2. How many nuclear medicine procedures are performed in the US annually?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="checkAnswer(this, false, 2)"><div class="option-letter">A</div><div>About 400,000</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, false, 2)"><div class="option-letter">B</div><div>About 4 million</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, true, 2)"><div class="option-letter">C</div><div>About 40 million</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, false, 2)"><div class="option-letter">D</div><div>About 400 million</div></div>
+          </div>
+          <div class="quiz-feedback" id="fb-2"></div>
+        </div>
+        <div class="quiz-question">
+          <p class="question-text">3. The DOE estimates how many net new nuclear workers will be needed by 2050?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="checkAnswer(this, false, 3)"><div class="option-letter">A</div><div>75,000</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, true, 3)"><div class="option-letter">B</div><div>375,000</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, false, 3)"><div class="option-letter">C</div><div>750,000</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, false, 3)"><div class="option-letter">D</div><div>3.75 million</div></div>
+          </div>
+          <div class="quiz-feedback" id="fb-3"></div>
+        </div>
+        <div class="quiz-question">
+          <p class="question-text">4. True or False: Nuclear plants primarily employ nuclear physicists and engineers, with few skilled trades workers.</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="checkAnswer(this, false, 4)"><div class="option-letter">A</div><div>True</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, true, 4)"><div class="option-letter">B</div><div>False: nuclear plants are built and maintained primarily by skilled trades</div></div>
+          </div>
+          <div class="quiz-feedback" id="fb-4"></div>
+        </div>
+        <div class="quiz-question">
+          <p class="question-text">5. What does NDT stand for, and why is it relevant to nuclear workers?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="checkAnswer(this, false, 5)"><div class="option-letter">A</div><div>Nuclear Diagnostic Testing: used only in nuclear medicine</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, true, 5)"><div class="option-letter">B</div><div>Non-Destructive Testing: inspection using radiation to examine materials without cutting them</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, false, 5)"><div class="option-letter">C</div><div>Neutron Diffusion Theory: a physics concept for reactor design</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, false, 5)"><div class="option-letter">D</div><div>National Defense Technology: a government classification</div></div>
+          </div>
+          <div class="quiz-feedback" id="fb-5"></div>
+        </div>
+      </div>
+
+      <!-- AI TUTOR -->
+      <div class="tutor-container">
+        <div class="tutor-header">
+          <div class="tutor-icon">&#129302;</div>
+          <div>
+            <div class="tutor-title">ARIA AI Tutor</div>
+            <div style="font-size: 0.85rem; color: var(--gray);">Ask me about nuclear technology applications or the workforce opportunity</div>
+          </div>
+        </div>
+        <div class="tutor-input">
+          <input type="text" id="tutor-question" placeholder="Ask a question about this module..." />
+          <button id="ask-tutor" onclick="askTutor()">Ask</button>
+        </div>
+        <div id="tutor-response"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="nav-btn" onclick="window.location.href='module-2-reactors.html'">
+          Continue to Module 2 &#8594;
+        </button>
+      </div>
+    </main>
+  </div>
+
+<script>
+// ==============================
+// INTERACTIVE 1: Is This Nuclear?
+// ==============================
+const itnItems = [
+  { emoji: '&#128684;', name: 'Smoke Detector', nuclear: true, explain: 'Most smoke detectors contain americium-241, a radioactive isotope that ionizes air to detect smoke particles. (Source: NRC)' },
+  { emoji: '&#127820;', name: 'Banana', nuclear: true, explain: 'Bananas contain potassium-40 (K-40), a naturally occurring radioactive isotope. The "banana equivalent dose" is a real unit in radiation science. (Source: HPS)' },
+  { emoji: '&#128161;', name: 'Microwave Oven', nuclear: false, explain: 'Microwaves use electromagnetic radiation (microwaves), but this is NOT nuclear technology. No radioactive materials or nuclear reactions are involved.' },
+  { emoji: '&#129659;', name: 'PET Scan', nuclear: true, explain: 'PET scans use positron-emitting isotopes (typically F-18 produced in a cyclotron) to image metabolic activity in the body. About 2 million PET scans/year in the US. (Source: SNMMI)' },
+  { emoji: '&#128690;', name: 'Exit Sign', nuclear: true, explain: 'Many self-luminous exit signs contain tritium (H-3), a radioactive isotope of hydrogen. They glow without electricity for 10-20 years. (Source: NRC)' },
+  { emoji: '&#128747;', name: 'Airport Security Scanner', nuclear: false, explain: 'Airport body scanners use millimeter waves or backscatter X-rays. While X-rays involve radiation, they are generated electrically, not from nuclear reactions or radioactive materials.' },
+  { emoji: '&#127798;', name: 'Irradiated Spices', nuclear: true, explain: 'About 1/3 of dried spices sold in the US are irradiated with gamma rays (Co-60) to kill bacteria. FDA-approved since 1963. The food does NOT become radioactive. (Source: FDA)' },
+  { emoji: '&#128752;', name: 'Mars Rover', nuclear: true, explain: 'Curiosity and Perseverance rovers are powered by RTGs containing plutonium-238. The radioactive decay generates heat, converted to ~110 watts of electricity. No solar panels needed. (Source: NASA/DOE)' },
+  { emoji: '&#128167;', name: 'Hydroelectric Dam', nuclear: false, explain: 'Hydroelectric power uses gravity and flowing water to spin turbines. No nuclear technology involved, though both are carbon-free energy sources.' },
+  { emoji: '&#128297;', name: 'Pipeline Weld Inspection', nuclear: true, explain: 'Industrial radiography uses gamma sources (Ir-192, Co-60) to X-ray welds and detect flaws without cutting the pipe. This is nuclear NDT (Non-Destructive Testing). (Source: ASNT)' }
+];
+
+let itnIdx = 0, itnCorrect = 0, itnResults = [];
+
+function itnInit() {
+  const dots = document.getElementById('itn-dots');
+  dots.innerHTML = itnItems.map((_, i) => '<div class="itn-dot' + (i === 0 ? ' current' : '') + '"></div>').join('');
+  itnShow();
+  document.getElementById('itn-score').textContent = 'Question 1 of ' + itnItems.length;
+}
+
+function itnShow() {
+  const item = itnItems[itnIdx];
+  document.getElementById('itn-emoji').innerHTML = item.emoji;
+  document.getElementById('itn-name').textContent = item.name;
+  document.getElementById('itn-yes').disabled = false;
+  document.getElementById('itn-no').disabled = false;
+  document.getElementById('itn-feedback').className = 'itn-feedback';
+  document.getElementById('itn-feedback').style.display = 'none';
+  document.getElementById('itn-next').style.display = 'none';
+}
+
+function itnAnswer(guessedYes) {
+  const item = itnItems[itnIdx];
+  const correct = guessedYes === item.nuclear;
+  if (correct) itnCorrect++;
+  itnResults.push(correct);
+
+  document.getElementById('itn-yes').disabled = true;
+  document.getElementById('itn-no').disabled = true;
+
+  const fb = document.getElementById('itn-feedback');
+  fb.className = 'itn-feedback show ' + (correct ? 'right' : 'wrong');
+  fb.innerHTML = (correct ? '<strong>Correct!</strong>' : '<strong>Not quite!</strong>') +
+    ' <span class="explain">' + item.explain + '</span>';
+  fb.style.display = 'block';
+
+  const dots = document.querySelectorAll('.itn-dot');
+  dots[itnIdx].className = 'itn-dot ' + (correct ? 'correct' : 'incorrect');
+
+  if (itnIdx < itnItems.length - 1) {
+    document.getElementById('itn-next').style.display = 'block';
+  } else {
+    setTimeout(itnFinish, 1500);
+  }
+  document.getElementById('itn-score').textContent = itnCorrect + ' of ' + (itnIdx + 1) + ' correct';
+}
+
+function itnNext() {
+  itnIdx++;
+  const dots = document.querySelectorAll('.itn-dot');
+  if (itnIdx < dots.length) dots[itnIdx].className = 'itn-dot current';
+  document.getElementById('itn-score').textContent = 'Question ' + (itnIdx + 1) + ' of ' + itnItems.length;
+  itnShow();
+}
+
+function itnFinish() {
+  document.getElementById('itn-display').style.display = 'none';
+  const summary = document.getElementById('itn-summary');
+  summary.style.display = 'block';
+  document.getElementById('itn-final-score').textContent = itnCorrect + '/' + itnItems.length;
+  const pct = Math.round(itnCorrect / itnItems.length * 100);
+  let msg = pct >= 80
+    ? 'Impressive! You already have a good sense of how nuclear technology shows up in everyday life.'
+    : pct >= 50
+    ? 'Not bad! Nuclear technology is more common than most people realize. The items that surprised you are exactly why this course matters.'
+    : 'Nuclear technology is hiding everywhere! From smoke detectors to Mars rovers to the spices in your kitchen. This course will show you the full picture.';
+  document.getElementById('itn-takeaway').textContent = msg;
+}
+
+itnInit();
+
+// ==============================
+// INTERACTIVE 2: Energy Density Visualizer
+// ==============================
+const edvData = {
+  coal: { amount: '1 ton', unit: '(~2,000 lbs)', height: 180, color: '#555', insight: 'One uranium pellet (~7g) = 1 ton of coal. A single fuel pellet the size of your pinky tip replaces a pickup truck full of coal. (Source: DOE Office of Nuclear Energy)', label: 'Coal' },
+  gas: { amount: '17,000', unit: 'cubic feet', height: 160, color: '#4fb6df', insight: 'That tiny pellet replaces 17,000 cubic feet of natural gas, enough to heat an average US home for almost a year. (Source: NEI)', label: 'Natural Gas' },
+  oil: { amount: '149', unit: 'gallons', height: 140, color: '#a855f7', insight: '149 gallons of oil = about 3.5 barrels. One uranium pellet replaces almost 4 barrels of crude oil. (Source: WNA)', label: 'Oil' },
+  wind: { amount: '2.4', unit: 'MW-hours equiv.', height: 120, color: '#22c55e', insight: 'A single pellet produces as much energy as a large wind turbine generates in about 1.5 hours at full capacity. But the pellet works 24/7 for years. (Source: DOE)', label: 'Wind Equivalent' }
+};
+
+function edvSelect(fuel) {
+  document.querySelectorAll('.edv-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const d = edvData[fuel];
+
+  document.getElementById('edv-visual').innerHTML =
+    '<div class="edv-column">' +
+      '<div class="edv-bar-wrap"><div class="edv-bar" style="height:20px;background:var(--gold);width:20px;border-radius:50%;"></div></div>' +
+      '<div class="edv-amount" style="font-size:0.9rem;">7g</div>' +
+      '<div class="edv-fuel-label" style="color:var(--gold)">Uranium Pellet</div>' +
+    '</div>' +
+    '<div style="font-size:1.5rem;color:var(--gray);align-self:center;">=</div>' +
+    '<div class="edv-column">' +
+      '<div class="edv-bar-wrap"><div class="edv-bar" style="height:0px;background:' + d.color + ';" id="edv-bar-cmp"></div></div>' +
+      '<div class="edv-amount">' + d.amount + '</div>' +
+      '<div class="edv-unit">' + d.unit + '</div>' +
+      '<div class="edv-fuel-label">' + d.label + '</div>' +
+    '</div>';
+
+  document.getElementById('edv-insight').textContent = d.insight;
+  setTimeout(function() {
+    var bar = document.getElementById('edv-bar-cmp');
+    if (bar) bar.style.height = d.height + 'px';
+  }, 50);
+}
+
+edvSelect('coal');
+
+// ==============================
+// INTERACTIVE 3: Career Path Explorer
+// ==============================
+const cpeTrades = [
+  {
+    icon: '&#9889;', name: 'Electrician',
+    steps: [
+      { role: 'Licensed Journeyman Electrician', salary: '$55K-$75K', desc: 'Your current credentials: state license, OSHA 10, commercial/industrial experience.' },
+      { role: 'Reactor Ready Wrapper Course', salary: '6-8 weeks', desc: 'Add nuclear-specific knowledge: Class 1E systems, IEEE 384, NQA-1, 10 CFR 50.49 environmental qualification.' },
+      { role: 'Nuclear Electrical Maintenance Tech', salary: '$79K-$103K', desc: 'Entry role at operating plants. Maintain MOVs, breakers, EDGs, battery systems, safety buses.' },
+      { role: 'Senior Nuclear Electrician / I&C', salary: '$100K-$130K', desc: 'Lead electrical teams during outages. Specialize in I&C, digital controls, or relay protection.' },
+      { role: 'Electrical Supervisor / SME', salary: '$120K-$150K+', desc: 'Supervise electrical maintenance. Subject matter expert for regulatory audits and NRC inspections.' }
+    ]
+  },
+  {
+    icon: '&#128295;', name: 'Welder',
+    steps: [
+      { role: 'Certified Welder (AWS/ASME)', salary: '$50K-$70K', desc: 'Your current credentials: AWS certifications, ASME code experience, structural/pipe welding.' },
+      { role: 'Reactor Ready Wrapper Course', salary: '6-8 weeks', desc: 'Add nuclear-specific: ASME Section III/XI, nuclear weld procedures, NDE awareness, NQA-1 documentation.' },
+      { role: 'Nuclear-Qualified Welder', salary: '$73K-$104K', desc: 'Weld on safety-related components. Every weld you make gets radiographic inspection.' },
+      { role: 'Nuclear Weld Inspector / NDE Tech', salary: '$80K-$120K', desc: 'ASNT Level II in RT/UT. Inspect the welds others make. Critical quality role.' },
+      { role: 'Welding Engineer / QA Lead', salary: '$110K-$145K+', desc: 'Develop weld procedures. Lead QA programs. Oversee compliance for new construction.' }
+    ]
+  },
+  {
+    icon: '&#128679;', name: 'Pipefitter',
+    steps: [
+      { role: 'Licensed Journeyman Pipefitter', salary: '$55K-$75K', desc: 'Your current credentials: UA journeyman card, ASME B31 experience, rigging/fitting.' },
+      { role: 'Reactor Ready Wrapper Course', salary: '6-8 weeks', desc: 'Add nuclear-specific: ASME III piping, nuclear safety class systems, contamination control, NQA-1.' },
+      { role: 'Nuclear Construction Pipefitter', salary: '$75K-$105K', desc: 'Install and maintain safety-related piping. Work on primary coolant, feedwater, steam systems.' },
+      { role: 'Senior Pipefitter / Foreman', salary: '$95K-$125K', desc: 'Lead pipe crews during construction or outages. Coordinate with QA and engineering.' },
+      { role: 'Piping Superintendent', salary: '$115K-$150K+', desc: 'Oversee all piping work on a project. Interface with NRC, manage schedules and workforce.' }
+    ]
+  },
+  {
+    icon: '&#128200;', name: 'I&C Tech',
+    steps: [
+      { role: 'Industrial I&C Technician', salary: '$55K-$80K', desc: 'Your current credentials: instrumentation and controls experience, PLC programming, calibration.' },
+      { role: 'Reactor Ready Deep Wrapper', salary: '12-16 weeks', desc: 'Add nuclear-specific: reactor protection systems, safety I&C, digital controls, IEEE 603, cybersecurity (10 CFR 73.54).' },
+      { role: 'Nuclear I&C Technician', salary: '$87K-$110K', desc: 'Maintain reactor protection systems, process instruments, control rod drive mechanisms.' },
+      { role: 'Senior I&C / Digital Controls', salary: '$100K-$130K', desc: 'Specialize in digital I&C upgrades, DCS platforms, cybersecurity for nuclear systems.' },
+      { role: 'I&C Supervisor / Engineering', salary: '$120K-$155K+', desc: 'Lead I&C department. Own the instrument calibration program and digital modernization projects.' }
+    ]
+  }
+];
+
+function cpeInit() {
+  const tradesEl = document.getElementById('cpe-trades');
+  const pathsEl = document.getElementById('cpe-pathways');
+
+  tradesEl.innerHTML = cpeTrades.map((t, i) =>
+    '<button class="cpe-trade" onclick="cpeSelect(' + i + ')" id="cpe-t' + i + '">' +
+      '<div class="cpe-trade-icon">' + t.icon + '</div>' +
+      '<div class="cpe-trade-name">' + t.name + '</div>' +
+    '</button>'
+  ).join('');
+
+  pathsEl.innerHTML = cpeTrades.map((t, ti) =>
+    '<div class="cpe-pathway" id="cpe-p' + ti + '">' +
+    t.steps.map((s, si) =>
+      '<div class="cpe-step" id="cpe-s' + ti + '-' + si + '">' +
+        '<div class="cpe-timeline">' +
+          '<div class="cpe-dot"></div>' +
+          (si < t.steps.length - 1 ? '<div class="cpe-line"></div>' : '') +
+        '</div>' +
+        '<div class="cpe-content">' +
+          '<div class="cpe-role">' + s.role + '</div>' +
+          '<div class="cpe-salary">' + s.salary + '</div>' +
+          '<div class="cpe-desc">' + s.desc + '</div>' +
+        '</div>' +
+      '</div>'
+    ).join('') +
+    '</div>'
+  ).join('');
+}
+
+function cpeSelect(idx) {
+  document.querySelectorAll('.cpe-trade').forEach(b => b.classList.remove('active'));
+  document.getElementById('cpe-t' + idx).classList.add('active');
+
+  document.querySelectorAll('.cpe-pathway').forEach(p => p.classList.remove('active'));
+  document.getElementById('cpe-p' + idx).classList.add('active');
+
+  // Animate steps lighting up
+  const steps = cpeTrades[idx].steps;
+  steps.forEach(function(_, si) {
+    var el = document.getElementById('cpe-s' + idx + '-' + si);
+    el.classList.remove('lit');
+  });
+  steps.forEach(function(_, si) {
+    setTimeout(function() {
+      document.getElementById('cpe-s' + idx + '-' + si).classList.add('lit');
+    }, si * 300);
+  });
+}
+
+cpeInit();
+cpeSelect(0);
+
+// ==============================
+// Toggle app cards
+// ==============================
+function toggleApp(card) { card.classList.toggle('expanded'); }
+
+// ==============================
+// Quiz
+// ==============================
+function checkAnswer(option, isCorrect, qNum) {
+  var parent = option.parentElement;
+  var fb = document.getElementById('fb-' + qNum);
+  Array.from(parent.children).forEach(function(opt) {
+    opt.style.pointerEvents = 'none';
+    if (opt === option) opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+  });
+  fb.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+  fb.textContent = isCorrect
+    ? 'Correct!'
+    : 'Not quite. Review the content above and try again.';
+}
+
+// ==============================
+// AI Tutor
+// ==============================
+const tutorKB = {
+  'ndt|non-destructive|radiography|weld inspection': 'NDT (Non-Destructive Testing) using radiation is one of nuclear technology\'s most direct connections to your trade. Radiographic testing (RT) uses gamma sources (Ir-192, Se-75, Co-60) or X-rays to image welds and components without cutting them open. At nuclear plants, every safety-related weld gets RT or UT inspection. ASNT Level II certification in RT is a valuable qualification. (Source: ASNT, NRC Reg Guide 1.58)',
+  'pet scan|medical|cancer|radiation therapy': 'Nuclear medicine is huge: ~40 million procedures per year in the US. PET scans use positron-emitting isotopes (usually F-18 from a cyclotron) to image metabolic activity. Radiation therapy kills cancer tumors with carefully aimed beams or implanted seeds. The isotopes often come from nuclear reactors. (Source: SNMMI, WHO)',
+  'food irradiation|spice|food safety': 'Food irradiation uses gamma rays (typically from Co-60) or electron beams to kill bacteria and pathogens without making food radioactive. FDA-approved since 1963 for spices, and now covers produce, poultry, and meat. (Source: FDA, CDC)',
+  'space|nasa|voyager|rtg|mars': 'RTGs use Pu-238 decay heat to generate electricity. Voyager 1 (launched 1977, now in interstellar space) is still powered by its RTG. Curiosity and Perseverance rovers on Mars each have an RTG producing ~110 watts. Built at Idaho National Laboratory. (Source: NASA/DOE)',
+  'workforce|jobs|salary|hiring|demand': 'The nuclear workforce shortage is real. 375,000 net new workers needed by 2050 (DOE Liftoff Report). 40% of the current workforce retiring. New construction (SMRs, Kairos, TerraPower) adding demand. Nuclear electricians in Texas earn a median of $102,674. (Source: DOE, BLS, NEI)',
+  'smoke detector|americium': 'Most ionization smoke detectors contain a tiny amount of americium-241 (Am-241). It emits alpha particles that ionize air between two plates. When smoke enters, it disrupts the current and triggers the alarm. The amount is so small it poses no health risk. (Source: NRC)',
+  'banana|potassium': 'Bananas contain potassium-40 (K-40), a naturally occurring radioactive isotope. You\'d need to eat about 10 million bananas at once to get a dangerous dose. The "banana equivalent dose" (BED) is an informal unit used in radiation education. (Source: Health Physics Society)',
+  'default': 'I can answer questions about nuclear technology applications, the workforce opportunity, or how your trade skills connect to nuclear work. Try asking about: NDT inspection, nuclear medicine, the workforce shortage, food irradiation, smoke detectors, or space applications.'
+};
+
+function askTutor() {
+  var q = document.getElementById('tutor-question').value.toLowerCase();
+  var r = document.getElementById('tutor-response');
+  if (!q.trim()) { r.textContent = 'Please enter a question.'; r.classList.add('show'); return; }
+  var answer = tutorKB['default'];
+  for (var pattern in tutorKB) {
+    if (pattern === 'default') continue;
+    var kws = pattern.split('|');
+    if (kws.some(function(kw) { return q.indexOf(kw) >= 0; })) { answer = tutorKB[pattern]; break; }
+  }
+  r.textContent = answer;
+  r.classList.add('show');
+}
+
+document.getElementById('tutor-question').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') askTutor();
+});
+</script>
+</body>
+</html>

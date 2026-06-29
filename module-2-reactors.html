@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 2: How Nuclear Reactors Work — Reactor Ready</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --blue: #1a3a5c;
+      --teal: #00b4d8;
+      --teal-light: #90e0ef;
+      --gold: #f4a261;
+      --white: #f8fafc;
+      --gray: #94a3b8;
+      --dark-card: #111f35;
+      --success: #22c55e;
+      --error: #ef4444;
+      --border: rgba(0,180,216,0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: var(--dark-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--teal);
+    }
+    .nav-logo .atom { font-size: 1.5rem; }
+    .nav-badge {
+      font-size: 0.7rem;
+      background: var(--teal);
+      color: var(--navy);
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    .container { display: flex; height: calc(100vh - 65px); }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 280px;
+      background: var(--dark-card);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 1.5rem 1rem;
+    }
+    .sidebar h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+    .module-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 1px solid transparent;
+    }
+    .module-item.active { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .module-item.complete { opacity: 0.7; }
+    .module-item.locked { opacity: 0.5; cursor: not-allowed; }
+    .module-item:not(.locked):hover { background: rgba(0,180,216,0.05); }
+    .module-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--blue);
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .module-item.active .module-number { background: var(--teal); color: var(--navy); }
+    .module-item.complete .module-number { background: var(--success); color: var(--navy); }
+    .module-info { flex: 1; }
+    .module-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .module-meta { font-size: 0.75rem; color: var(--gray); }
+    .module-lock { font-size: 1.2rem; color: var(--gray); }
+    .module-check { font-size: 1.2rem; color: var(--success); }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem 3rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .breadcrumb { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; }
+    .breadcrumb a { color: var(--teal); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .progress-section { margin-bottom: 2rem; }
+    .progress-label { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem; }
+    .progress-bar { height: 8px; background: var(--blue); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-light)); transition: width 0.3s; }
+
+    .module-header { margin-bottom: 2.5rem; }
+    .module-title-main { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--teal); }
+    .module-subtitle { font-size: 1.3rem; color: var(--gray); margin-bottom: 1rem; }
+    .module-meta-main { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--gray); }
+
+    .objectives {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .objectives h3 { font-size: 1.1rem; color: var(--teal); margin-bottom: 1rem; }
+    .objectives ol { margin-left: 1.5rem; }
+    .objectives li { margin-bottom: 0.75rem; line-height: 1.6; }
+
+    .content-card {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1rem; }
+    .card-text { line-height: 1.7; margin-bottom: 1rem; }
+    .callout {
+      background: rgba(0,180,216,0.1);
+      border-left: 3px solid var(--teal);
+      padding: 1rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+    .callout strong { color: var(--teal); }
+    .analogy-box {
+      background: rgba(244,162,97,0.1);
+      border-left: 3px solid var(--gold);
+      padding: 1rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+    .analogy-box strong { color: var(--gold); }
+
+    /* INTERACTIVE BADGE (shared) */
+    .int-container {
+      background: rgba(0,180,216,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .int-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .int-badge {
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .int-label { font-size: 0.95rem; font-weight: 600; color: var(--teal); }
+    .int-canvas-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0.75rem;
+    }
+    .int-canvas-wrap canvas {
+      width: 100%;
+      max-width: 700px;
+      border-radius: 10px;
+      display: block;
+    }
+    .int-controls {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+    .int-btn {
+      padding: 0.5rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.8rem;
+      transition: all 0.15s;
+    }
+    .int-btn.primary { background: var(--teal); color: var(--navy); }
+    .int-btn.primary:hover { filter: brightness(1.1); }
+    .int-btn.secondary { background: var(--blue); color: var(--white); border: 1px solid var(--border); }
+    .int-btn.secondary:hover { border-color: var(--teal); }
+    .int-btn.gold { background: var(--gold); color: var(--navy); }
+    .int-btn.gold:hover { filter: brightness(1.1); }
+    .int-status {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--gray);
+      min-height: 1.2rem;
+      margin-top: 0.25rem;
+    }
+    .int-insight {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: rgba(244,162,97,0.1);
+      border: 1px solid rgba(244,162,97,0.3);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    /* INTERACTIVE: PWR vs BWR Flow */
+    .flow-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .flow-tab {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      background: var(--dark-card);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--white);
+    }
+    .flow-tab:hover { border-color: var(--teal); }
+    .flow-tab.active { background: rgba(0,180,216,0.15); border-color: var(--teal); color: var(--teal); }
+    .flow-tab .tab-pct { font-size: 0.75rem; color: var(--gray); font-weight: 400; margin-top: 0.25rem; }
+    .flow-legend {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--gray);
+    }
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 0.35rem;
+      vertical-align: middle;
+    }
+
+    /* INTERACTIVE: Control Rod Challenge */
+    .crc-display {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .crc-gauge {
+      position: relative;
+      height: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .crc-power-ring {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .crc-power-value {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .crc-power-unit {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-top: 0.25rem;
+    }
+    .crc-target-label {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+    .crc-target-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .crc-rod-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .crc-rod-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--teal);
+    }
+    .crc-rod-track {
+      position: relative;
+      width: 60px;
+      height: 220px;
+      background: rgba(0,180,216,0.08);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .crc-rod-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0,180,216,0.3);
+      border-radius: 0 0 8px 8px;
+      transition: height 0.15s;
+    }
+    .crc-rod-handle {
+      position: absolute;
+      left: -5px;
+      width: 70px;
+      height: 12px;
+      background: var(--teal);
+      border-radius: 4px;
+      cursor: grab;
+      box-shadow: 0 0 8px rgba(0,180,216,0.4);
+    }
+    .crc-rod-handle:active { cursor: grabbing; }
+    .crc-rod-pct {
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+    .crc-scoreboard {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 0.75rem;
+    }
+    .crc-score-item {
+      text-align: center;
+    }
+    .crc-score-num {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+    .crc-score-lbl {
+      font-size: 0.7rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .crc-result {
+      text-align: center;
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      min-height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    /* REACTOR COMPARISON */
+    .reactor-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .reactor-card {
+      background: rgba(0,180,216,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .reactor-card h4 {
+      color: var(--teal);
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+    .reactor-card ul { margin-left: 1.25rem; line-height: 1.8; }
+    .reactor-card li { margin-bottom: 0.5rem; }
+
+    /* PLANT TOUR */
+    .plant-diagram {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .plant-component {
+      background: rgba(0,180,216,0.05);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .plant-component:hover {
+      background: rgba(0,180,216,0.1);
+      border-color: var(--teal);
+      transform: translateY(-2px);
+    }
+    .plant-component.selected {
+      background: rgba(0,180,216,0.15);
+      border-color: var(--teal);
+    }
+    .component-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .component-name { font-size: 0.85rem; font-weight: 600; color: var(--teal); }
+    .component-detail {
+      background: rgba(0,180,216,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      line-height: 1.7;
+      display: none;
+    }
+    .component-detail.show { display: block; }
+
+    /* ENERGY PATH */
+    .energy-path {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0;
+      overflow-x: auto;
+      padding: 1rem 0;
+    }
+    .path-step { flex-shrink: 0; text-align: center; min-width: 120px; }
+    .path-box {
+      background: var(--dark-card);
+      border: 2px solid var(--teal);
+      border-radius: 8px;
+      padding: 1rem;
+      font-weight: 600;
+      color: var(--teal);
+      margin-bottom: 0.75rem;
+    }
+    .path-description { font-size: 0.8rem; line-height: 1.5; color: var(--gray); }
+    .path-arrow { font-size: 1.5rem; color: var(--teal); flex-shrink: 0; }
+
+    /* QUIZ */
+    .quiz-container {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .quiz-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1.5rem; }
+    .quiz-question { margin-bottom: 2rem; }
+    .question-text { font-weight: 600; margin-bottom: 1rem; line-height: 1.6; }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .quiz-option {
+      background: rgba(0,180,216,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .quiz-option:hover { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .quiz-option.correct { background: rgba(34,197,94,0.1); border-color: var(--success); }
+    .quiz-option.incorrect { background: rgba(239,68,68,0.1); border-color: var(--error); }
+    .option-letter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--blue);
+      font-weight: 600;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .quiz-option.correct .option-letter { background: var(--success); }
+    .quiz-option.incorrect .option-letter { background: var(--error); }
+    .quiz-feedback {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid var(--success); }
+    .quiz-feedback.incorrect { background: rgba(239,68,68,0.1); color: var(--error); border: 1px solid var(--error); }
+
+    /* AI TUTOR */
+    .tutor-container {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .tutor-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .tutor-icon { font-size: 1.5rem; }
+    .tutor-title { font-size: 1.1rem; font-weight: 600; color: var(--teal); }
+    .tutor-input { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    #tutor-question {
+      flex: 1;
+      background: var(--blue);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: var(--white);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+    #tutor-question::placeholder { color: var(--gray); }
+    #ask-tutor {
+      background: var(--teal);
+      color: var(--navy);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #tutor-response {
+      background: rgba(0,180,216,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      line-height: 1.7;
+      display: none;
+    }
+    #tutor-response.show { display: block; }
+
+    /* NAVIGATION */
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .nav-btn {
+      background: var(--teal);
+      color: var(--navy);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      font-size: 1rem;
+      font-family: inherit;
+      text-decoration: none;
+    }
+    .nav-btn:hover { opacity: 0.9; }
+    .nav-btn.secondary { background: var(--blue); color: var(--white); }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { padding: 1.5rem; }
+      .reactor-grid { grid-template-columns: 1fr; }
+      .plant-diagram { grid-template-columns: repeat(3, 1fr); }
+      .crc-display { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">
+      <span class="atom">&#9883;</span>
+      <span>Reactor Ready</span>
+    </div>
+    <div class="nav-right">
+      <span>by Naked Nuclear</span>
+      <span style="color: var(--border);">|</span>
+      <span>Nuclear Wrapper Course</span>
+      <span style="color: var(--border);">|</span>
+      <span class="nav-badge">DEMO BUILD</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h3>Course Modules</h3>
+
+      <a href="module-1-welcome.html" style="text-decoration:none;color:inherit;">
+        <div class="module-item complete">
+          <div class="module-number">&#10003;</div>
+          <div class="module-info">
+            <div class="module-title">Welcome to Nuclear</div>
+            <div class="module-meta">30 min</div>
+          </div>
+          <div class="module-check">&#10003;</div>
+        </div>
+      </a>
+
+      <div class="module-item active">
+        <div class="module-number">&#9679;</div>
+        <div class="module-info">
+          <div class="module-title">How Reactors Work</div>
+          <div class="module-meta">35 min</div>
+        </div>
+      </div>
+
+      <div class="module-item locked">
+        <div class="module-number">3</div>
+        <div class="module-info">
+          <div class="module-title">Radiation Safety Fundamentals</div>
+          <div class="module-meta">40 min</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+
+      <div class="module-item locked">
+        <div class="module-number">4</div>
+        <div class="module-info">
+          <div class="module-title">Inside the Reactor</div>
+          <div class="module-meta">45 min</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+
+      <div class="module-item locked">
+        <div class="module-number">5</div>
+        <div class="module-info">
+          <div class="module-title">Your Career Path</div>
+          <div class="module-meta">30 min</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+
+      <div class="module-item locked">
+        <div class="module-number">6</div>
+        <div class="module-info">
+          <div class="module-title">Citations &amp; Sources</div>
+          <div class="module-meta">Reference</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <div class="breadcrumb">
+        <a href="module-1-welcome.html">Reactor Ready</a> &rarr; Module 2
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-label">Course Progress: Module 2 of 6</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 33%"></div>
+        </div>
+      </div>
+
+      <!-- MODULE HEADER -->
+      <div class="module-header">
+        <h1 class="module-title-main">How Nuclear Reactors Work</h1>
+        <p class="module-subtitle">Fission, Heat, Steam, Electricity — The Cycle You'll Maintain</p>
+        <div class="module-meta-main">
+          <div>&#9201; 35 min</div>
+          <div>&#128196; Reading + Interactive</div>
+          <div>&#10003; 1 Knowledge Check</div>
+          <div>&#127918; 3 Interactive Widgets</div>
+        </div>
+      </div>
+
+      <!-- LEARNING OBJECTIVES -->
+      <div class="objectives">
+        <h3>Learning Objectives</h3>
+        <p style="color: var(--gray); margin-bottom: 1rem; font-size: 0.9rem;">By the end of this module, you will be able to:</p>
+        <ol>
+          <li>Explain nuclear fission in plain terms — what splits, what's released, and why it matters</li>
+          <li>Describe the chain reaction and how control rods manage it</li>
+          <li>Trace the energy path: fission heat &rarr; steam &rarr; turbine &rarr; electricity</li>
+          <li>Identify the 5 main systems in a nuclear power plant and what each does</li>
+          <li>Recognize the difference between a PWR and a BWR — the two most common US reactor designs</li>
+        </ol>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 1: WHAT IS FISSION -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">What Is Fission?</h2>
+        <p class="card-text">
+          You've generated electricity from steam your whole career. The turbines, the generators, the feedwater systems — you know this equipment. Nuclear is the same thermodynamic cycle. What changes is what's making the steam.
+        </p>
+        <p class="card-text"><strong>Fission explanation (workforce-friendly):</strong></p>
+        <ul style="line-height: 1.8; margin-left: 1.5rem; margin-bottom: 1rem;">
+          <li><strong>Uranium-235 atoms are naturally unstable.</strong> When a slow-moving neutron hits one, it splits into two smaller atoms, releases 2-3 more neutrons, and releases an enormous amount of heat — about 50 million times more heat per atom than burning coal. <span style="color:var(--gray);font-size:0.85rem;">(Source: DOE NNSA, "Nuclear Energy Basics")</span></li>
+          <li><strong>Those released neutrons hit more U-235 atoms</strong> &rarr; more splits &rarr; more neutrons &rarr; chain reaction.</li>
+          <li><strong>The chain reaction is controlled by control rods</strong> (made of hafnium or boron) that absorb neutrons. Full insertion = reactor shuts down. Partial insertion = power control.</li>
+        </ul>
+        <div class="callout">
+          <strong>Key concept:</strong> Fission doesn't burn anything. There's no flame, no combustion gases. It's pure heat from atomic splitting — and that heat is what makes steam to spin your turbine. <span style="color:var(--gray);font-size:0.85rem;">(Source: NRC, "How Nuclear Reactors Work")</span>
+        </div>
+        <div class="analogy-box">
+          <strong>Analogy:</strong> Think of it like a billiard break shot. The cue ball (neutron) hits one ball (U-235), which sends more balls in all directions. Each of those hits another ball. Now imagine doing that 10&sup2;&sup0; times per second. That's your reactor at full power.
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- INTERACTIVE 1: Chain Reaction Simulator -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="int-container">
+          <div class="int-header">
+            <span class="int-badge">Interactive</span>
+            <span class="int-label">Chain Reaction Simulator</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem;">Fire a neutron into uranium-235 atoms and watch the chain reaction unfold. Use the control rod slider to see how reactors manage criticality.</p>
+          <div class="int-canvas-wrap">
+            <canvas id="cr-canvas" width="700" height="400"></canvas>
+          </div>
+          <div class="int-controls">
+            <button class="int-btn gold" id="cr-fire">Fire Neutron</button>
+            <button class="int-btn primary" id="cr-burst">Burst (20)</button>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <label style="font-size:0.8rem;color:var(--gray);font-weight:500;">Control Rods:</label>
+              <input type="range" id="cr-rods" min="0" max="100" value="30" style="width:120px;accent-color:var(--teal);">
+              <span id="cr-k" style="font-size:0.8rem;font-weight:700;color:var(--teal);">k&#8776;1.0</span>
+            </div>
+            <button class="int-btn secondary" id="cr-reset">Reset</button>
+          </div>
+          <div class="int-status" id="cr-status">Fissions: 0 | Active neutrons: 0</div>
+          <div class="int-insight">
+            <strong style="color:var(--gold);">Why this matters:</strong> At k=1.0 (critical), the chain reaction sustains itself — this is normal operation. At k&lt;1.0 (subcritical), the reaction dies out. At k&gt;1.0 (supercritical), it grows exponentially. Control rods absorb neutrons to keep k&asymp;1.0.
+            <br><span style="font-size:0.8rem;color:var(--gray);">Source: Lamarsh &amp; Baratta, "Introduction to Nuclear Engineering," Ch. 4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 2: PWR vs BWR -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">The Two Main US Reactor Designs</h2>
+        <div class="reactor-grid">
+          <div class="reactor-card">
+            <h4>Pressurized Water Reactor (PWR) — ~65% of US fleet</h4>
+            <ul>
+              <li><strong>Primary loop:</strong> water under ~2,250 psi pressure circulates through reactor core. High pressure keeps it liquid even at 550&#176;F.</li>
+              <li><strong>Steam generator:</strong> primary water transfers heat to secondary loop through tube bundles. The two loops never mix.</li>
+              <li><strong>Secondary loop:</strong> lower-pressure water boils to steam, drives turbine.</li>
+              <li><strong>Containment building:</strong> reinforced concrete dome around reactor and primary loop.</li>
+              <li><strong>Examples:</strong> South Texas Project, Comanche Peak, Vogtle</li>
+            </ul>
+          </div>
+          <div class="reactor-card">
+            <h4>Boiling Water Reactor (BWR) — ~35% of US fleet</h4>
+            <ul>
+              <li><strong>Single loop:</strong> reactor coolant boils directly in the reactor vessel, steam goes straight to turbine.</li>
+              <li><strong>Simpler</strong> (no steam generators), but turbine becomes mildly radioactive.</li>
+              <li><strong>Containment:</strong> different geometry than PWR, usually with torus (suppression pool) at base.</li>
+              <li><strong>Examples:</strong> Nine Mile Point, Quad Cities, Susquehanna</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>For trades workers:</strong> The equipment you maintain differs between PWR and BWR — PWR electricians deal with steam generator instrumentation, BWR electricians deal with a radioactive turbine building. Know which plant type you're working at.
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- INTERACTIVE 2: PWR vs BWR Flow Animator -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="int-container">
+          <div class="int-header">
+            <span class="int-badge">Interactive</span>
+            <span class="int-label">PWR vs BWR Flow Diagram</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem;">Watch how water and steam flow through each reactor type. Click a component to learn what it does.</p>
+          <div class="flow-tabs">
+            <button class="flow-tab active" onclick="setFlowType('pwr')">
+              PWR — Pressurized Water
+              <div class="tab-pct">~65% of US fleet</div>
+            </button>
+            <button class="flow-tab" onclick="setFlowType('bwr')">
+              BWR — Boiling Water
+              <div class="tab-pct">~35% of US fleet</div>
+            </button>
+          </div>
+          <div class="int-canvas-wrap">
+            <canvas id="flow-canvas" width="700" height="380"></canvas>
+          </div>
+          <div class="flow-legend">
+            <span><span class="legend-dot" style="background:#ef4444;"></span>Hot water / Primary</span>
+            <span><span class="legend-dot" style="background:#60a5fa;"></span>Cool water</span>
+            <span><span class="legend-dot" style="background:#e2e8f0;"></span>Steam</span>
+            <span><span class="legend-dot" style="background:#fbbf24;"></span>Electricity</span>
+          </div>
+          <div id="flow-info" class="int-insight" style="min-height:3rem;">
+            <strong style="color:var(--teal);">PWR:</strong> Two separate loops. Primary water stays pressurized (liquid) and transfers heat through a steam generator. The turbine side stays non-radioactive.
+            <br><span style="font-size:0.8rem;color:var(--gray);">Source: NRC NUREG/BR-0298, "Nuclear Power Plant Licensing Process"</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 3: INTERACTIVE PLANT TOUR -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">Interactive — Click-Through Plant Tour</h2>
+        <p class="card-text">Click each component to learn what it does and how you'll work on it:</p>
+
+        <div class="plant-diagram">
+          <div class="plant-component" onclick="selectComponent(1)">
+            <div class="component-icon">&#9762;&#65039;</div>
+            <div class="component-name">Reactor Core</div>
+          </div>
+          <div class="plant-component" onclick="selectComponent(2)">
+            <div class="component-icon">&#128168;</div>
+            <div class="component-name">Steam Generator</div>
+          </div>
+          <div class="plant-component" onclick="selectComponent(3)">
+            <div class="component-icon">&#9881;&#65039;</div>
+            <div class="component-name">Turbine</div>
+          </div>
+          <div class="plant-component" onclick="selectComponent(4)">
+            <div class="component-icon">&#9889;</div>
+            <div class="component-name">Generator</div>
+          </div>
+          <div class="plant-component" onclick="selectComponent(5)">
+            <div class="component-icon">&#127754;</div>
+            <div class="component-name">Cooling Tower</div>
+          </div>
+        </div>
+
+        <div class="component-detail" id="component-1">
+          <strong>Reactor Core</strong><br/><br/>
+          Uranium fuel rods arranged in a core. Fission happens here. The core runs at ~550&#176;F (PWR). Control rods insert between fuel assemblies to control the chain reaction. As a trades worker: you'll maintain the motors that drive control rod mechanisms (CRDMs) and the sensors that monitor core temperature and neutron flux. <span style="color:var(--gray);font-size:0.85rem;">(Source: NRC Technical Training Center, "Reactor Concepts Manual")</span>
+        </div>
+        <div class="component-detail" id="component-2">
+          <strong>Steam Generator (PWR) / Reactor Vessel (BWR)</strong><br/><br/>
+          In a PWR, the steam generator is the heat exchanger where primary water heats secondary water through thousands of small tubes. About the size of a school bus. You'll maintain feedwater pumps, steam generator blowdown systems, level instruments, and tube plugging equipment during outages.
+        </div>
+        <div class="component-detail" id="component-3">
+          <strong>Turbine</strong><br/><br/>
+          Steam from the secondary loop (PWR) or directly from the reactor (BWR) drives the turbine blades. Nuclear turbines are massive — 1,000-1,400 MW units. The same equipment you know: HP and LP turbine stages, turning gear motors, lube oil systems, governor controls. Pipefitters work on steam lines and extraction systems here.
+        </div>
+        <div class="component-detail" id="component-4">
+          <strong>Generator</strong><br/><br/>
+          Converts mechanical rotation to electricity at typically 20-25kV. Then step-up transformers raise it to 345-500kV for the grid. You'll maintain excitation systems, voltage regulators, protective relaying (87G differential, 40 loss of field, 46 negative sequence), hydrogen cooling systems, and the main generator breaker.
+        </div>
+        <div class="component-detail" id="component-5">
+          <strong>Cooling Tower / Condenser</strong><br/><br/>
+          Steam exhausted from the turbine must be condensed back to liquid water for the cycle to repeat. Large plants use cooling towers (the iconic hyperbolic structures) or once-through cooling from a river or ocean. Condensate pumps (electricians maintain the motors), air ejectors, and hotwell level control are all in this area.
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- INTERACTIVE 3: Control Rod Challenge -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="int-container" style="margin-top:2rem;">
+          <div class="int-header">
+            <span class="int-badge">Interactive</span>
+            <span class="int-label">Control Rod Challenge</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem;">Drag the control rod to hit the target power level. Reactor operators do this every day — adjusting rod height to match demand. Can you hit all 5 targets?</p>
+
+          <div class="crc-display">
+            <div class="crc-gauge">
+              <div class="crc-power-ring" id="crc-ring">
+                <div class="crc-power-value" id="crc-power">0%</div>
+                <div class="crc-power-unit">Reactor Power</div>
+              </div>
+              <div style="margin-top:1rem;text-align:center;">
+                <div class="crc-target-label">Target:</div>
+                <div class="crc-target-value" id="crc-target">75%</div>
+              </div>
+            </div>
+            <div class="crc-rod-panel">
+              <div class="crc-rod-label">Control Rod</div>
+              <div class="crc-rod-track" id="crc-track">
+                <div class="crc-rod-fill" id="crc-fill"></div>
+                <div class="crc-rod-handle" id="crc-handle"></div>
+              </div>
+              <div class="crc-rod-pct" id="crc-rod-pct">Inserted: 70%</div>
+              <button class="int-btn primary" id="crc-lock" style="margin-top:0.5rem;">Lock In</button>
+            </div>
+          </div>
+
+          <div class="crc-result" id="crc-result"></div>
+
+          <div class="crc-scoreboard">
+            <div class="crc-score-item">
+              <div class="crc-score-num" id="crc-round" style="color:var(--teal);">1/5</div>
+              <div class="crc-score-lbl">Round</div>
+            </div>
+            <div class="crc-score-item">
+              <div class="crc-score-num" id="crc-hits" style="color:var(--success);">0</div>
+              <div class="crc-score-lbl">Hits</div>
+            </div>
+            <div class="crc-score-item">
+              <div class="crc-score-num" id="crc-misses" style="color:var(--error);">0</div>
+              <div class="crc-score-lbl">Misses</div>
+            </div>
+          </div>
+
+          <div class="int-insight">
+            <strong style="color:var(--gold);">Why this matters:</strong> In a real plant, reactor operators use control rods for fine power adjustments. Withdrawing rods increases power; inserting them decreases it. The relationship isn't linear — it depends on rod worth, temperature coefficients, and xenon poisoning. But the principle is exactly what you just practiced.
+            <br><span style="font-size:0.8rem;color:var(--gray);">Source: NRC Reactor Concepts Manual, NUREG/CR-6042</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 4: ENERGY PATH -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">The Energy Path — Step by Step</h2>
+        <div class="energy-path">
+          <div class="path-step">
+            <div class="path-box">Fission Heat</div>
+            <div class="path-description">U-235 splits, releases ~200 MeV per fission</div>
+          </div>
+          <div class="path-arrow">&rarr;</div>
+          <div class="path-step">
+            <div class="path-box">Reactor Coolant</div>
+            <div class="path-description">Water at 550&#176;F / 2,250 psi transfers heat away from core</div>
+          </div>
+          <div class="path-arrow">&rarr;</div>
+          <div class="path-step">
+            <div class="path-box">Steam Generator</div>
+            <div class="path-description">PWR: primary &rarr; secondary heat transfer here</div>
+          </div>
+          <div class="path-arrow">&rarr;</div>
+          <div class="path-step">
+            <div class="path-box">Steam</div>
+            <div class="path-description">~540&#176;F steam at ~1,000 psi enters HP turbine</div>
+          </div>
+          <div class="path-arrow">&rarr;</div>
+          <div class="path-step">
+            <div class="path-box">Turbine</div>
+            <div class="path-description">3,600 RPM (60 Hz). Same as fossil.</div>
+          </div>
+          <div class="path-arrow">&rarr;</div>
+          <div class="path-step">
+            <div class="path-box">Generator</div>
+            <div class="path-description">20-25kV output. Step up to 345-500kV.</div>
+          </div>
+          <div class="path-arrow">&rarr;</div>
+          <div class="path-step">
+            <div class="path-box">Grid</div>
+            <div class="path-description">Baseload: 24/7 at 90%+ capacity factor.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KNOWLEDGE CHECK -->
+      <div class="quiz-container">
+        <h2 class="quiz-title">Knowledge Check</h2>
+
+        <div class="quiz-question" id="q1">
+          <p class="question-text">1. What causes the heat in a nuclear reactor?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(1,'A',false)"><div class="option-letter">A</div><div>Burning uranium fuel</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'B',false)"><div class="option-letter">B</div><div>Chemical reactions between uranium and water</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'C',true)"><div class="option-letter">C</div><div>Uranium atoms splitting (fission), releasing energy</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'D',false)"><div class="option-letter">D</div><div>Friction from spinning turbine components</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-1"></div>
+        </div>
+
+        <div class="quiz-question" id="q2">
+          <p class="question-text">2. What is the purpose of control rods in a nuclear reactor?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(2,'A',false)"><div class="option-letter">A</div><div>They hold the fuel assemblies in position</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'B',false)"><div class="option-letter">B</div><div>They cool the reactor core during shutdown</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'C',false)"><div class="option-letter">C</div><div>They measure neutron flux in the core</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'D',true)"><div class="option-letter">D</div><div>They absorb neutrons to control the chain reaction rate</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-2"></div>
+        </div>
+
+        <div class="quiz-question" id="q3">
+          <p class="question-text">3. In a PWR, does the primary coolant water ever become steam?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(3,'A',true)"><div class="option-letter">A</div><div>No — the primary loop stays liquid under high pressure (~2,250 psi)</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'B',false)"><div class="option-letter">B</div><div>Yes — it boils in the steam generator</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'C',false)"><div class="option-letter">C</div><div>Yes — it boils at the top of the reactor vessel</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'D',false)"><div class="option-letter">D</div><div>It depends on power level</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-3"></div>
+        </div>
+
+        <div class="quiz-question" id="q4">
+          <p class="question-text">4. Which reactor type has steam generators?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(4,'A',false)"><div class="option-letter">A</div><div>Boiling Water Reactor (BWR)</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'B',true)"><div class="option-letter">B</div><div>Pressurized Water Reactor (PWR)</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'C',false)"><div class="option-letter">C</div><div>Both PWR and BWR</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'D',false)"><div class="option-letter">D</div><div>Neither — steam is generated in the turbine building</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-4"></div>
+        </div>
+
+        <div class="quiz-question" id="q5">
+          <p class="question-text">5. What is the capacity factor of a typical US nuclear plant?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(5,'A',false)"><div class="option-letter">A</div><div>About 50% (it runs half the time)</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'B',false)"><div class="option-letter">B</div><div>About 70% (similar to coal plants)</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'C',true)"><div class="option-letter">C</div><div>About 90-93% (nearly continuous operation)</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'D',false)"><div class="option-letter">D</div><div>About 30% (similar to wind energy)</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-5"></div>
+        </div>
+
+        <div class="quiz-question" id="q6">
+          <p class="question-text">6. For an electrician working at a nuclear plant, which area contains the MOST familiar electrical equipment?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(6,'A',false)"><div class="option-letter">A</div><div>The reactor building (containment)</div></div>
+            <div class="quiz-option" onclick="selectOption(6,'B',false)"><div class="option-letter">B</div><div>The control room</div></div>
+            <div class="quiz-option" onclick="selectOption(6,'C',true)"><div class="option-letter">C</div><div>The turbine building (generator, excitation, switchgear)</div></div>
+            <div class="quiz-option" onclick="selectOption(6,'D',false)"><div class="option-letter">D</div><div>The spent fuel pool</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-6"></div>
+        </div>
+      </div>
+
+      <!-- AI TUTOR -->
+      <div class="tutor-container">
+        <div class="tutor-header">
+          <div class="tutor-icon">&#129302;</div>
+          <div>
+            <div class="tutor-title">ARIA AI Tutor</div>
+            <div style="font-size: 0.85rem; color: var(--gray);">Ask me about how nuclear reactors work</div>
+          </div>
+        </div>
+        <div class="tutor-input">
+          <input type="text" id="tutor-question" placeholder="Ask a question about this module..." />
+          <button id="ask-tutor" onclick="askTutor()">Ask</button>
+        </div>
+        <div id="tutor-response"></div>
+      </div>
+
+      <!-- NAVIGATION -->
+      <div class="nav-buttons">
+        <a href="module-1-welcome.html" class="nav-btn secondary">&larr; Back to Module 1</a>
+        <button class="nav-btn" onclick="alert('Module 3: Radiation Safety Fundamentals — coming soon')">Continue to Module 3 &rarr;</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SCRIPTS -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <script>
+  // ───────────────────────────────────────────
+  // INTERACTIVE 1: Chain Reaction Simulator
+  // ───────────────────────────────────────────
+  (function(){
+    const cv = document.getElementById('cr-canvas');
+    const ctx = cv.getContext('2d');
+    const W = cv.width, H = cv.height;
+
+    // Uranium atoms grid
+    let atoms = [];
+    function initAtoms(){
+      atoms = [];
+      for(let ax = 100; ax < W-30; ax += 26)
+        for(let ay = 30; ay < H-30; ay += 26)
+          atoms.push({x:ax+(Math.random()-.5)*5, y:ay+(Math.random()-.5)*5, r:7, alive:true, flash:0});
+    }
+
+    let neutrons = [], fragments = [], flashes = [], fissionCount = 0;
+
+    function getK(){
+      return 1.8 - (parseInt(document.getElementById('cr-rods').value)/100)*1.6;
+    }
+    function updateKLabel(){
+      const k = getK();
+      const el = document.getElementById('cr-k');
+      const c = k > 1.05 ? '#ef4444' : k < 0.95 ? '#60a5fa' : '#22c55e';
+      const l = k > 1.05 ? 'SUPERCRITICAL' : k < 0.95 ? 'SUBCRITICAL' : 'CRITICAL';
+      el.style.color = c;
+      el.textContent = 'k\u2248' + k.toFixed(2) + ' (' + l + ')';
+    }
+
+    function fire(){
+      neutrons.push({
+        x:20, y:H/2+(Math.random()-.5)*40,
+        vx:3, vy:(Math.random()-.5)*0.5,
+        gen:0, age:0
+      });
+    }
+    function burst(){ for(let i=0;i<20;i++) setTimeout(fire, i*80); }
+    function reset(){
+      neutrons=[]; fragments=[]; flashes=[]; fissionCount=0;
+      initAtoms(); updateStatus();
+    }
+    function updateStatus(){
+      document.getElementById('cr-status').textContent =
+        'Fissions: ' + fissionCount + ' | Active neutrons: ' + neutrons.filter(n=>n.age<500).length;
+    }
+
+    document.getElementById('cr-fire').onclick = fire;
+    document.getElementById('cr-burst').onclick = burst;
+    document.getElementById('cr-reset').onclick = reset;
+    document.getElementById('cr-rods').addEventListener('input', updateKLabel);
+
+    initAtoms();
+    updateKLabel();
+
+    function animate(){
+      const k = getK();
+      // Physics
+      for(let i=neutrons.length-1;i>=0;i--){
+        const n=neutrons[i];
+        n.x+=n.vx; n.y+=n.vy; n.age++;
+        if(n.x<-10||n.x>W+10||n.y<-10||n.y>H+10||n.age>500){neutrons.splice(i,1);continue;}
+        for(const a of atoms){
+          if(!a.alive) continue;
+          const dx=n.x-a.x, dy=n.y-a.y;
+          if(Math.sqrt(dx*dx+dy*dy)<a.r+2){
+            a.alive=false; a.flash=20; fissionCount++;
+            flashes.push({x:a.x,y:a.y,r:5,alpha:1});
+            const fa=Math.random()*Math.PI;
+            fragments.push(
+              {x:a.x,y:a.y,vx:Math.cos(fa)*2,vy:Math.sin(fa)*2,r:5,c:'#f59e0b',life:60},
+              {x:a.x,y:a.y,vx:-Math.cos(fa)*2,vy:-Math.sin(fa)*2,r:4,c:'#ef4444',life:60}
+            );
+            const newN = Math.random()<k?(Math.random()<(k-1)?3:2):(Math.random()<k?1:0);
+            for(let j=0;j<newN;j++){
+              const ang=Math.random()*Math.PI*2, spd=2+Math.random()*2;
+              neutrons.push({x:a.x,y:a.y,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,gen:n.gen+1,age:0});
+            }
+            neutrons.splice(i,1);
+            break;
+          }
+        }
+      }
+      for(let i=fragments.length-1;i>=0;i--){
+        fragments[i].x+=fragments[i].vx; fragments[i].y+=fragments[i].vy;
+        fragments[i].vx*=.97; fragments[i].vy*=.97;
+        if(--fragments[i].life<=0) fragments.splice(i,1);
+      }
+      for(let i=flashes.length-1;i>=0;i--){
+        flashes[i].r+=2; flashes[i].alpha-=.05;
+        if(flashes[i].alpha<=0) flashes.splice(i,1);
+      }
+      updateStatus();
+
+      // Draw
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#0a1628'; ctx.fillRect(0,0,W,H);
+
+      // Grid
+      ctx.strokeStyle='rgba(26,58,92,0.3)'; ctx.lineWidth=0.5;
+      for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+      for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+      // Control rods visual
+      const rodVal = parseInt(document.getElementById('cr-rods').value);
+      const rodH = (rodVal/100)*(H-40);
+      ctx.fillStyle='rgba(0,180,216,0.12)';
+      for(let px=140;px<W-40;px+=65){
+        ctx.fillRect(px-2,10,4,rodH);
+        ctx.fillStyle='rgba(0,180,216,0.3)';
+        ctx.fillRect(px-3,8+rodH,6,5);
+        ctx.fillStyle='rgba(0,180,216,0.12)';
+      }
+
+      // Neutron source
+      ctx.fillStyle='var(--teal)';
+      ctx.fillStyle='#00b4d8';
+      ctx.beginPath(); ctx.arc(30,H/2,10,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#0a1628'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('n',30,H/2+3.5);
+
+      // Flashes
+      for(const f of flashes){
+        const g=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,f.r);
+        g.addColorStop(0,'rgba(244,162,97,'+f.alpha+')');
+        g.addColorStop(1,'rgba(244,162,97,0)');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill();
+      }
+
+      // Atoms
+      for(const a of atoms){
+        if(!a.alive){
+          if(a.flash>0){
+            a.flash--;
+            ctx.fillStyle='rgba(244,162,97,'+(a.flash/20*0.5)+')';
+            ctx.beginPath(); ctx.arc(a.x,a.y,12,0,Math.PI*2); ctx.fill();
+          }
+          continue;
+        }
+        const g=ctx.createRadialGradient(a.x-1,a.y-1,0,a.x,a.y,a.r);
+        g.addColorStop(0,'#3d6b35'); g.addColorStop(1,'#264220');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(a.x,a.y,a.r,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle='rgba(34,197,94,0.2)'; ctx.lineWidth=0.5; ctx.stroke();
+      }
+
+      // Fragments
+      for(const f of fragments){
+        ctx.fillStyle=f.c; ctx.globalAlpha=f.life/60;
+        ctx.beginPath(); ctx.arc(f.x,f.y,f.r*(f.life/60),0,Math.PI*2); ctx.fill();
+        ctx.globalAlpha=1;
+      }
+
+      // Neutrons with generation colors
+      const genColors=['#f8fafc','#60a5fa','#22c55e','#f59e0b','#ef4444','#a78bfa'];
+      for(const n of neutrons){
+        const cl=genColors[Math.min(n.gen,genColors.length-1)];
+        ctx.fillStyle=cl; ctx.beginPath(); ctx.arc(n.x,n.y,2.5,0,Math.PI*2); ctx.fill();
+        const ng=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,7);
+        ng.addColorStop(0,cl+'60'); ng.addColorStop(1,cl+'00');
+        ctx.fillStyle=ng; ctx.beginPath(); ctx.arc(n.x,n.y,7,0,Math.PI*2); ctx.fill();
+      }
+
+      // Labels
+      ctx.fillStyle='rgba(148,163,184,0.6)'; ctx.font='9px sans-serif'; ctx.textAlign='left';
+      ctx.fillText('Green = U-235 nuclei | Colored dots = neutrons (color = generation)', 80, H-8);
+
+      requestAnimationFrame(animate);
+    }
+    setTimeout(burst, 600);
+    animate();
+  })();
+
+  // ───────────────────────────────────────────
+  // INTERACTIVE 2: PWR vs BWR Flow Animator
+  // ───────────────────────────────────────────
+  (function(){
+    const cv = document.getElementById('flow-canvas');
+    const ctx = cv.getContext('2d');
+    const W = cv.width, H = cv.height;
+    let flowType = 'pwr';
+    let particles = [];
+    let frame = 0;
+
+    window.setFlowType = function(type){
+      flowType = type;
+      particles = [];
+      document.querySelectorAll('.flow-tab').forEach(t=>t.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      const info = document.getElementById('flow-info');
+      if(type==='pwr'){
+        info.innerHTML='<strong style="color:var(--teal);">PWR:</strong> Two separate loops. Primary water stays pressurized (liquid) and transfers heat through a steam generator. The turbine side stays non-radioactive.<br><span style="font-size:0.8rem;color:var(--gray);">Source: NRC NUREG/BR-0298</span>';
+      } else {
+        info.innerHTML='<strong style="color:var(--teal);">BWR:</strong> Single loop. Water boils directly in the reactor vessel and steam goes straight to the turbine. Simpler design, but the turbine building becomes mildly radioactive.<br><span style="font-size:0.8rem;color:var(--gray);">Source: NRC NUREG/BR-0298</span>';
+      }
+    };
+
+    // Component positions
+    const components = {
+      pwr: {
+        reactor: {x:100,y:180,w:80,h:100,label:'Reactor\nCore',color:'#ef4444'},
+        sg: {x:240,y:160,w:70,h:130,label:'Steam\nGenerator',color:'#f59e0b'},
+        turbine: {x:390,y:170,w:80,h:80,label:'Turbine',color:'#94a3b8'},
+        generator: {x:520,y:180,w:70,h:70,label:'Generator',color:'#fbbf24'},
+        condenser: {x:390,y:310,w:80,h:50,label:'Condenser',color:'#60a5fa'},
+        pump1: {x:100,y:310,w:60,h:40,label:'RCP',color:'#ef4444'},
+        pump2: {x:240,y:320,w:60,h:40,label:'FW Pump',color:'#60a5fa'},
+        tower: {x:620,y:140,w:50,h:120,label:'Cooling\nTower',color:'#60a5fa'}
+      },
+      bwr: {
+        reactor: {x:140,y:160,w:100,h:120,label:'Reactor\nVessel\n(boiling)',color:'#ef4444'},
+        turbine: {x:350,y:170,w:80,h:80,label:'Turbine',color:'#94a3b8'},
+        generator: {x:480,y:180,w:70,h:70,label:'Generator',color:'#fbbf24'},
+        condenser: {x:350,y:310,w:80,h:50,label:'Condenser',color:'#60a5fa'},
+        pump: {x:140,y:320,w:70,h:40,label:'Recirc\nPump',color:'#60a5fa'},
+        tower: {x:600,y:140,w:50,h:120,label:'Cooling\nTower',color:'#60a5fa'}
+      }
+    };
+
+    // Flow paths (arrays of waypoints for particles)
+    const paths = {
+      pwr: {
+        primary: [ // Hot: reactor -> SG top -> SG bottom -> pump -> reactor
+          {x:180,y:180},{x:240,y:180},{x:275,y:180},{x:275,y:280},{x:240,y:280},
+          {x:160,y:330},{x:100,y:330},{x:130,y:310},{x:130,y:230},{x:140,y:200}
+        ],
+        secondary: [ // Cool water up through SG -> steam to turbine -> condenser -> pump -> back
+          {x:260,y:320},{x:265,y:280},{x:265,y:200},{x:265,y:160},{x:320,y:160},
+          {x:390,y:190},{x:430,y:210},{x:430,y:310},{x:390,y:335},
+          {x:300,y:340},{x:260,y:340}
+        ]
+      },
+      bwr: {
+        single: [ // Reactor -> steam to turbine -> condenser -> pump -> back to reactor
+          {x:240,y:180},{x:300,y:170},{x:350,y:190},{x:390,y:210},
+          {x:390,y:310},{x:350,y:335},{x:240,y:340},{x:175,y:340},
+          {x:175,y:310},{x:175,y:250},{x:190,y:200}
+        ]
+      }
+    };
+
+    function spawnParticles(){
+      if(flowType==='pwr'){
+        // Primary loop (hot red)
+        if(frame%8===0) particles.push({path:'primary',t:0,speed:0.012,color:'#ef4444',type:'pwr'});
+        // Secondary loop (blue->white steam->blue)
+        if(frame%10===0) particles.push({path:'secondary',t:0,speed:0.01,color:'#60a5fa',type:'pwr'});
+      } else {
+        // Single loop
+        if(frame%6===0) particles.push({path:'single',t:0,speed:0.011,color:'#ef4444',type:'bwr'});
+      }
+    }
+
+    function getPointOnPath(pathPts, t){
+      const totalSegs = pathPts.length - 1;
+      const seg = Math.min(Math.floor(t * totalSegs), totalSegs-1);
+      const localT = (t * totalSegs) - seg;
+      const p0 = pathPts[seg], p1 = pathPts[Math.min(seg+1, pathPts.length-1)];
+      return {
+        x: p0.x + (p1.x - p0.x) * localT,
+        y: p0.y + (p1.y - p0.y) * localT
+      };
+    }
+
+    function drawBox(b, highlight){
+      ctx.fillStyle = highlight ? 'rgba(0,180,216,0.15)' : 'rgba(17,31,53,0.9)';
+      ctx.strokeStyle = highlight ? '#00b4d8' : 'rgba(0,180,216,0.3)';
+      ctx.lineWidth = highlight ? 2 : 1;
+      const r = 6;
+      ctx.beginPath();
+      ctx.moveTo(b.x+r,b.y); ctx.lineTo(b.x+b.w-r,b.y);
+      ctx.quadraticCurveTo(b.x+b.w,b.y,b.x+b.w,b.y+r);
+      ctx.lineTo(b.x+b.w,b.y+b.h-r);
+      ctx.quadraticCurveTo(b.x+b.w,b.y+b.h,b.x+b.w-r,b.y+b.h);
+      ctx.lineTo(b.x+r,b.y+b.h);
+      ctx.quadraticCurveTo(b.x,b.y+b.h,b.x,b.y+b.h-r);
+      ctx.lineTo(b.x,b.y+r);
+      ctx.quadraticCurveTo(b.x,b.y,b.x+r,b.y);
+      ctx.closePath();
+      ctx.fill(); ctx.stroke();
+
+      // Label
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      const lines = b.label.split('\n');
+      const lineH = 14;
+      const startY = b.y + b.h/2 - (lines.length-1)*lineH/2;
+      lines.forEach((line,i) => {
+        ctx.fillText(line, b.x+b.w/2, startY + i*lineH);
+      });
+    }
+
+    function animate(){
+      frame++;
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#0a1628'; ctx.fillRect(0,0,W,H);
+
+      const comps = components[flowType];
+
+      // Draw connection lines (pipes)
+      ctx.strokeStyle='rgba(148,163,184,0.15)'; ctx.lineWidth=3;
+      const pathSet = paths[flowType];
+      for(const key in pathSet){
+        const pts = pathSet[key];
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
+        ctx.stroke();
+      }
+
+      // Draw components
+      for(const key in comps) drawBox(comps[key], false);
+
+      // Spawn and update particles
+      spawnParticles();
+      for(let i=particles.length-1;i>=0;i--){
+        const p = particles[i];
+        p.t += p.speed;
+        if(p.t >= 1){ particles.splice(i,1); continue; }
+
+        const pathKey = p.path;
+        const pathPts = pathSet[pathKey];
+        if(!pathPts){ particles.splice(i,1); continue; }
+        const pos = getPointOnPath(pathPts, p.t);
+
+        // Color transition for secondary/single loop
+        let color = p.color;
+        if(flowType==='pwr' && p.path==='secondary'){
+          // Blue -> white (steam) at SG -> blue after condenser
+          if(p.t > 0.25 && p.t < 0.6) color = '#e2e8f0'; // steam phase
+          else color = '#60a5fa';
+        }
+        if(flowType==='bwr' && p.path==='single'){
+          // Red at reactor -> white steam to turbine -> blue after condenser
+          if(p.t < 0.15) color = '#ef4444';
+          else if(p.t < 0.45) color = '#e2e8f0';
+          else color = '#60a5fa';
+        }
+
+        // Draw particle
+        ctx.fillStyle = color;
+        ctx.beginPath(); ctx.arc(pos.x, pos.y, 3, 0, Math.PI*2); ctx.fill();
+        const glow = ctx.createRadialGradient(pos.x,pos.y,0,pos.x,pos.y,8);
+        glow.addColorStop(0, color+'60');
+        glow.addColorStop(1, color+'00');
+        ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.arc(pos.x, pos.y, 8, 0, Math.PI*2); ctx.fill();
+      }
+
+      // Labels
+      if(flowType==='pwr'){
+        ctx.fillStyle='rgba(239,68,68,0.6)'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+        ctx.fillText('PRIMARY LOOP (radioactive)', 170, 145);
+        ctx.fillStyle='rgba(96,165,250,0.6)';
+        ctx.fillText('SECONDARY LOOP (clean)', 350, 145);
+      } else {
+        ctx.fillStyle='rgba(239,68,68,0.6)'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+        ctx.fillText('SINGLE LOOP (radioactive steam reaches turbine)', W/2, 145);
+      }
+
+      // Electricity output arrow
+      const gen = comps.generator || comps.generator;
+      if(gen){
+        ctx.strokeStyle='#fbbf24'; ctx.lineWidth=2; ctx.setLineDash([5,3]);
+        ctx.beginPath();
+        ctx.moveTo(gen.x+gen.w, gen.y+gen.h/2);
+        ctx.lineTo(gen.x+gen.w+30, gen.y+gen.h/2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle='#fbbf24'; ctx.font='bold 11px sans-serif';
+        ctx.fillText('GRID', gen.x+gen.w+45, gen.y+gen.h/2+4);
+        ctx.font='16px sans-serif';
+        ctx.fillText('\u26a1', gen.x+gen.w+45, gen.y+gen.h/2-10);
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  })();
+
+  // ───────────────────────────────────────────
+  // INTERACTIVE 3: Control Rod Challenge
+  // ───────────────────────────────────────────
+  (function(){
+    const track = document.getElementById('crc-track');
+    const handle = document.getElementById('crc-handle');
+    const fill = document.getElementById('crc-fill');
+    const powerEl = document.getElementById('crc-power');
+    const ringEl = document.getElementById('crc-ring');
+    const targetEl = document.getElementById('crc-target');
+    const rodPctEl = document.getElementById('crc-rod-pct');
+    const resultEl = document.getElementById('crc-result');
+    const roundEl = document.getElementById('crc-round');
+    const hitsEl = document.getElementById('crc-hits');
+    const missesEl = document.getElementById('crc-misses');
+    const lockBtn = document.getElementById('crc-lock');
+
+    const targets = [75, 40, 95, 20, 60];
+    let round = 0, hits = 0, misses = 0;
+    let rodInserted = 70; // percent inserted (0=fully withdrawn=max power, 100=fully inserted=0 power)
+    let isDragging = false;
+    let gameOver = false;
+
+    function rodToPower(ins){ return Math.max(0, Math.min(100, 100 - ins)); }
+    function updateDisplay(){
+      const power = rodToPower(rodInserted);
+      powerEl.textContent = Math.round(power) + '%';
+      rodPctEl.textContent = 'Inserted: ' + Math.round(rodInserted) + '%';
+      fill.style.height = rodInserted + '%';
+      handle.style.top = (rodInserted/100 * (track.offsetHeight - 12)) + 'px';
+
+      // Color the power display
+      const target = targets[round];
+      const diff = Math.abs(power - target);
+      if(diff <= 5) {
+        ringEl.style.background = 'rgba(34,197,94,0.15)';
+        ringEl.style.border = '3px solid #22c55e';
+        powerEl.style.color = '#22c55e';
+      } else if(diff <= 15) {
+        ringEl.style.background = 'rgba(244,162,97,0.15)';
+        ringEl.style.border = '3px solid #f4a261';
+        powerEl.style.color = '#f4a261';
+      } else {
+        ringEl.style.background = 'rgba(0,180,216,0.08)';
+        ringEl.style.border = '3px solid rgba(0,180,216,0.3)';
+        powerEl.style.color = '#f8fafc';
+      }
+    }
+
+    function setTarget(){
+      if(round >= targets.length){
+        gameOver = true;
+        targetEl.textContent = 'Done!';
+        lockBtn.style.display = 'none';
+        const pct = Math.round((hits/targets.length)*100);
+        resultEl.style.background = hits >= 4 ? 'rgba(34,197,94,0.15)' : hits >= 2 ? 'rgba(244,162,97,0.15)' : 'rgba(239,68,68,0.15)';
+        resultEl.style.color = hits >= 4 ? '#22c55e' : hits >= 2 ? '#f4a261' : '#ef4444';
+        resultEl.textContent = hits + '/' + targets.length + ' targets hit! ' + (hits >= 4 ? 'Excellent reactor operator!' : hits >= 2 ? 'Good start — keep practicing!' : 'Needs work — try again!');
+        return;
+      }
+      targetEl.textContent = targets[round] + '%';
+      roundEl.textContent = (round+1) + '/' + targets.length;
+      resultEl.textContent = '';
+      resultEl.style.background = 'transparent';
+    }
+
+    lockBtn.onclick = function(){
+      if(gameOver) return;
+      const power = rodToPower(rodInserted);
+      const target = targets[round];
+      const diff = Math.abs(power - target);
+      if(diff <= 5){
+        hits++;
+        hitsEl.textContent = hits;
+        resultEl.style.background = 'rgba(34,197,94,0.15)';
+        resultEl.style.color = '#22c55e';
+        resultEl.textContent = 'HIT! Power ' + Math.round(power) + '% (target ' + target + '%, within \u00b15%)';
+      } else {
+        misses++;
+        missesEl.textContent = misses;
+        resultEl.style.background = 'rgba(239,68,68,0.15)';
+        resultEl.style.color = '#ef4444';
+        resultEl.textContent = 'MISS. Power ' + Math.round(power) + '% (target ' + target + '%, off by ' + Math.round(diff) + '%)';
+      }
+      round++;
+      setTimeout(setTarget, 1200);
+    };
+
+    // Drag handling
+    function startDrag(e){
+      if(gameOver) return;
+      isDragging = true;
+      e.preventDefault();
+    }
+    function moveDrag(e){
+      if(!isDragging) return;
+      const rect = track.getBoundingClientRect();
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      let pct = ((clientY - rect.top) / rect.height) * 100;
+      pct = Math.max(0, Math.min(100, pct));
+      rodInserted = pct;
+      updateDisplay();
+    }
+    function endDrag(){ isDragging = false; }
+
+    handle.addEventListener('mousedown', startDrag);
+    handle.addEventListener('touchstart', startDrag);
+    document.addEventListener('mousemove', moveDrag);
+    document.addEventListener('touchmove', moveDrag);
+    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('touchend', endDrag);
+
+    // Click on track to jump
+    track.addEventListener('click', function(e){
+      if(gameOver) return;
+      const rect = track.getBoundingClientRect();
+      let pct = ((e.clientY - rect.top) / rect.height) * 100;
+      rodInserted = Math.max(0, Math.min(100, pct));
+      updateDisplay();
+    });
+
+    setTarget();
+    updateDisplay();
+  })();
+
+  // ───────────────────────────────────────────
+  // Plant Tour
+  // ───────────────────────────────────────────
+  function selectComponent(num) {
+    for(let i=1;i<=5;i++) document.getElementById('component-'+i).classList.remove('show');
+    document.querySelectorAll('.plant-component').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('component-'+num).classList.add('show');
+    event.currentTarget.classList.add('selected');
+  }
+
+  // ───────────────────────────────────────────
+  // Quiz
+  // ───────────────────────────────────────────
+  const feedbackData = {
+    1: {
+      correct: "Correct. Fission releases ~200 MeV per reaction — about 50 million times more energy per atom than burning coal. No combustion, no flames. (Source: DOE NE, \"Nuclear Energy Basics\")",
+      incorrect: "Fission is the splitting of uranium-235 atoms when struck by neutrons. It's not a burning process — there's no combustion. The energy comes from the conversion of mass to energy (E=mc\u00b2)."
+    },
+    2: {
+      correct: "Correct. Control rods (made of hafnium, boron, or silver-indium-cadmium) absorb neutrons. Fully inserted = reactor shutdown (SCRAM). Partially inserted = power reduction. (Source: NRC Reactor Concepts Manual)",
+      incorrect: "Control rods absorb neutrons. When a neutron is absorbed, it can't split another uranium atom — so the chain reaction slows. Inserting control rods reduces reactor power; withdrawing them increases it."
+    },
+    3: {
+      correct: "Correct. The ~2,250 psi pressure in the primary loop keeps the water liquid even at 550\u00b0F. If the pressure drops, the water can flash to steam — a Loss of Coolant Accident (LOCA).",
+      incorrect: "In a PWR, the primary loop operates at ~2,250 psi — high enough that water stays liquid at 550\u00b0F. The secondary loop is where steam is generated. In a BWR, water DOES boil in the reactor vessel."
+    },
+    4: {
+      correct: "Correct. PWRs use steam generators to transfer heat from the radioactive primary loop to the non-radioactive secondary loop. BWRs skip this — water boils directly in the reactor vessel.",
+      incorrect: "PWRs have steam generators. BWRs don't — in a BWR, water boils directly in the reactor core and steam goes straight to the turbine. BWR turbine buildings are mildly radioactive."
+    },
+    5: {
+      correct: "Correct. Nuclear plants run at 90-93% capacity factor — essentially always on. Compare to solar (~25%) and wind (~35%). This reliability is why nuclear is called 'baseload.' (Source: EIA Electric Power Monthly)",
+      incorrect: "US nuclear plants run at 90-93% capacity factor — among the highest of any power source. They only shut down for refueling (every 18-24 months) and maintenance."
+    },
+    6: {
+      correct: "Correct. The turbine building is where nuclear plants most resemble conventional power generation. Generator, main transformer, excitation systems, switchgear — equipment you already know.",
+      incorrect: "The turbine building is where nuclear and conventional power plants overlap most. Generator, excitation systems, main transformer, switchgear — familiar territory for any power plant electrician."
+    }
+  };
+
+  function selectOption(qNum, letter, isCorrect) {
+    const q = document.getElementById('q'+qNum);
+    const opts = q.querySelectorAll('.quiz-option');
+    const fb = document.getElementById('feedback-'+qNum);
+    opts.forEach(o => o.style.pointerEvents='none');
+    event.currentTarget.classList.add(isCorrect?'correct':'incorrect');
+    fb.classList.add('show', isCorrect?'correct':'incorrect');
+    fb.textContent = (isCorrect?'\u2713 ':'\\u2717 ') + feedbackData[qNum][isCorrect?'correct':'incorrect'];
+  }
+
+  // ───────────────────────────────────────────
+  // AI Tutor
+  // ───────────────────────────────────────────
+  const tutorKB = {
+    'fission|chain reaction|neutron|uranium|split': "Fission is the splitting of uranium-235 when struck by a slow-moving neutron. It releases 2 smaller atoms (fission products), 2-3 more neutrons, and about 200 MeV of energy as heat. Those new neutrons hit more U-235 atoms, creating a chain reaction. Control rods absorb neutrons to manage the reaction rate. A reactor at full power undergoes about 10\u00b2\u2070 fissions per second. (Source: Lamarsh & Baratta, Ch. 4)",
+    'pwr|pressurized water|primary loop|secondary loop|steam generator': "A PWR has two coolant loops. Primary: water at ~2,250 psi, 550\u00b0F, stays liquid due to high pressure. Secondary: receives heat through steam generator tube bundles, boils to steam, drives turbine. The loops never mix — keeping the turbine side non-radioactive. ~65% of US plants are PWRs. (Source: NRC NUREG/BR-0298)",
+    'bwr|boiling water': "A BWR has one coolant loop — water boils directly in the reactor vessel and steam goes straight to the turbine. Simpler (no steam generators), but the turbine building is mildly radioactive. Uses a torus (suppression pool) for pressure suppression. ~35% of US plants are BWRs. (Source: NRC NUREG/BR-0298)",
+    'control rod|scram|shutdown|trip': "Control rods are made of hafnium, boron carbide, or silver-indium-cadmium. When inserted, they absorb neutrons and slow the chain reaction. A SCRAM (rapid full insertion) happens automatically on out-of-limit conditions. Rods drop by gravity within seconds. After SCRAM, decay heat continues for hours and requires cooling. (Source: NRC Reactor Concepts Manual)",
+    'turbine|generator|electricity|grid|capacity': "Nuclear turbines spin at 3,600 RPM (60 Hz), same as fossil plants but much larger (1,000-1,400 MW). Generator outputs at 20-25kV, stepped up to 345-500kV for transmission. Nuclear plants run at 90-93% capacity factor — the highest of any power source. (Source: EIA Electric Power Monthly)",
+    'k factor|criticality|critical|supercritical|subcritical': "The multiplication factor k describes neutron balance. k=1.0 (critical): each fission produces exactly 1 new fission — steady-state power. k<1.0 (subcritical): reaction dying out. k>1.0 (supercritical): reaction growing. Reactors operate at k\u22481.0 for normal power. Control rods, boron concentration, and temperature feedback all regulate k. (Source: Lamarsh & Baratta, Ch. 4)",
+    'safety|containment|defense in depth|barrier': "Nuclear plants use 'defense in depth' — multiple independent barriers. The fuel pellet itself contains fission products. The fuel cladding (zirconium alloy) is the second barrier. The reactor vessel is the third. The containment building (reinforced concrete, 3-4 feet thick) is the fourth. Each barrier can independently prevent radioactive release. (Source: NRC, 10 CFR 50)",
+    'default': "I can answer questions about how nuclear reactors work. Try asking about: fission and chain reactions, how a PWR differs from a BWR, control rods and reactor shutdown, criticality (k-factor), defense in depth safety, or the path from heat to electricity."
+  };
+
+  function askTutor() {
+    const q = document.getElementById('tutor-question').value.toLowerCase();
+    const r = document.getElementById('tutor-response');
+    if(!q.trim()){ r.textContent='Please enter a question.'; r.classList.add('show'); return; }
+    let answer = tutorKB['default'];
+    for(const [pattern,text] of Object.entries(tutorKB)){
+      if(pattern==='default') continue;
+      if(pattern.split('|').some(kw=>q.includes(kw))){ answer=text; break; }
+    }
+    r.textContent = answer;
+    r.classList.add('show');
+  }
+  document.getElementById('tutor-question').addEventListener('keypress',function(e){
+    if(e.key==='Enter') askTutor();
+  });
+  </script>
+</body>
+</html>
