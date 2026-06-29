@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 3: Radiation Safety Fundamentals — Reactor Ready</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --blue: #1a3a5c;
+      --teal: #00b4d8;
+      --teal-light: #90e0ef;
+      --gold: #f4a261;
+      --white: #f8fafc;
+      --gray: #94a3b8;
+      --dark-card: #111f35;
+      --success: #22c55e;
+      --error: #ef4444;
+      --border: rgba(0,180,216,0.2);
+      --alpha: #ef4444;
+      --beta: #f59e0b;
+      --gamma: #a78bfa;
+      --neutron: #60a5fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; background: var(--dark-card);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.1rem; color: var(--teal); }
+    .nav-logo .atom { font-size: 1.5rem; }
+    .nav-badge { font-size: 0.7rem; background: var(--teal); color: var(--navy); padding: 0.2rem 0.5rem; border-radius: 999px; font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--gray); }
+    .container { display: flex; height: calc(100vh - 65px); }
+
+    .sidebar {
+      width: 280px; background: var(--dark-card); border-right: 1px solid var(--border);
+      overflow-y: auto; padding: 1.5rem 1rem;
+    }
+    .sidebar h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); margin-bottom: 1rem; }
+    .module-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem;
+      margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s; border: 1px solid transparent; text-decoration: none; color: inherit;
+    }
+    .module-item.active { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .module-item.complete { opacity: 0.7; }
+    .module-item.locked { opacity: 0.5; cursor: not-allowed; }
+    .module-item:not(.locked):hover { background: rgba(0,180,216,0.05); }
+    .module-number {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%; background: var(--blue);
+      font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .module-item.active .module-number { background: var(--teal); color: var(--navy); }
+    .module-item.complete .module-number { background: var(--success); color: var(--navy); }
+    .module-info { flex: 1; }
+    .module-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .module-meta { font-size: 0.75rem; color: var(--gray); }
+    .module-lock { font-size: 1.2rem; color: var(--gray); }
+
+    .main { flex: 1; overflow-y: auto; padding: 2rem 3rem; max-width: 900px; margin: 0 auto; }
+    .breadcrumb { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; }
+    .breadcrumb a { color: var(--teal); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .progress-section { margin-bottom: 2rem; }
+    .progress-label { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem; }
+    .progress-bar { height: 8px; background: var(--blue); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+    .module-header { margin-bottom: 2.5rem; }
+    .module-title-main { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--teal); }
+    .module-subtitle { font-size: 1.3rem; color: var(--gray); margin-bottom: 1rem; }
+    .module-meta-main { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--gray); }
+
+    .objectives {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .objectives h3 { font-size: 1.1rem; color: var(--teal); margin-bottom: 1rem; }
+    .objectives ol { margin-left: 1.5rem; }
+    .objectives li { margin-bottom: 0.75rem; line-height: 1.6; }
+
+    .content-card {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .card-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1rem; }
+    .card-text { line-height: 1.7; margin-bottom: 1rem; }
+    .callout {
+      background: rgba(0,180,216,0.1); border-left: 3px solid var(--teal);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .callout strong { color: var(--teal); }
+    .analogy-box {
+      background: rgba(244,162,97,0.1); border-left: 3px solid var(--gold);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .analogy-box strong { color: var(--gold); }
+    .warning-box {
+      background: rgba(239,68,68,0.1); border-left: 3px solid var(--error);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .warning-box strong { color: var(--error); }
+
+    /* RADIATION TYPE TABLE */
+    .rad-table {
+      width: 100%; border-collapse: collapse; margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    .rad-table th {
+      text-align: left; padding: 0.75rem; border-bottom: 2px solid var(--border);
+      color: var(--teal); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .rad-table td {
+      padding: 0.75rem; border-bottom: 1px solid var(--border); line-height: 1.5;
+    }
+    .rad-table tr:last-child td { border-bottom: none; }
+    .rad-dot {
+      display: inline-block; width: 12px; height: 12px; border-radius: 50%;
+      margin-right: 0.5rem; vertical-align: middle;
+    }
+
+    /* INTERACTIVE SHARED STYLES */
+    .int-container {
+      background: rgba(0,180,216,0.04); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem;
+    }
+    .int-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+    .int-badge {
+      background: var(--gold); color: var(--navy); font-size: 0.7rem; font-weight: 700;
+      padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .int-label { font-size: 0.95rem; font-weight: 600; color: var(--teal); }
+    .int-canvas-wrap { display: flex; justify-content: center; margin-bottom: 0.75rem; }
+    .int-canvas-wrap canvas { width: 100%; max-width: 700px; border-radius: 10px; display: block; }
+    .int-controls {
+      display: flex; gap: 0.75rem; justify-content: center; align-items: center;
+      flex-wrap: wrap; margin-bottom: 0.5rem;
+    }
+    .int-btn {
+      padding: 0.5rem 1.2rem; border: none; border-radius: 6px; font-weight: 600;
+      cursor: pointer; font-family: inherit; font-size: 0.8rem; transition: all 0.15s;
+    }
+    .int-btn.primary { background: var(--teal); color: var(--navy); }
+    .int-btn.primary:hover { filter: brightness(1.1); }
+    .int-btn.secondary { background: var(--blue); color: var(--white); border: 1px solid var(--border); }
+    .int-btn.secondary:hover { border-color: var(--teal); }
+    .int-btn.gold { background: var(--gold); color: var(--navy); }
+    .int-btn.gold:hover { filter: brightness(1.1); }
+    .int-btn.active { outline: 2px solid var(--white); outline-offset: 2px; }
+    .int-status { text-align: center; font-size: 0.8rem; color: var(--gray); min-height: 1.2rem; margin-top: 0.25rem; }
+    .int-insight {
+      margin-top: 0.75rem; padding: 0.75rem 1rem;
+      background: rgba(244,162,97,0.1); border: 1px solid rgba(244,162,97,0.3);
+      border-radius: 8px; font-size: 0.85rem; line-height: 1.6; text-align: center;
+    }
+
+    /* DOSE COMPARISON */
+    .dose-bars { margin: 1rem 0; }
+    .dose-row {
+      display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem;
+      cursor: pointer; padding: 0.3rem 0; transition: opacity 0.2s;
+    }
+    .dose-row:hover { opacity: 0.8; }
+    .dose-label { width: 180px; font-size: 0.85rem; text-align: right; flex-shrink: 0; }
+    .dose-bar-track { flex: 1; height: 24px; background: rgba(0,180,216,0.08); border-radius: 4px; overflow: hidden; position: relative; }
+    .dose-bar-fill {
+      height: 100%; border-radius: 4px; transition: width 0.8s ease;
+      display: flex; align-items: center; padding-left: 0.5rem;
+      font-size: 0.75rem; font-weight: 600; color: var(--navy); min-width: fit-content;
+    }
+    .dose-value { font-size: 0.8rem; font-weight: 600; width: 90px; flex-shrink: 0; }
+    .dose-detail {
+      display: none; margin: -0.3rem 0 0.6rem 188px; padding: 0.5rem 0.75rem;
+      background: rgba(0,180,216,0.06); border-radius: 6px;
+      font-size: 0.8rem; color: var(--gray); line-height: 1.5;
+    }
+    .dose-detail.show { display: block; }
+
+    /* ALARA CHALLENGE */
+    .alara-scenario {
+      background: rgba(0,180,216,0.06); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem;
+    }
+    .alara-scenario h4 { color: var(--teal); margin-bottom: 0.5rem; }
+    .alara-choices {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0;
+    }
+    .alara-choice-group h5 {
+      font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--gray); margin-bottom: 0.5rem;
+    }
+    .alara-option {
+      display: block; width: 100%; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem;
+      background: var(--dark-card); border: 1px solid var(--border); border-radius: 6px;
+      color: var(--white); font-size: 0.8rem; cursor: pointer; transition: all 0.15s;
+      font-family: inherit; text-align: left;
+    }
+    .alara-option:hover { border-color: var(--teal); }
+    .alara-option.selected { background: rgba(0,180,216,0.15); border-color: var(--teal); color: var(--teal); }
+    .alara-result {
+      padding: 0.75rem; border-radius: 8px; font-size: 0.9rem;
+      line-height: 1.6; min-height: 2rem; text-align: center;
+    }
+    .alara-dose-display {
+      text-align: center; margin: 1rem 0;
+    }
+    .alara-dose-num { font-size: 2.5rem; font-weight: 800; }
+    .alara-dose-unit { font-size: 0.9rem; color: var(--gray); }
+    .alara-dose-limit { font-size: 0.85rem; color: var(--gray); margin-top: 0.25rem; }
+
+    /* QUIZ */
+    .quiz-container {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .quiz-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1.5rem; }
+    .quiz-question { margin-bottom: 2rem; }
+    .question-text { font-weight: 600; margin-bottom: 1rem; line-height: 1.6; }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .quiz-option {
+      background: rgba(0,180,216,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem;
+    }
+    .quiz-option:hover { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .quiz-option.correct { background: rgba(34,197,94,0.1); border-color: var(--success); }
+    .quiz-option.incorrect { background: rgba(239,68,68,0.1); border-color: var(--error); }
+    .option-letter {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%; background: var(--blue);
+      font-weight: 600; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .quiz-option.correct .option-letter { background: var(--success); }
+    .quiz-option.incorrect .option-letter { background: var(--error); }
+    .quiz-feedback {
+      display: none; margin-top: 1rem; padding: 0.75rem; border-radius: 8px;
+      font-size: 0.9rem; line-height: 1.6;
+    }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid var(--success); }
+    .quiz-feedback.incorrect { background: rgba(239,68,68,0.1); color: var(--error); border: 1px solid var(--error); }
+
+    /* AI TUTOR */
+    .tutor-container {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .tutor-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .tutor-icon { font-size: 1.5rem; }
+    .tutor-title { font-size: 1.1rem; font-weight: 600; color: var(--teal); }
+    .tutor-input { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    #tutor-question {
+      flex: 1; background: var(--blue); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem; color: var(--white);
+      font-size: 0.95rem; font-family: inherit;
+    }
+    #tutor-question::placeholder { color: var(--gray); }
+    #ask-tutor {
+      background: var(--teal); color: var(--navy); border: none;
+      border-radius: 8px; padding: 0.75rem 1.5rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    #tutor-response {
+      background: rgba(0,180,216,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1rem; line-height: 1.7; display: none;
+    }
+    #tutor-response.show { display: block; }
+
+    .nav-buttons {
+      display: flex; justify-content: space-between; gap: 1rem;
+      margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .nav-btn {
+      background: var(--teal); color: var(--navy); border: none; border-radius: 8px;
+      padding: 0.75rem 1.5rem; font-weight: 600; cursor: pointer;
+      font-size: 1rem; font-family: inherit; text-decoration: none;
+    }
+    .nav-btn:hover { opacity: 0.9; }
+    .nav-btn.secondary { background: var(--blue); color: var(--white); }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { padding: 1.5rem; }
+      .alara-choices { grid-template-columns: 1fr; }
+      .dose-label { width: 120px; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo"><span class="atom">&#9883;</span><span>Reactor Ready</span></div>
+    <div class="nav-right">
+      <span>by Naked Nuclear</span>
+      <span style="color:var(--border);">|</span>
+      <span>Nuclear Wrapper Course</span>
+      <span style="color:var(--border);">|</span>
+      <span class="nav-badge">DEMO BUILD</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar">
+      <h3>Course Modules</h3>
+      <a href="module-1-welcome.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Welcome to Nuclear</div><div class="module-meta">30 min</div></div>
+      </a>
+      <a href="module-2-reactors.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">How Reactors Work</div><div class="module-meta">35 min</div></div>
+      </a>
+      <div class="module-item active">
+        <div class="module-number">&#9679;</div>
+        <div class="module-info"><div class="module-title">Radiation Safety</div><div class="module-meta">40 min</div></div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">4</div>
+        <div class="module-info"><div class="module-title">Inside the Reactor</div><div class="module-meta">45 min</div></div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">5</div>
+        <div class="module-info"><div class="module-title">Your Career Path</div><div class="module-meta">30 min</div></div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">6</div>
+        <div class="module-info"><div class="module-title">Citations &amp; Sources</div><div class="module-meta">Reference</div></div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="breadcrumb"><a href="module-1-welcome.html">Reactor Ready</a> &rarr; Module 3</div>
+
+      <div class="progress-section">
+        <div class="progress-label">Course Progress: Module 3 of 6</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+      </div>
+
+      <div class="module-header">
+        <h1 class="module-title-main">Radiation Safety Fundamentals</h1>
+        <p class="module-subtitle">What Radiation Is, How to Measure It, and How to Protect Yourself</p>
+        <div class="module-meta-main">
+          <div>&#9201; 40 min</div>
+          <div>&#128196; Reading + Interactive</div>
+          <div>&#10003; 1 Knowledge Check</div>
+          <div>&#127918; 3 Interactive Widgets</div>
+        </div>
+      </div>
+
+      <div class="objectives">
+        <h3>Learning Objectives</h3>
+        <p style="color:var(--gray);margin-bottom:1rem;font-size:0.9rem;">By the end of this module, you will be able to:</p>
+        <ol>
+          <li>Identify the four types of ionizing radiation and what stops each one</li>
+          <li>Explain dose units (rem, mrem, Sievert) and what the numbers mean for your body</li>
+          <li>Compare everyday radiation exposures to occupational limits</li>
+          <li>Apply the three ALARA tools: Time, Distance, and Shielding</li>
+          <li>Distinguish between contamination and radiation — a critical difference for daily work</li>
+        </ol>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 1: THE FOUR TYPES -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">The Four Types of Ionizing Radiation</h2>
+        <p class="card-text">
+          You'll hear "radiation" a lot at a nuclear plant. Here's the part most people get wrong: <strong>not all radiation is the same.</strong> There are four types, and each one behaves differently — which means each one is stopped differently.
+        </p>
+
+        <table class="rad-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>What It Is</th>
+              <th>Stopped By</th>
+              <th>Hazard</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="rad-dot" style="background:var(--alpha);"></span><strong>Alpha (&alpha;)</strong></td>
+              <td>2 protons + 2 neutrons (helium nucleus). Heavy, slow, +2 charge.</td>
+              <td>Paper, skin, a few inches of air</td>
+              <td>Dangerous if inhaled/ingested (internal). Harmless externally.</td>
+            </tr>
+            <tr>
+              <td><span class="rad-dot" style="background:var(--beta);"></span><strong>Beta (&beta;)</strong></td>
+              <td>High-speed electron. Light, fast, -1 charge.</td>
+              <td>Aluminum foil, plastic, clothing</td>
+              <td>Can burn skin at high doses. Internal hazard if ingested.</td>
+            </tr>
+            <tr>
+              <td><span class="rad-dot" style="background:var(--gamma);"></span><strong>Gamma (&gamma;)</strong></td>
+              <td>Electromagnetic wave. No mass, no charge. Travels at speed of light.</td>
+              <td>Lead, concrete, steel (never fully stopped — only reduced)</td>
+              <td>Penetrates the whole body. This is your primary external hazard at a plant.</td>
+            </tr>
+            <tr>
+              <td><span class="rad-dot" style="background:var(--neutron);"></span><strong>Neutron (n)</strong></td>
+              <td>Uncharged particle from fission. Various speeds.</td>
+              <td>Water, concrete, polyethylene (hydrogen-rich materials)</td>
+              <td>Highly penetrating. Found near the reactor core. Can activate materials.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>For trades workers:</strong> At a nuclear plant, <strong>gamma radiation</strong> is your primary concern day-to-day. Alpha and beta sources are contained inside sealed systems. Neutrons are only a concern near the reactor vessel during operation. Your dosimeter measures gamma and neutron dose. <span style="color:var(--gray);font-size:0.85rem;">(Source: 10 CFR 20, NRC Regulatory Guide 8.34)</span>
+        </div>
+
+        <!-- INTERACTIVE 1: Radiation Penetration Simulator -->
+        <div class="int-container">
+          <div class="int-header">
+            <span class="int-badge">Interactive</span>
+            <span class="int-label">Radiation Penetration Simulator</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem;">Select a radiation type and watch it interact with different shielding materials. See which materials stop which radiation.</p>
+          <div class="int-controls" style="margin-bottom:1rem;">
+            <button class="int-btn active" style="background:var(--alpha);color:#fff;" onclick="setRadType('alpha',this)">Alpha (&alpha;)</button>
+            <button class="int-btn" style="background:var(--beta);color:#fff;" onclick="setRadType('beta',this)">Beta (&beta;)</button>
+            <button class="int-btn" style="background:var(--gamma);color:#fff;" onclick="setRadType('gamma',this)">Gamma (&gamma;)</button>
+            <button class="int-btn" style="background:var(--neutron);color:#fff;" onclick="setRadType('neutron',this)">Neutron (n)</button>
+            <button class="int-btn secondary" onclick="fireRadiation()">Fire!</button>
+          </div>
+          <div class="int-canvas-wrap">
+            <canvas id="pen-canvas" width="700" height="300"></canvas>
+          </div>
+          <div class="int-status" id="pen-status">Select a radiation type and click Fire!</div>
+          <div class="int-insight">
+            <strong style="color:var(--gold);">Key takeaway:</strong> Alpha can't even get through paper. Beta is stopped by thin metal. Gamma requires thick, dense shielding (and is never fully stopped — only reduced). Neutrons need hydrogen-rich materials like water or concrete to slow and capture them.
+            <br><span style="font-size:0.8rem;color:var(--gray);">Source: Turner, "Atoms, Radiation, and Radiation Protection," Ch. 5-6</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 2: DOSE UNITS AND COMPARISONS -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">Understanding Dose: What the Numbers Mean</h2>
+        <p class="card-text">
+          Radiation dose measures how much energy radiation deposits in your body. Here are the units you'll use every day at a plant:
+        </p>
+        <ul style="line-height:1.8;margin-left:1.5rem;margin-bottom:1rem;">
+          <li><strong>rem</strong> (Roentgen Equivalent Man) — the US standard. 1 rem = significant dose.</li>
+          <li><strong>mrem</strong> (millirem) — 1/1000 of a rem. Most occupational doses are measured in mrem.</li>
+          <li><strong>Sievert (Sv)</strong> — international standard. 1 Sv = 100 rem. 1 mSv = 100 mrem.</li>
+        </ul>
+
+        <div class="warning-box">
+          <strong>NRC Occupational Limits (10 CFR 20.1201):</strong><br>
+          &bull; 5,000 mrem/year (5 rem) — whole body (TEDE)<br>
+          &bull; 50,000 mrem/year (50 rem) — any individual organ<br>
+          &bull; 15,000 mrem/year (15 rem) — lens of the eye<br>
+          &bull; 50,000 mrem/year (50 rem) — skin or extremities<br>
+          Most plants set <strong>administrative limits well below these</strong> — typically 1,000-2,000 mrem/year.
+        </div>
+
+        <div class="callout">
+          <strong>Context matters:</strong> The average American receives about <strong>620 mrem/year</strong> from natural background radiation (radon, cosmic rays, food, medical procedures). A nuclear plant worker's occupational dose is typically <strong>100-300 mrem/year</strong> — less than a single CT scan. <span style="color:var(--gray);font-size:0.85rem;">(Source: NCRP Report No. 160)</span>
+        </div>
+
+        <!-- INTERACTIVE 2: Dose Comparison Explorer -->
+        <div class="int-container">
+          <div class="int-header">
+            <span class="int-badge">Interactive</span>
+            <span class="int-label">Dose Comparison Explorer</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem;">Click any bar to learn more. Compare everyday radiation exposures on the same scale.</p>
+
+          <div class="dose-bars" id="dose-bars">
+            <!-- Filled by JS -->
+          </div>
+
+          <div class="int-insight">
+            <strong style="color:var(--gold);">Perspective:</strong> A nuclear plant worker's annual dose is typically less than a single CT scan and far less than the natural background radiation everyone receives. The NRC limit of 5,000 mrem/year has a large safety margin built in.
+            <br><span style="font-size:0.8rem;color:var(--gray);">Source: NCRP Report No. 160; NRC 10 CFR 20</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 3: ALARA AND PROTECTION -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">ALARA — As Low As Reasonably Achievable</h2>
+        <p class="card-text">
+          ALARA isn't just a rule — it's a way of thinking. Every dose you receive should be <strong>as low as reasonably achievable</strong>, considering economic and practical factors. You have three tools to reduce dose:
+        </p>
+        <ul style="line-height:1.8;margin-left:1.5rem;margin-bottom:1rem;">
+          <li><strong>Time:</strong> Spend less time near the source. Plan your work, practice your task, minimize time in radiation areas. A 50% reduction in time = 50% reduction in dose.</li>
+          <li><strong>Distance:</strong> The inverse square law — double your distance, quarter your dose. Even a few extra feet matter. If the source is at 1 foot and you move to 2 feet, your dose rate drops by 75%.</li>
+          <li><strong>Shielding:</strong> Put material between you and the source. Lead blankets, concrete walls, water — each material has a "half-value layer" (HVL) that cuts dose in half.</li>
+        </ul>
+
+        <div class="analogy-box">
+          <strong>Think of it like a campfire:</strong> To get less heat (dose), you can:<br>
+          &bull; Spend less time near it (Time)<br>
+          &bull; Stand further back (Distance)<br>
+          &bull; Put a wall between you and it (Shielding)<br>
+          Same physics, different energy source.
+        </div>
+
+        <div class="callout">
+          <strong>Contamination vs. Radiation — know the difference:</strong><br>
+          &bull; <strong>Radiation</strong> is energy traveling from a source. When you leave the area, you stop receiving dose. Like standing near a light bulb — walk away and the light stops hitting you.<br>
+          &bull; <strong>Contamination</strong> is radioactive material ON you or IN you. It travels with you and keeps giving you dose until it's removed. Like getting paint on your hands — it doesn't stop until you wash it off.<br>
+          This is why you wear protective clothing (PCs), booties, and gloves in contaminated areas — and why you pass through a monitor when leaving.
+          <span style="color:var(--gray);font-size:0.85rem;">(Source: NRC NUREG-1556, Vol. 18)</span>
+        </div>
+
+        <!-- INTERACTIVE 3: ALARA Challenge -->
+        <div class="int-container">
+          <div class="int-header">
+            <span class="int-badge">Interactive</span>
+            <span class="int-label">ALARA Planning Challenge</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem;">You're assigned to work in a radiation area. Choose your Time, Distance, and Shielding strategy to minimize your dose. Can you stay under the plant's administrative limit?</p>
+
+          <div id="alara-game">
+            <!-- Filled by JS -->
+          </div>
+
+          <div class="int-insight">
+            <strong style="color:var(--gold);">Real-world context:</strong> Before any radiation work, you'll receive a Radiation Work Permit (RWP) that specifies the dose rate, expected stay time, required shielding, and protective clothing. ALARA planning is done BEFORE you enter the area — not while you're in it.
+            <br><span style="font-size:0.8rem;color:var(--gray);">Source: 10 CFR 20.1101; INPO Guidelines for Radiation Protection</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- KNOWLEDGE CHECK -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="quiz-container">
+        <h2 class="quiz-title">Knowledge Check</h2>
+
+        <div class="quiz-question" id="q1">
+          <p class="question-text">1. Which type of radiation is your primary external hazard at a nuclear plant?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(1,'A',false)"><div class="option-letter">A</div><div>Alpha — because it's the most ionizing</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'B',false)"><div class="option-letter">B</div><div>Beta — because it's fast-moving</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'C',true)"><div class="option-letter">C</div><div>Gamma — because it penetrates the whole body</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'D',false)"><div class="option-letter">D</div><div>Alpha and beta equally</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-1"></div>
+        </div>
+
+        <div class="quiz-question" id="q2">
+          <p class="question-text">2. What is the NRC annual whole-body dose limit for radiation workers?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(2,'A',false)"><div class="option-letter">A</div><div>100 mrem/year</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'B',false)"><div class="option-letter">B</div><div>1,000 mrem/year</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'C',true)"><div class="option-letter">C</div><div>5,000 mrem/year (5 rem)</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'D',false)"><div class="option-letter">D</div><div>50,000 mrem/year (50 rem)</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-2"></div>
+        </div>
+
+        <div class="quiz-question" id="q3">
+          <p class="question-text">3. What does ALARA stand for?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(3,'A',false)"><div class="option-letter">A</div><div>All Levels Are Roughly Acceptable</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'B',true)"><div class="option-letter">B</div><div>As Low As Reasonably Achievable</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'C',false)"><div class="option-letter">C</div><div>Automatic Limits And Radiation Awareness</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'D',false)"><div class="option-letter">D</div><div>Annual Limit for Allowed Radiation Absorption</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-3"></div>
+        </div>
+
+        <div class="quiz-question" id="q4">
+          <p class="question-text">4. If you double your distance from a radiation source, what happens to your dose rate?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(4,'A',false)"><div class="option-letter">A</div><div>It's cut in half</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'B',true)"><div class="option-letter">B</div><div>It drops to one-quarter (inverse square law)</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'C',false)"><div class="option-letter">C</div><div>It stays the same — distance doesn't matter for gamma</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'D',false)"><div class="option-letter">D</div><div>It drops to one-eighth</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-4"></div>
+        </div>
+
+        <div class="quiz-question" id="q5">
+          <p class="question-text">5. What is the difference between radiation and contamination?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(5,'A',false)"><div class="option-letter">A</div><div>They're the same thing — just different words</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'B',false)"><div class="option-letter">B</div><div>Radiation is natural; contamination is man-made</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'C',true)"><div class="option-letter">C</div><div>Radiation is energy from a source; contamination is radioactive material on/in you</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'D',false)"><div class="option-letter">D</div><div>Contamination is more dangerous than radiation</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-5"></div>
+        </div>
+
+        <div class="quiz-question" id="q6">
+          <p class="question-text">6. The average American receives about how much background radiation per year?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(6,'A',false)"><div class="option-letter">A</div><div>10 mrem (basically zero)</div></div>
+            <div class="quiz-option" onclick="selectOption(6,'B',false)"><div class="option-letter">B</div><div>100 mrem</div></div>
+            <div class="quiz-option" onclick="selectOption(6,'C',true)"><div class="option-letter">C</div><div>620 mrem (about 6.2 mSv)</div></div>
+            <div class="quiz-option" onclick="selectOption(6,'D',false)"><div class="option-letter">D</div><div>5,000 mrem (the same as the NRC limit)</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-6"></div>
+        </div>
+      </div>
+
+      <!-- AI TUTOR -->
+      <div class="tutor-container">
+        <div class="tutor-header">
+          <div class="tutor-icon">&#129302;</div>
+          <div>
+            <div class="tutor-title">ARIA AI Tutor</div>
+            <div style="font-size:0.85rem;color:var(--gray);">Ask me about radiation safety</div>
+          </div>
+        </div>
+        <div class="tutor-input">
+          <input type="text" id="tutor-question" placeholder="Ask a question about radiation safety..." />
+          <button id="ask-tutor" onclick="askTutor()">Ask</button>
+        </div>
+        <div id="tutor-response"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="module-2-reactors.html" class="nav-btn secondary">&larr; Back to Module 2</a>
+        <button class="nav-btn" onclick="alert('Module 4: Inside the Reactor — coming soon')">Continue to Module 4 &rarr;</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  // ───────────────────────────────────────────
+  // INTERACTIVE 1: Radiation Penetration Simulator
+  // ───────────────────────────────────────────
+  (function(){
+    const cv = document.getElementById('pen-canvas');
+    const ctx = cv.getContext('2d');
+    const W = cv.width, H = cv.height;
+    let radType = 'alpha';
+    let particles = [];
+    let animFrame = 0;
+
+    const colors = {alpha:'#ef4444', beta:'#f59e0b', gamma:'#a78bfa', neutron:'#60a5fa'};
+    const labels = {alpha:'\u03b1', beta:'\u03b2', gamma:'\u03b3', neutron:'n'};
+    const sizes = {alpha:5, beta:3, gamma:2, neutron:4};
+
+    // Shielding barriers
+    const barriers = [
+      {x:200, w:12, label:'Paper', color:'#d4c5a9', stops:['alpha']},
+      {x:330, w:18, label:'Aluminum', color:'#a8b4c0', stops:['alpha','beta']},
+      {x:460, w:30, label:'Lead', color:'#6b7280', stops:['alpha','beta','gamma']},
+      {x:590, w:40, label:'Concrete\n(+water)', color:'#9ca3af', stops:['alpha','beta','gamma','neutron']}
+    ];
+
+    window.setRadType = function(type, el){
+      radType = type;
+      particles = [];
+      document.querySelectorAll('.int-controls .int-btn').forEach(b=>b.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('pen-status').textContent = 'Type: ' + type.charAt(0).toUpperCase()+type.slice(1) + ' — Click Fire!';
+    };
+
+    window.fireRadiation = function(){
+      for(let i=0;i<(radType==='gamma'?8:radType==='neutron'?6:12);i++){
+        setTimeout(()=>{
+          particles.push({
+            x:40, y:H/2+(Math.random()-.5)*120,
+            vx: radType==='gamma'?6:radType==='beta'?4:radType==='neutron'?3.5:2,
+            vy:(Math.random()-.5)*0.8,
+            type:radType, alive:true, trail:[], stopped:false, stopX:0
+          });
+        }, i*60);
+      }
+    };
+
+    function animate(){
+      animFrame++;
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#0a1628'; ctx.fillRect(0,0,W,H);
+
+      // Grid
+      ctx.strokeStyle='rgba(26,58,92,0.2)'; ctx.lineWidth=0.5;
+      for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+
+      // Source
+      ctx.fillStyle='#f4a261';
+      ctx.beginPath(); ctx.arc(30,H/2,14,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#0a1628'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('SRC',30,H/2+4);
+
+      // Barriers
+      for(const b of barriers){
+        ctx.fillStyle=b.color;
+        ctx.fillRect(b.x,20,b.w,H-40);
+        ctx.fillStyle='#f8fafc'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+        const lines = b.label.split('\n');
+        lines.forEach((l,i) => ctx.fillText(l, b.x+b.w/2, 14 + i*12));
+
+        // Checkmark or X for current type
+        const stops = b.stops.includes(radType);
+        ctx.font = 'bold 14px sans-serif';
+        ctx.fillStyle = stops ? '#22c55e' : '#ef4444';
+        ctx.fillText(stops ? '\u2713' : '\u2717', b.x+b.w/2, H-10);
+      }
+
+      // Update particles
+      for(const p of particles){
+        if(!p.alive) continue;
+        if(!p.stopped){
+          p.x += p.vx;
+          p.y += p.vy;
+          p.trail.push({x:p.x, y:p.y});
+          if(p.trail.length>60) p.trail.shift();
+
+          // Check barrier collisions
+          for(const b of barriers){
+            if(p.x >= b.x && p.x <= b.x+b.w && b.stops.includes(p.type)){
+              p.stopped = true;
+              p.stopX = p.x;
+              p.vx = 0; p.vy = 0;
+              break;
+            }
+          }
+          // Gamma: attenuate through lead (some get through with reduced intensity)
+          // For simplicity, ~30% of gammas pass through lead
+          if(p.type==='gamma' && p.stopped){
+            if(Math.random()<0.3){
+              p.stopped = false;
+              p.vx = 4; // slower after passing through
+            }
+          }
+
+          if(p.x > W+10 || p.y<-10 || p.y>H+10) p.alive=false;
+        }
+      }
+
+      // Draw trails and particles
+      for(const p of particles){
+        if(p.trail.length>1){
+          ctx.beginPath();
+          ctx.moveTo(p.trail[0].x, p.trail[0].y);
+          for(let i=1;i<p.trail.length;i++) ctx.lineTo(p.trail[i].x, p.trail[i].y);
+          ctx.strokeStyle = p.stopped ? colors[p.type]+'40' : colors[p.type]+'80';
+          ctx.lineWidth = p.stopped ? 0.8 : 1.5;
+          ctx.stroke();
+        }
+        if(p.alive && !p.stopped){
+          ctx.fillStyle = colors[p.type];
+          ctx.beginPath(); ctx.arc(p.x,p.y,sizes[p.type],0,Math.PI*2); ctx.fill();
+          // Glow
+          const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,sizes[p.type]*3);
+          g.addColorStop(0,colors[p.type]+'50');
+          g.addColorStop(1,colors[p.type]+'00');
+          ctx.fillStyle=g;
+          ctx.beginPath(); ctx.arc(p.x,p.y,sizes[p.type]*3,0,Math.PI*2); ctx.fill();
+        } else if(p.stopped){
+          // Stopped particle flash
+          ctx.fillStyle = colors[p.type]+'60';
+          ctx.beginPath(); ctx.arc(p.stopX,p.y,sizes[p.type]+2,0,Math.PI*2); ctx.fill();
+        }
+      }
+
+      // Legend
+      ctx.fillStyle='rgba(148,163,184,0.5)'; ctx.font='9px sans-serif'; ctx.textAlign='left';
+      ctx.fillText('\u2713 = stops this radiation type | \u2717 = passes through', 50, H-5);
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+    // Auto-fire on load
+    setTimeout(fireRadiation, 500);
+  })();
+
+  // ───────────────────────────────────────────
+  // INTERACTIVE 2: Dose Comparison Explorer
+  // ───────────────────────────────────────────
+  (function(){
+    const doseData = [
+      {label:'Eating a banana', mrem:0.01, color:'#22c55e', detail:'Bananas contain potassium-40, a naturally radioactive isotope. You\'d need to eat 100 million bananas at once for a lethal dose. (Source: Health Physics Society)'},
+      {label:'Living near a nuclear plant (annual)', mrem:0.1, color:'#22c55e', detail:'The NRC requires nuclear plants to limit public dose to well under 100 mrem/year. Actual doses are typically 0.01-0.1 mrem/year. (Source: NRC NUREG-1350)'},
+      {label:'Chest X-ray', mrem:10, color:'#60a5fa', detail:'A single chest X-ray delivers about 10 mrem. Dental X-rays are about 1.5 mrem each. (Source: ACR/RSNA RadiologyInfo.org)'},
+      {label:'Cross-country flight (NY-LA)', mrem:3.5, color:'#60a5fa', detail:'At 35,000 feet, you\'re above most of the atmosphere that shields cosmic radiation. Airline crews receive about 200-400 mrem/year from flights. (Source: FAA Civil Aerospace Medical Institute)'},
+      {label:'Natural background (US annual avg)', mrem:310, color:'#f4a261', detail:'Includes cosmic rays (~30 mrem), terrestrial radiation (~20 mrem), internal (food/water, ~30 mrem), and radon (~230 mrem). Radon is the biggest source. (Source: NCRP Report No. 160)'},
+      {label:'Medical procedures (US annual avg)', mrem:310, color:'#f4a261', detail:'CT scans, nuclear medicine, fluoroscopy. The average American gets almost as much dose from medical procedures as from natural background. (Source: NCRP Report No. 160)'},
+      {label:'Typical nuclear worker (annual)', mrem:200, color:'#a78bfa', detail:'Average occupational dose for US nuclear plant workers. Most workers receive well under the 5,000 mrem limit. ALARA keeps doses as low as practical. (Source: NRC NUREG-0713)'},
+      {label:'CT scan (chest)', mrem:700, color:'#ef4444', detail:'A single chest CT delivers about 700 mrem — more than most nuclear workers receive in an entire year. (Source: ACR/RSNA)'},
+      {label:'NRC annual limit (occupational)', mrem:5000, color:'#ef4444', detail:'5,000 mrem (5 rem) per year for whole body (TEDE). Most plants set administrative limits of 1,000-2,000 mrem to ensure workers stay well below. (Source: 10 CFR 20.1201)'},
+    ];
+
+    const maxMrem = 5000;
+    const container = document.getElementById('dose-bars');
+    let openDetail = -1;
+
+    doseData.forEach((d,i) => {
+      const pct = Math.max(1, (Math.log10(d.mrem+1)/Math.log10(maxMrem+1))*100);
+      const row = document.createElement('div');
+      row.className = 'dose-row';
+      row.innerHTML = `
+        <div class="dose-label">${d.label}</div>
+        <div class="dose-bar-track">
+          <div class="dose-bar-fill" style="width:${pct}%;background:${d.color};">${d.mrem>=1?d.mrem.toLocaleString():d.mrem}</div>
+        </div>
+        <div class="dose-value" style="color:${d.color};">${d.mrem>=1?d.mrem.toLocaleString():d.mrem} mrem</div>
+      `;
+      row.onclick = function(){
+        const det = document.getElementById('dose-detail-'+i);
+        if(openDetail===i){ det.classList.remove('show'); openDetail=-1; }
+        else {
+          document.querySelectorAll('.dose-detail').forEach(d=>d.classList.remove('show'));
+          det.classList.add('show'); openDetail=i;
+        }
+      };
+      container.appendChild(row);
+
+      const detail = document.createElement('div');
+      detail.className = 'dose-detail';
+      detail.id = 'dose-detail-'+i;
+      detail.textContent = d.detail;
+      container.appendChild(detail);
+    });
+  })();
+
+  // ───────────────────────────────────────────
+  // INTERACTIVE 3: ALARA Planning Challenge
+  // ───────────────────────────────────────────
+  (function(){
+    const scenarios = [
+      {
+        title: 'Motor Replacement in a Radiation Area',
+        desc: 'You need to replace a pump motor in an area with a dose rate of 100 mR/hr. The job normally takes 2 hours.',
+        baseRate: 100, baseTime: 120, // mR/hr, minutes
+        time: [
+          {label:'No planning (2 hrs)', factor:1, minutes:120},
+          {label:'Pre-staged tools (1.5 hrs)', factor:0.75, minutes:90},
+          {label:'Practiced + pre-staged (45 min)', factor:0.375, minutes:45}
+        ],
+        distance: [
+          {label:'Right at source (1 ft)', factor:1},
+          {label:'Arm\'s length (3 ft)', factor:0.11},
+          {label:'Extended tools (6 ft)', factor:0.028}
+        ],
+        shielding: [
+          {label:'No shielding', factor:1},
+          {label:'Lead blanket on source', factor:0.5},
+          {label:'Temporary lead wall', factor:0.25}
+        ],
+        limit: 50 // administrative limit for this job in mrem
+      },
+      {
+        title: 'Cable Pull in Containment',
+        desc: 'You\'re pulling cable through a penetration in containment. General area dose rate is 25 mR/hr. Standard job time is 4 hours.',
+        baseRate: 25, baseTime: 240,
+        time: [
+          {label:'No planning (4 hrs)', factor:1, minutes:240},
+          {label:'Pre-routed cable (3 hrs)', factor:0.75, minutes:180},
+          {label:'Pre-routed + extra help (2 hrs)', factor:0.5, minutes:120}
+        ],
+        distance: [
+          {label:'At penetration (1 ft)', factor:1},
+          {label:'Short extension (3 ft)', factor:0.11},
+          {label:'Long pull from corridor (8 ft)', factor:0.016}
+        ],
+        shielding: [
+          {label:'No shielding', factor:1},
+          {label:'Lead blanket on hot pipe', factor:0.5},
+          {label:'Lead blankets + temp wall', factor:0.2}
+        ],
+        limit: 30
+      },
+      {
+        title: 'Valve Inspection During Outage',
+        desc: 'You need to inspect a valve in a 50 mR/hr area. Inspection takes about 30 minutes normally.',
+        baseRate: 50, baseTime: 30,
+        time: [
+          {label:'Thorough inspection (30 min)', factor:1, minutes:30},
+          {label:'Focused checklist (20 min)', factor:0.67, minutes:20},
+          {label:'Quick + camera assist (10 min)', factor:0.33, minutes:10}
+        ],
+        distance: [
+          {label:'Hands-on (1 ft)', factor:1},
+          {label:'Mirror + light (3 ft)', factor:0.11},
+          {label:'Remote camera (10 ft)', factor:0.01}
+        ],
+        shielding: [
+          {label:'No shielding', factor:1},
+          {label:'Portable shield', factor:0.5},
+          {label:'Lead cave around source', factor:0.15}
+        ],
+        limit: 15
+      }
+    ];
+
+    let currentScenario = 0;
+    let selections = {time:0, distance:0, shielding:0};
+
+    function renderScenario(){
+      const s = scenarios[currentScenario];
+      const game = document.getElementById('alara-game');
+      game.innerHTML = `
+        <div class="alara-scenario">
+          <h4>Scenario ${currentScenario+1} of ${scenarios.length}: ${s.title}</h4>
+          <p style="color:var(--gray);font-size:0.9rem;line-height:1.6;">${s.desc}</p>
+        </div>
+        <div class="alara-choices">
+          <div class="alara-choice-group">
+            <h5>&#9201; Time</h5>
+            ${s.time.map((t,i)=>`<button class="alara-option${selections.time===i?' selected':''}" onclick="alaraSelect('time',${i})">${t.label}</button>`).join('')}
+          </div>
+          <div class="alara-choice-group">
+            <h5>&#8596; Distance</h5>
+            ${s.distance.map((d,i)=>`<button class="alara-option${selections.distance===i?' selected':''}" onclick="alaraSelect('distance',${i})">${d.label}</button>`).join('')}
+          </div>
+          <div class="alara-choice-group">
+            <h5>&#128737; Shielding</h5>
+            ${s.shielding.map((sh,i)=>`<button class="alara-option${selections.shielding===i?' selected':''}" onclick="alaraSelect('shielding',${i})">${sh.label}</button>`).join('')}
+          </div>
+        </div>
+        <div class="alara-dose-display">
+          <div class="alara-dose-num" id="alara-dose" style="color:var(--white);">--</div>
+          <div class="alara-dose-unit">millirem estimated dose</div>
+          <div class="alara-dose-limit">Admin limit for this job: ${s.limit} mrem</div>
+        </div>
+        <div class="alara-result" id="alara-result"></div>
+        <div class="int-controls" style="margin-top:0.75rem;">
+          <button class="int-btn primary" onclick="alaraCalculate()">Calculate My Dose</button>
+          ${currentScenario < scenarios.length-1 ? '<button class="int-btn gold" onclick="alaraNext()">Next Scenario &rarr;</button>' : '<button class="int-btn gold" onclick="alaraRestart()">Restart All</button>'}
+        </div>
+      `;
+    }
+
+    window.alaraSelect = function(category, idx){
+      selections[category] = idx;
+      const group = document.querySelectorAll('.alara-choice-group')[category==='time'?0:category==='distance'?1:2];
+      group.querySelectorAll('.alara-option').forEach((o,i)=>{
+        o.classList.toggle('selected', i===idx);
+      });
+    };
+
+    window.alaraCalculate = function(){
+      const s = scenarios[currentScenario];
+      const timeFactor = s.time[selections.time].factor;
+      const distFactor = s.distance[selections.distance].factor;
+      const shieldFactor = s.shielding[selections.shielding].factor;
+      const minutes = s.time[selections.time].minutes;
+      const effectiveRate = s.baseRate * distFactor * shieldFactor;
+      const dose = effectiveRate * (minutes/60);
+      const doseRounded = Math.round(dose*10)/10;
+
+      const el = document.getElementById('alara-dose');
+      el.textContent = doseRounded;
+
+      const result = document.getElementById('alara-result');
+      if(doseRounded <= s.limit){
+        el.style.color = '#22c55e';
+        result.style.background = 'rgba(34,197,94,0.15)';
+        result.style.color = '#22c55e';
+        result.textContent = '\u2713 Under the ' + s.limit + ' mrem limit! Good ALARA planning. Effective rate: ' + effectiveRate.toFixed(1) + ' mR/hr for ' + minutes + ' min.';
+      } else {
+        el.style.color = '#ef4444';
+        result.style.background = 'rgba(239,68,68,0.15)';
+        result.style.color = '#ef4444';
+        result.textContent = '\u2717 Over the ' + s.limit + ' mrem limit. Try reducing time, increasing distance, or adding shielding.';
+      }
+    };
+
+    window.alaraNext = function(){
+      currentScenario++;
+      selections = {time:0, distance:0, shielding:0};
+      renderScenario();
+    };
+
+    window.alaraRestart = function(){
+      currentScenario = 0;
+      selections = {time:0, distance:0, shielding:0};
+      renderScenario();
+    };
+
+    renderScenario();
+  })();
+
+  // ───────────────────────────────────────────
+  // Quiz
+  // ───────────────────────────────────────────
+  const feedbackData = {
+    1: {
+      correct: "Correct. Gamma radiation penetrates the entire body and is the primary external hazard at a nuclear plant. Alpha and beta are contained inside sealed systems. Your dosimeter primarily measures gamma dose. (Source: NRC Regulatory Guide 8.34)",
+      incorrect: "Gamma radiation is the primary external hazard because it penetrates the whole body. Alpha is stopped by skin and is only dangerous if inhaled/ingested. Beta can burn skin but is stopped by thin metal. (Source: NRC Regulatory Guide 8.34)"
+    },
+    2: {
+      correct: "Correct. 10 CFR 20.1201 sets the whole-body (TEDE) limit at 5,000 mrem (5 rem) per year. Most plants set administrative limits of 1,000-2,000 mrem to stay well below the regulatory limit.",
+      incorrect: "The NRC limit is 5,000 mrem/year (5 rem) per 10 CFR 20.1201. However, most plants set much lower administrative limits (1,000-2,000 mrem) to ensure workers stay well below the regulatory limit."
+    },
+    3: {
+      correct: "Correct. ALARA means keeping doses As Low As Reasonably Achievable, considering economic and practical factors. It's not about zero dose — it's about minimizing dose through smart planning using Time, Distance, and Shielding.",
+      incorrect: "ALARA = As Low As Reasonably Achievable. It's a fundamental principle in radiation protection (10 CFR 20.1003). You minimize dose using three tools: Time (less time = less dose), Distance (inverse square law), and Shielding (material between you and the source)."
+    },
+    4: {
+      correct: "Correct. The inverse square law: dose rate is inversely proportional to the square of the distance. Double the distance = 1/(2\u00b2) = 1/4 the dose rate. This is one of the most powerful ALARA tools. (Source: Lamarsh & Baratta, Ch. 9)",
+      incorrect: "The inverse square law says dose rate drops as 1/d\u00b2. Double the distance = 1/4 the dose rate. Triple the distance = 1/9 the dose rate. This is why even a few extra feet matter."
+    },
+    5: {
+      correct: "Correct. Radiation is energy traveling from a source — leave the area and it stops. Contamination is radioactive material ON or IN you — it travels with you. That's why you wear protective clothing and pass through monitors when leaving contaminated areas.",
+      incorrect: "Radiation = energy from a source (stops when you leave). Contamination = radioactive material on/in your body (travels with you until removed). This distinction is critical — contamination requires decontamination procedures, not just leaving the area."
+    },
+    6: {
+      correct: "Correct. The average American receives about 620 mrem/year total — roughly half from natural sources (radon, cosmic, terrestrial, food) and half from medical procedures (CT scans, nuclear medicine). (Source: NCRP Report No. 160)",
+      incorrect: "The average American gets about 620 mrem/year — ~310 mrem from natural background (radon is the biggest contributor at ~230 mrem) and ~310 mrem from medical procedures. (Source: NCRP Report No. 160)"
+    }
+  };
+
+  function selectOption(qNum, letter, isCorrect) {
+    const q = document.getElementById('q'+qNum);
+    q.querySelectorAll('.quiz-option').forEach(o => o.style.pointerEvents='none');
+    event.currentTarget.classList.add(isCorrect?'correct':'incorrect');
+    const fb = document.getElementById('feedback-'+qNum);
+    fb.classList.add('show', isCorrect?'correct':'incorrect');
+    fb.textContent = (isCorrect?'\u2713 ':'\u2717 ') + feedbackData[qNum][isCorrect?'correct':'incorrect'];
+  }
+
+  // ───────────────────────────────────────────
+  // AI Tutor
+  // ───────────────────────────────────────────
+  const tutorKB = {
+    'alpha|beta|gamma|neutron|type|radiation type|ionizing': "There are four types of ionizing radiation: Alpha (\u03b1) — heavy helium nucleus, stopped by paper/skin. Beta (\u03b2) — fast electron, stopped by aluminum/plastic. Gamma (\u03b3) — electromagnetic wave, needs lead/concrete/steel (never fully stopped). Neutron (n) — uncharged, needs water/concrete/hydrogen-rich materials. At a nuclear plant, gamma is your primary external hazard. (Source: Turner, Ch. 5-6)",
+    'dose|rem|mrem|sievert|unit': "Dose units: rem (Roentgen Equivalent Man) is the US standard. 1 rem = 1000 mrem. Sievert (Sv) is international: 1 Sv = 100 rem. The NRC occupational limit is 5,000 mrem/year (5 rem) whole body. Most plants set administrative limits of 1,000-2,000 mrem. The average American receives ~620 mrem/year from background radiation. (Source: 10 CFR 20; NCRP Report 160)",
+    'alara|as low|time distance shielding': "ALARA = As Low As Reasonably Achievable. Three tools: (1) TIME — less time = less dose, plan work beforehand, practice in non-rad areas. (2) DISTANCE — inverse square law: 2x distance = 1/4 dose rate. (3) SHIELDING — lead, concrete, or water between you and the source. Each half-value layer cuts dose by 50%. Before any rad work, you get a Radiation Work Permit (RWP). (Source: 10 CFR 20.1101)",
+    'contamination|contam|decon': "Contamination = radioactive material ON or IN your body. Unlike radiation (energy from a source that stops when you leave), contamination travels with you. Wear protective clothing (PCs), booties, gloves in contaminated areas. Pass through portal monitors when leaving. If contaminated: decon procedures (showering, removing clothing). Internal contamination (inhaled/ingested) is more serious. (Source: NRC NUREG-1556)",
+    'background|natural|radon|banana': "Average US background: ~620 mrem/year. Sources: radon gas (~230 mrem, biggest contributor), cosmic rays (~30 mrem, more at altitude), terrestrial (~20 mrem), internal from food (~30 mrem), medical (~310 mrem). A banana has ~0.01 mrem from potassium-40. Living near a nuclear plant adds ~0.01-0.1 mrem/year. (Source: NCRP Report No. 160)",
+    'dosimeter|badge|tld|osl': "Workers wear dosimeters to track radiation dose. Types: TLD (Thermoluminescent Dosimeter) — crystal that stores energy from radiation, read out periodically. OSL (Optically Stimulated Luminescence) — similar to TLD, read with light. Electronic Personal Dosimeter (EPD) — real-time digital readout, alarms at preset levels. You wear the official dosimeter on your chest (between waist and collar), plus an EPD for immediate dose rate info. (Source: NRC Regulatory Guide 8.34)",
+    'rwp|radiation work permit|hot spot|rad area': "A Radiation Work Permit (RWP) is required before entering any radiation area. It specifies: dose rates, expected stay time, required protective clothing, shielding requirements, contamination levels, and special instructions. Types of areas: Radiation Area (>5 mrem/hr), High Radiation Area (>100 mrem/hr), Very High Radiation Area (>500 rad/hr). You MUST follow the RWP exactly. (Source: 10 CFR 20.1601-1602)",
+    'default': "I can answer questions about radiation safety. Try asking about: types of radiation (alpha, beta, gamma, neutron), dose units (rem, mrem, Sievert), ALARA (Time, Distance, Shielding), contamination vs radiation, background radiation sources, dosimeters, or radiation work permits."
+  };
+
+  function askTutor() {
+    const q = document.getElementById('tutor-question').value.toLowerCase();
+    const r = document.getElementById('tutor-response');
+    if(!q.trim()){ r.textContent='Please enter a question.'; r.classList.add('show'); return; }
+    let answer = tutorKB['default'];
+    for(const [pattern,text] of Object.entries(tutorKB)){
+      if(pattern==='default') continue;
+      if(pattern.split('|').some(kw=>q.includes(kw))){ answer=text; break; }
+    }
+    r.textContent = answer;
+    r.classList.add('show');
+  }
+  document.getElementById('tutor-question').addEventListener('keypress',function(e){
+    if(e.key==='Enter') askTutor();
+  });
+  </script>
+</body>
+</html>
