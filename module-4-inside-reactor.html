@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 4: Inside the Reactor — Reactor Ready</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --blue: #1a3a5c;
+      --teal: #00b4d8;
+      --teal-light: #90e0ef;
+      --gold: #f4a261;
+      --white: #f8fafc;
+      --gray: #94a3b8;
+      --dark-card: #111f35;
+      --success: #22c55e;
+      --error: #ef4444;
+      --border: rgba(0,180,216,0.2);
+      --fuel: #f59e0b;
+      --coolant: #38bdf8;
+      --steam: #e2e8f0;
+      --control: #a78bfa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; background: var(--dark-card);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.1rem; color: var(--teal); }
+    .nav-logo .atom { font-size: 1.5rem; }
+    .nav-badge { font-size: 0.7rem; background: var(--teal); color: var(--navy); padding: 0.2rem 0.5rem; border-radius: 999px; font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--gray); }
+    .container { display: flex; height: calc(100vh - 65px); }
+
+    .sidebar {
+      width: 280px; background: var(--dark-card); border-right: 1px solid var(--border);
+      overflow-y: auto; padding: 1.5rem 1rem;
+    }
+    .sidebar h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); margin-bottom: 1rem; }
+    .module-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem;
+      margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s; border: 1px solid transparent; text-decoration: none; color: inherit;
+    }
+    .module-item.active { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .module-item.complete { opacity: 0.7; }
+    .module-item.locked { opacity: 0.5; cursor: not-allowed; }
+    .module-item:not(.locked):hover { background: rgba(0,180,216,0.05); }
+    .module-number {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%; background: var(--blue);
+      font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .module-item.active .module-number { background: var(--teal); color: var(--navy); }
+    .module-item.complete .module-number { background: var(--success); color: var(--navy); }
+    .module-info { flex: 1; }
+    .module-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .module-meta { font-size: 0.75rem; color: var(--gray); }
+    .module-lock { font-size: 1.2rem; color: var(--gray); }
+    .module-check { font-size: 1.2rem; color: var(--success); }
+
+    .main {
+      flex: 1; overflow-y: auto; padding: 2rem 3rem; max-width: 900px; margin: 0 auto;
+    }
+    .breadcrumb { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; }
+    .breadcrumb a { color: var(--teal); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .progress-section { margin-bottom: 2rem; }
+    .progress-label { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem; }
+    .progress-bar { height: 8px; background: var(--blue); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-light)); transition: width 0.3s; }
+    .module-header { margin-bottom: 2.5rem; }
+    .module-title-main { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--teal); }
+    .module-subtitle { font-size: 1.3rem; color: var(--gray); margin-bottom: 1rem; }
+    .module-meta-main { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--gray); }
+
+    .objectives {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .objectives h3 { font-size: 1.1rem; color: var(--teal); margin-bottom: 1rem; }
+    .objectives ul { list-style: none; }
+    .objectives li { padding: 0.5rem 0; padding-left: 1.5rem; position: relative; font-size: 0.95rem; }
+    .objectives li::before { content: '\25B8'; position: absolute; left: 0; color: var(--teal); }
+
+    .content-section { margin-bottom: 2.5rem; }
+    .content-section h2 { font-size: 1.5rem; color: var(--teal); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    .content-section h3 { font-size: 1.2rem; color: var(--teal-light); margin: 1.5rem 0 0.75rem; }
+    .content-section p { line-height: 1.8; margin-bottom: 1rem; color: #cbd5e1; }
+    .content-section ul, .content-section ol { margin: 0.5rem 0 1rem 1.5rem; }
+    .content-section li { line-height: 1.7; margin-bottom: 0.3rem; color: #cbd5e1; }
+
+    .source-tag { font-size: 0.75rem; color: var(--gold); font-style: italic; }
+
+    .key-concept {
+      background: rgba(0,180,216,0.08); border-left: 3px solid var(--teal);
+      padding: 1rem 1.5rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0;
+    }
+    .key-concept strong { color: var(--teal); }
+
+    .warning-box {
+      background: rgba(239,68,68,0.08); border-left: 3px solid var(--error);
+      padding: 1rem 1.5rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0;
+    }
+    .warning-box strong { color: var(--error); }
+
+    /* DATA TABLE */
+    .data-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.9rem; }
+    .data-table th { text-align: left; padding: 0.75rem; background: var(--blue); color: var(--teal-light); border-bottom: 2px solid var(--teal); }
+    .data-table td { padding: 0.75rem; border-bottom: 1px solid var(--border); color: #cbd5e1; }
+    .data-table tr:hover { background: rgba(0,180,216,0.03); }
+
+    /* INTERACTIVE WIDGETS */
+    .widget {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin: 2rem 0;
+    }
+    .widget-label {
+      display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; background: var(--teal); color: var(--navy);
+      padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 0.75rem;
+    }
+    .widget h3 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+    .widget p.widget-desc { font-size: 0.9rem; color: var(--gray); margin-bottom: 1rem; }
+    canvas { display: block; margin: 0 auto; border-radius: 8px; background: #0d1a2d; cursor: pointer; max-width: 100%; }
+
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; align-items: center;
+    }
+    .controls label { font-size: 0.85rem; color: var(--gray); }
+    .controls input[type="range"] { width: 160px; accent-color: var(--teal); }
+    .controls select {
+      background: var(--blue); color: var(--white); border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem;
+    }
+    .controls button, .btn {
+      background: var(--teal); color: var(--navy); border: none;
+      padding: 0.5rem 1.2rem; border-radius: 6px; font-weight: 600;
+      cursor: pointer; font-size: 0.85rem; transition: opacity 0.2s;
+    }
+    .controls button:hover, .btn:hover { opacity: 0.85; }
+    .btn-secondary { background: var(--blue); color: var(--white); }
+    .status-display {
+      font-size: 0.95rem; font-weight: 600; padding: 0.3rem 0.8rem;
+      border-radius: 6px; background: rgba(0,180,216,0.1);
+    }
+
+    /* TABS */
+    .tab-row { display: flex; gap: 0.25rem; margin-bottom: 1rem; }
+    .tab-btn {
+      background: var(--blue); color: var(--gray); border: none;
+      padding: 0.5rem 1rem; border-radius: 6px 6px 0 0;
+      cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--teal); color: var(--navy); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* DRAG ITEMS */
+    .drag-zone {
+      min-height: 60px; border: 2px dashed var(--border); border-radius: 8px;
+      padding: 0.75rem; margin: 0.5rem 0; display: flex; flex-wrap: wrap; gap: 0.5rem;
+      transition: border-color 0.2s;
+    }
+    .drag-zone.over { border-color: var(--teal); background: rgba(0,180,216,0.05); }
+    .drag-item {
+      background: var(--blue); border: 1px solid var(--border); padding: 0.4rem 0.8rem;
+      border-radius: 6px; cursor: grab; font-size: 0.85rem; user-select: none;
+      transition: transform 0.15s;
+    }
+    .drag-item:active { cursor: grabbing; transform: scale(1.05); }
+    .drag-item.correct { border-color: var(--success); background: rgba(34,197,94,0.15); }
+    .drag-item.incorrect { border-color: var(--error); background: rgba(239,68,68,0.15); }
+
+    /* QUIZ */
+    .quiz { background: var(--dark-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 2rem 0; }
+    .quiz h3 { font-size: 1.3rem; color: var(--teal); margin-bottom: 1rem; }
+    .quiz-q { margin-bottom: 1.5rem; }
+    .quiz-q p { font-weight: 600; margin-bottom: 0.75rem; }
+    .quiz-q label { display: block; padding: 0.5rem 0.75rem; margin-bottom: 0.3rem; border-radius: 6px; cursor: pointer; transition: background 0.2s; font-size: 0.9rem; color: #cbd5e1; }
+    .quiz-q label:hover { background: rgba(0,180,216,0.05); }
+    .quiz-q input[type="radio"] { margin-right: 0.5rem; accent-color: var(--teal); }
+    .quiz-feedback { margin-top: 0.5rem; padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; display: none; }
+    .quiz-feedback.correct { background: rgba(34,197,94,0.1); border: 1px solid var(--success); color: var(--success); }
+    .quiz-feedback.incorrect { background: rgba(239,68,68,0.1); border: 1px solid var(--error); color: var(--error); }
+    .quiz-result { margin-top: 1rem; padding: 1rem; border-radius: 8px; background: rgba(0,180,216,0.1); text-align: center; font-size: 1.1rem; font-weight: 600; display: none; }
+
+    /* TUTOR */
+    .tutor-container { background: var(--dark-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 2rem 0; }
+    .tutor-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .tutor-icon { font-size: 1.5rem; }
+    .tutor-title { font-weight: 700; font-size: 1.1rem; }
+    .tutor-input { display: flex; gap: 0.5rem; }
+    .tutor-input input { flex: 1; background: var(--blue); border: 1px solid var(--border); color: var(--white); padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.9rem; }
+    .tutor-input button { background: var(--teal); color: var(--navy); border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    #tutor-response { margin-top: 1rem; line-height: 1.7; color: #cbd5e1; }
+
+    /* NAVIGATION BUTTONS */
+    .nav-buttons { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .nav-btn { display: inline-block; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; cursor: pointer; border: none; }
+    .nav-btn:not(.secondary) { background: var(--teal); color: var(--navy); }
+    .nav-btn.secondary { background: var(--blue); color: var(--white); text-decoration: none; }
+    .nav-btn:hover { opacity: 0.9; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { padding: 1.5rem; }
+      .module-title-main { font-size: 1.8rem; }
+      canvas { width: 100% !important; height: auto !important; }
+      .controls { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <!-- TOP NAV -->
+  <nav>
+    <div class="nav-logo">
+      <span class="atom">&#9883;</span>
+      <span>Reactor Ready</span>
+      <span class="nav-badge">MIT OCW 22.01</span>
+    </div>
+    <div class="nav-right">
+      <span>Module 4 of 6</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h3>Course Modules</h3>
+
+      <a href="module-1-welcome.html" style="text-decoration:none;color:inherit;">
+        <div class="module-item complete">
+          <div class="module-number">&#10003;</div>
+          <div class="module-info">
+            <div class="module-title">Welcome to Nuclear</div>
+            <div class="module-meta">30 min</div>
+          </div>
+          <div class="module-check">&#10003;</div>
+        </div>
+      </a>
+
+      <a href="module-2-reactors.html" style="text-decoration:none;color:inherit;">
+        <div class="module-item complete">
+          <div class="module-number">&#10003;</div>
+          <div class="module-info">
+            <div class="module-title">How Reactors Work</div>
+            <div class="module-meta">35 min</div>
+          </div>
+          <div class="module-check">&#10003;</div>
+        </div>
+      </a>
+
+      <a href="module-3-radiation-safety.html" style="text-decoration:none;color:inherit;">
+        <div class="module-item complete">
+          <div class="module-number">&#10003;</div>
+          <div class="module-info">
+            <div class="module-title">Radiation Safety Fundamentals</div>
+            <div class="module-meta">40 min</div>
+          </div>
+          <div class="module-check">&#10003;</div>
+        </div>
+      </a>
+
+      <div class="module-item active">
+        <div class="module-number">&#9679;</div>
+        <div class="module-info">
+          <div class="module-title">Inside the Reactor</div>
+          <div class="module-meta">45 min</div>
+        </div>
+      </div>
+
+      <div class="module-item locked">
+        <div class="module-number">5</div>
+        <div class="module-info">
+          <div class="module-title">Your Career Path</div>
+          <div class="module-meta">30 min</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+
+      <div class="module-item locked">
+        <div class="module-number">6</div>
+        <div class="module-info">
+          <div class="module-title">Citations &amp; Sources</div>
+          <div class="module-meta">Reference</div>
+        </div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <div class="breadcrumb">
+        <a href="module-1-welcome.html">Reactor Ready</a> &rarr; Module 4
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-label">Module Progress: 0%</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+
+      <div class="module-header">
+        <div class="module-title-main">Inside the Reactor</div>
+        <div class="module-subtitle">Major Components, Safety Systems &amp; Defense in Depth</div>
+        <div class="module-meta-main">
+          <span>&#128338; 45 minutes</span>
+          <span>&#9881; 3 Interactive Widgets</span>
+          <span>&#128196; 6 Knowledge Checks</span>
+        </div>
+      </div>
+
+      <div class="objectives">
+        <h3>&#127919; Learning Objectives</h3>
+        <ul>
+          <li>Identify the major components of a nuclear reactor and their functions</li>
+          <li>Explain the purpose and operation of safety systems (ECCS, containment, EDGs)</li>
+          <li>Describe Defense in Depth and its multiple barrier concept</li>
+          <li>Understand how reactor operators control power level and respond to transients</li>
+          <li>Recognize what trades workers actually maintain in a nuclear plant</li>
+        </ul>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- SECTION 1: REACTOR VESSEL & CORE COMPONENTS -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="content-section">
+        <h2>1. The Reactor Vessel &amp; Core Components</h2>
+
+        <p>The reactor pressure vessel (RPV) is the heart of a nuclear power plant. This massive steel vessel — typically 40-45 feet tall, 14-20 feet in diameter, with walls 8-12 inches thick — contains the nuclear fuel, control rods, and coolant that make power generation possible.</p>
+        <p class="source-tag">Source: Lamarsh &amp; Baratta, "Introduction to Nuclear Engineering," Ch. 4</p>
+
+        <h3>Core Components</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Function</th>
+              <th>Material</th>
+              <th>Trades Relevance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Fuel Assemblies</strong></td>
+              <td>Contain UO&#8322; fuel pellets in zircaloy cladding; where fission occurs</td>
+              <td>UO&#8322; pellets, Zircaloy-4 cladding</td>
+              <td>Handled by reactor engineers during refueling</td>
+            </tr>
+            <tr>
+              <td><strong>Control Rods</strong></td>
+              <td>Absorb neutrons to control reaction rate; inserted = less power</td>
+              <td>Ag-In-Cd alloy or B&#8324;C</td>
+              <td>Drive mechanisms maintained by I&amp;C and electricians</td>
+            </tr>
+            <tr>
+              <td><strong>Reactor Coolant</strong></td>
+              <td>Removes heat from core; acts as neutron moderator</td>
+              <td>Light water (H&#8322;O), borated</td>
+              <td>Pumps, valves, piping maintained by all trades</td>
+            </tr>
+            <tr>
+              <td><strong>Core Barrel</strong></td>
+              <td>Structural support directing coolant flow through fuel assemblies</td>
+              <td>Stainless steel</td>
+              <td>Inspected during refueling outages</td>
+            </tr>
+            <tr>
+              <td><strong>Pressurizer</strong> (PWR)</td>
+              <td>Maintains RCS pressure at ~2,235 psi to prevent boiling</td>
+              <td>Carbon steel, SS-clad</td>
+              <td>Heaters &amp; spray valves maintained by electricians &amp; mechanics</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="source-tag">Source: USNRC, "Reactor Concepts Manual," NUREG/BR-0024, Rev. 4</p>
+
+        <div class="key-concept">
+          <strong>Key Concept:</strong> Everything in the reactor vessel serves one of three purposes: (1) sustain the chain reaction, (2) remove heat, or (3) control the reaction rate. Understanding this simplifies the entire system.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- INTERACTIVE 1: Reactor Cutaway Explorer -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="widget">
+        <div class="widget-label">Interactive Simulation</div>
+        <h3>Reactor Vessel Cutaway Explorer</h3>
+        <p class="widget-desc">Click on components to learn what they do. Hover to highlight. Trades workers maintain these systems every day.</p>
+        <canvas id="rv-canvas" width="700" height="500"></canvas>
+        <div id="rv-info" style="margin-top:1rem; padding:1rem; background:var(--blue); border-radius:8px; min-height:60px;">
+          <div style="color:var(--gray); font-size:0.9rem;">Click any component in the cutaway above to learn about it.</div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- SECTION 2: SAFETY SYSTEMS & DEFENSE IN DEPTH -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="content-section">
+        <h2>2. Safety Systems &amp; Defense in Depth</h2>
+
+        <p>Nuclear power plants are designed with multiple independent layers of protection — a philosophy called <strong>Defense in Depth</strong>. If one barrier fails, the next one is ready. No single failure can lead to a release of radioactivity.</p>
+        <p class="source-tag">Source: IAEA, "Defence in Depth in Nuclear Safety," INSAG-10</p>
+
+        <h3>The Five Physical Barriers</h3>
+        <ol>
+          <li><strong>Fuel Pellet:</strong> Ceramic UO&#8322; retains ~98% of fission products within its crystal structure</li>
+          <li><strong>Fuel Cladding:</strong> Zircaloy tube surrounds each fuel pellet — first engineered barrier</li>
+          <li><strong>Reactor Vessel:</strong> 8-12 inch thick carbon steel with stainless steel cladding</li>
+          <li><strong>Primary Containment:</strong> Steel-lined, reinforced concrete structure (3-4 ft thick walls)</li>
+          <li><strong>Secondary Containment / Shield Building:</strong> Outer concrete structure (in some designs)</li>
+        </ol>
+        <p class="source-tag">Source: USNRC, "Backgrounder on Defense-in-Depth," 2021</p>
+
+        <h3>Engineered Safety Features</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>System</th>
+              <th>Acronym</th>
+              <th>Purpose</th>
+              <th>Activation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Emergency Core Cooling</strong></td>
+              <td>ECCS</td>
+              <td>Flood core with borated water after LOCA</td>
+              <td>Automatic on low RCS pressure</td>
+            </tr>
+            <tr>
+              <td><strong>Containment Spray</strong></td>
+              <td>CSS</td>
+              <td>Reduce containment pressure &amp; scrub radioactive iodine</td>
+              <td>Automatic on high containment pressure</td>
+            </tr>
+            <tr>
+              <td><strong>Emergency Diesel Generators</strong></td>
+              <td>EDG</td>
+              <td>Backup power if offsite power is lost</td>
+              <td>Auto-start within 10 seconds on LOOP signal</td>
+            </tr>
+            <tr>
+              <td><strong>Reactor Protection System</strong></td>
+              <td>RPS</td>
+              <td>Automatic reactor trip (SCRAM) on abnormal conditions</td>
+              <td>Multiple redundant sensor channels</td>
+            </tr>
+            <tr>
+              <td><strong>Auxiliary Feedwater</strong></td>
+              <td>AFW</td>
+              <td>Backup water supply to steam generators for decay heat removal</td>
+              <td>Auto or manual on loss of main feedwater</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="source-tag">Source: USNRC, "Reactor Concepts Manual," Ch. 6; 10 CFR 50.46</p>
+
+        <div class="warning-box">
+          <strong>Why This Matters to Trades Workers:</strong> Every safety system requires electrical power, instrumentation, and mechanical components — maintained by the electricians, I&amp;C technicians, and mechanics who keep the plant running. When you test an EDG, you're testing the last line of defense.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- INTERACTIVE 2: Defense in Depth Builder -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="widget">
+        <div class="widget-label">Interactive Challenge</div>
+        <h3>Defense in Depth Builder</h3>
+        <p class="widget-desc">Drag the barriers into the correct order from innermost to outermost. Build your own defense in depth!</p>
+
+        <div style="display:flex; gap:2rem; flex-wrap: wrap;">
+          <div style="flex:1; min-width:200px;">
+            <div style="font-size:0.85rem; color:var(--gray); margin-bottom:0.5rem; font-weight:600;">Available Barriers:</div>
+            <div class="drag-zone" id="did-source">
+              <div class="drag-item" draggable="true" data-order="3" id="d-vessel">Reactor Vessel</div>
+              <div class="drag-item" draggable="true" data-order="1" id="d-pellet">Fuel Pellet</div>
+              <div class="drag-item" draggable="true" data-order="5" id="d-shield">Shield Building</div>
+              <div class="drag-item" draggable="true" data-order="2" id="d-clad">Fuel Cladding</div>
+              <div class="drag-item" draggable="true" data-order="4" id="d-contain">Containment</div>
+            </div>
+          </div>
+          <div style="flex:1; min-width:200px;">
+            <div style="font-size:0.85rem; color:var(--gray); margin-bottom:0.5rem; font-weight:600;">Drop here (innermost &#8594; outermost):</div>
+            <div class="drag-zone" id="did-target"></div>
+            <div style="margin-top:0.75rem; display:flex; gap:0.5rem;">
+              <button class="btn" onclick="checkDiD()">Check Order</button>
+              <button class="btn btn-secondary" onclick="resetDiD()">Reset</button>
+            </div>
+            <div id="did-result" style="margin-top:0.75rem; font-size:0.9rem;"></div>
+          </div>
+        </div>
+
+        <canvas id="did-canvas" width="700" height="280" style="margin-top:1rem;"></canvas>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- SECTION 3: PLANT OPERATIONS & POWER CONTROL -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="content-section">
+        <h2>3. How Operators Control the Reactor</h2>
+
+        <p>Licensed reactor operators control the nuclear chain reaction using three primary methods. Understanding these helps trades workers appreciate why certain maintenance activities are safety-critical.</p>
+
+        <h3>Three Methods of Reactivity Control</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Mechanism</th>
+              <th>Speed</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Control Rods</strong></td>
+              <td>Mechanical insertion/withdrawal of neutron-absorbing material</td>
+              <td>Fast (seconds)</td>
+              <td>Load following, SCRAM (emergency shutdown)</td>
+            </tr>
+            <tr>
+              <td><strong>Boron Concentration</strong></td>
+              <td>Dissolving boric acid in coolant to absorb neutrons</td>
+              <td>Slow (hours)</td>
+              <td>Long-term reactivity management, fuel burnup compensation</td>
+            </tr>
+            <tr>
+              <td><strong>Temperature Feedback</strong></td>
+              <td>Negative temperature coefficient — hotter core = less reactivity</td>
+              <td>Inherent (automatic)</td>
+              <td>Self-regulating safety feature (no operator action needed)</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="source-tag">Source: Lamarsh &amp; Baratta, Ch. 7; USNRC Reactor Concepts Manual, Ch. 3</p>
+
+        <div class="key-concept">
+          <strong>Negative Temperature Coefficient:</strong> In most modern reactors, if the core temperature rises, the chain reaction naturally slows down. This is a built-in safety feature — the physics itself acts as a brake. It's one reason why a Chernobyl-type accident is physically impossible in US-designed reactors (which use a negative void coefficient, unlike the RBMK's positive one).
+          <br><span class="source-tag">Source: MIT OCW 22.01, Lecture 26 (Chernobyl analysis)</span>
+        </div>
+
+        <h3>What Happens During a SCRAM</h3>
+        <p>A reactor trip (SCRAM) is the emergency shutdown of the reactor. When triggered, all control rods drop into the core within 2-4 seconds by gravity (the motors release, not insert them — a fail-safe design). The chain reaction stops almost instantly.</p>
+        <p>But <strong>decay heat</strong> remains. Fission products continue generating about 7% of full power immediately after shutdown, declining to ~1% within an hour. This is why cooling must continue even after the reactor is "off."</p>
+        <p class="source-tag">Source: ANS Standard 5.1-2014 (Decay Heat Standard); USNRC NUREG-1150</p>
+
+        <div class="warning-box">
+          <strong>Decay Heat Is Why Fukushima Happened:</strong> The reactors SCRAMmed successfully during the earthquake. But when the tsunami destroyed the backup diesel generators, there was no power to run the cooling pumps. Without cooling, decay heat melted the fuel — even though the chain reaction had already stopped.
+          <br><span class="source-tag">Source: INPO 11-005, "Special Report on the Nuclear Accident at Fukushima"</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- INTERACTIVE 3: Decay Heat Cooldown Simulator -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="widget">
+        <div class="widget-label">Interactive Simulation</div>
+        <h3>Decay Heat Cooldown Simulator</h3>
+        <p class="widget-desc">Watch how decay heat behaves after a reactor trip. Try different scenarios: normal shutdown vs loss of cooling. See why backup power is critical.</p>
+        <canvas id="dh-canvas" width="700" height="400"></canvas>
+        <div class="controls">
+          <button onclick="dhStart('normal')">Normal Shutdown</button>
+          <button onclick="dhStart('loca')" style="background:var(--gold);">Loss of Cooling</button>
+          <button onclick="dhStart('fukushima')" style="background:var(--error); color:var(--white);">Fukushima Scenario</button>
+          <button class="btn-secondary" onclick="dhReset()">Reset</button>
+          <span class="status-display" id="dh-status">Ready — choose a scenario</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- SECTION 4: WHAT TRADES WORKERS MAINTAIN -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="content-section">
+        <h2>4. What Trades Workers Actually Maintain</h2>
+
+        <p>A nuclear power plant employs hundreds of skilled trades workers. Here's what each trade touches — and why every job is safety-critical.</p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Trade</th>
+              <th>Key Systems</th>
+              <th>Safety-Critical Work Examples</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Electricians</strong></td>
+              <td>4.16kV safety buses, EDGs, motor control centers, cable routing</td>
+              <td>EDG maintenance, breaker testing, Class 1E circuit work</td>
+            </tr>
+            <tr>
+              <td><strong>I&amp;C Technicians</strong></td>
+              <td>RPS, process sensors, control rod drive mechanisms, PAMS</td>
+              <td>Safety channel calibration, RPS logic testing</td>
+            </tr>
+            <tr>
+              <td><strong>Mechanics / Pipefitters</strong></td>
+              <td>RCS pumps, valves, heat exchangers, ECCS piping</td>
+              <td>Safety valve testing, RCP seal replacement</td>
+            </tr>
+            <tr>
+              <td><strong>Welders</strong></td>
+              <td>ASME III piping, structural supports, containment penetrations</td>
+              <td>Safety-related welds per ASME Section IX, NDE</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="source-tag">Source: NEI 06-13, "Template for an Industry Training Program"; 10 CFR 50.120</p>
+
+        <div class="key-concept">
+          <strong>Class 1E:</strong> This is the NRC classification for electrical equipment and systems that are essential to reactor safety. Any work on Class 1E equipment requires special procedures, qualified personnel, and documented quality assurance. As a nuclear electrician, most of your critical work involves Class 1E systems.
+          <br><span class="source-tag">Source: IEEE 308-2020, "Standard Criteria for Class 1E Power Systems"</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- KNOWLEDGE CHECK -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="quiz">
+        <h3>&#9997; Knowledge Check</h3>
+        <p style="color:var(--gray); font-size:0.9rem; margin-bottom:1.5rem;">Test your understanding of reactor internals and safety systems.</p>
+
+        <div class="quiz-q" data-correct="b">
+          <p>1. What is the primary purpose of the pressurizer in a PWR?</p>
+          <label><input type="radio" name="q1" value="a"> Generate steam for the turbine</label>
+          <label><input type="radio" name="q1" value="b"> Maintain RCS pressure to prevent boiling in the reactor</label>
+          <label><input type="radio" name="q1" value="c"> Control the rate of the chain reaction</label>
+          <label><input type="radio" name="q1" value="d"> Store spent fuel assemblies</label>
+          <div class="quiz-feedback" id="fb1"></div>
+        </div>
+
+        <div class="quiz-q" data-correct="c">
+          <p>2. How many physical barriers make up Defense in Depth?</p>
+          <label><input type="radio" name="q2" value="a"> Three</label>
+          <label><input type="radio" name="q2" value="b"> Four</label>
+          <label><input type="radio" name="q2" value="c"> Five</label>
+          <label><input type="radio" name="q2" value="d"> Seven</label>
+          <div class="quiz-feedback" id="fb2"></div>
+        </div>
+
+        <div class="quiz-q" data-correct="a">
+          <p>3. During a SCRAM, control rods are inserted by:</p>
+          <label><input type="radio" name="q3" value="a"> Gravity (motors release, rods fall)</label>
+          <label><input type="radio" name="q3" value="b"> High-pressure hydraulics</label>
+          <label><input type="radio" name="q3" value="c"> Electric motor drive at full speed</label>
+          <label><input type="radio" name="q3" value="d"> Explosive charges</label>
+          <div class="quiz-feedback" id="fb3"></div>
+        </div>
+
+        <div class="quiz-q" data-correct="d">
+          <p>4. Why was Fukushima's fuel damage caused by decay heat, not a chain reaction?</p>
+          <label><input type="radio" name="q4" value="a"> The fuel was already spent</label>
+          <label><input type="radio" name="q4" value="b"> The operators forgot to SCRAM</label>
+          <label><input type="radio" name="q4" value="c"> Earthquakes prevent chain reactions</label>
+          <label><input type="radio" name="q4" value="d"> The SCRAM worked but cooling was lost — decay heat continued without pumps</label>
+          <div class="quiz-feedback" id="fb4"></div>
+        </div>
+
+        <div class="quiz-q" data-correct="b">
+          <p>5. What does "Class 1E" designate in a nuclear plant?</p>
+          <label><input type="radio" name="q5" value="a"> The highest quality grade of fuel pellets</label>
+          <label><input type="radio" name="q5" value="b"> Electrical equipment essential to reactor safety</label>
+          <label><input type="radio" name="q5" value="c"> The first level of operator licensing</label>
+          <label><input type="radio" name="q5" value="d"> Emergency exits in containment</label>
+          <div class="quiz-feedback" id="fb5"></div>
+        </div>
+
+        <div class="quiz-q" data-correct="c">
+          <p>6. Emergency diesel generators must auto-start within how many seconds of a loss of offsite power?</p>
+          <label><input type="radio" name="q6" value="a"> 2 seconds</label>
+          <label><input type="radio" name="q6" value="b"> 5 seconds</label>
+          <label><input type="radio" name="q6" value="c"> 10 seconds</label>
+          <label><input type="radio" name="q6" value="d"> 30 seconds</label>
+          <div class="quiz-feedback" id="fb6"></div>
+        </div>
+
+        <button class="btn" onclick="gradeQuiz()" style="margin-top:1rem;">Check Answers</button>
+        <div class="quiz-result" id="quiz-result"></div>
+      </div>
+
+      <!-- AI TUTOR -->
+      <div class="tutor-container">
+        <div class="tutor-header">
+          <div class="tutor-icon">&#129302;</div>
+          <div>
+            <div class="tutor-title">ARIA AI Tutor</div>
+            <div style="font-size: 0.85rem; color: var(--gray);">Ask me about reactor components, safety systems, or nuclear plant operations</div>
+          </div>
+        </div>
+        <div class="tutor-input">
+          <input type="text" id="tutor-question" placeholder="Ask a question about this module..." />
+          <button id="ask-tutor" onclick="askTutor()">Ask</button>
+        </div>
+        <div id="tutor-response"></div>
+      </div>
+
+      <!-- NAVIGATION -->
+      <div class="nav-buttons">
+        <a href="module-3-radiation-safety.html" class="nav-btn secondary">&larr; Back to Module 3</a>
+        <button class="nav-btn" onclick="alert('Module 5: Your Career Path — coming soon')">Continue to Module 5 &rarr;</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- SCRIPTS -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <script>
+  // ───────────────────────────────────────────
+  // INTERACTIVE 1: Reactor Vessel Cutaway Explorer
+  // ───────────────────────────────────────────
+  (function(){
+    const cv = document.getElementById('rv-canvas');
+    const ctx = cv.getContext('2d');
+    const W = cv.width, H = cv.height;
+
+    // Component regions (clickable areas)
+    const components = [
+      {
+        id: 'vessel', label: 'Reactor Pressure Vessel',
+        x: 200, y: 30, w: 300, h: 440,
+        color: '#4a5568', highlight: '#718096',
+        info: '<strong>Reactor Pressure Vessel (RPV)</strong><br>40-45 ft tall, 8-12" thick carbon steel with stainless steel cladding. Withstands 2,235 psi internal pressure and temperatures up to 600°F. Designed to last 40-60 years. <em>Inspected per ASME Section XI during refueling outages.</em>'
+      },
+      {
+        id: 'fuel', label: 'Fuel Assemblies',
+        x: 280, y: 160, w: 140, h: 200,
+        color: '#f59e0b', highlight: '#fbbf24',
+        info: '<strong>Fuel Assemblies</strong><br>157-193 assemblies in a typical PWR, each containing 200-264 fuel rods. Each rod holds ~300 UO₂ pellets (each about the size of a pencil eraser) stacked in a 12-ft zircaloy tube. Total uranium: ~100 metric tons. <em>Replaced 1/3 at a time during 18-24 month refueling cycles.</em>'
+      },
+      {
+        id: 'rods', label: 'Control Rods',
+        x: 260, y: 60, w: 180, h: 120,
+        color: '#a78bfa', highlight: '#c4b5fd',
+        info: '<strong>Control Rod Drive Mechanisms (CRDMs)</strong><br>53-69 rod cluster assemblies, each with 20-24 individual rods of Ag-In-Cd or B₄C. Electromagnets hold rods up — de-energize to drop (fail-safe). Full insertion in 2-4 seconds. <em>Electricians maintain the drive mechanisms; I&C techs calibrate position indicators.</em>'
+      },
+      {
+        id: 'coolant', label: 'Reactor Coolant',
+        x: 220, y: 370, w: 260, h: 80,
+        color: '#38bdf8', highlight: '#7dd3fc',
+        info: '<strong>Reactor Coolant (Light Water)</strong><br>~75,000 gallons at 2,235 psi, 550-600°F. Contains dissolved boric acid (0-2,000 ppm) for reactivity control. Flows at ~400,000 gpm through 2-4 loops. <em>Mechanics maintain RCS pumps (6,000 HP each); chemistry techs monitor boron concentration.</em>'
+      },
+      {
+        id: 'head', label: 'Vessel Head',
+        x: 240, y: 30, w: 220, h: 50,
+        color: '#6b7280', highlight: '#9ca3af',
+        info: '<strong>Reactor Vessel Head</strong><br>Hemispherical carbon steel cap, bolted with 54-58 studs torqued to 1,000+ ft-lbs each. Contains CRDM penetration nozzles. Removed during every refueling outage (takes ~3 days). <em>Massive crane operation requiring coordinated trades work.</em>'
+      },
+      {
+        id: 'nozzle', label: 'Inlet/Outlet Nozzles',
+        x: 500, y: 150, w: 80, h: 60,
+        color: '#22d3ee', highlight: '#67e8f9',
+        info: '<strong>Inlet/Outlet Nozzles</strong><br>2-4 cold leg inlets (~550°F) and 2-4 hot leg outlets (~600°F). These connect the RPV to the steam generators via large-bore piping. <em>Welds at nozzle-to-pipe connections are among the most inspected joints in the plant (ASME Section XI, ISI Program).</em>'
+      },
+      {
+        id: 'barrel', label: 'Core Barrel',
+        x: 225, y: 140, w: 250, h: 240,
+        color: '#64748b', highlight: '#94a3b8',
+        info: '<strong>Core Barrel &amp; Baffle</strong><br>Stainless steel cylinder that directs coolant flow downward along the vessel wall, then upward through the fuel assemblies. Ensures uniform cooling across all fuel. <em>Subject to irradiation embrittlement — inspected via remote UT and visual examination.</em>'
+      }
+    ];
+
+    let hoveredComp = null, selectedComp = null;
+
+    function drawVessel() {
+      ctx.clearRect(0, 0, W, H);
+
+      // Background label
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = 'rgba(0,180,216,0.05)';
+      ctx.fillRect(0, 0, W, H);
+
+      // Draw vessel outline
+      ctx.strokeStyle = '#4a5568';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      // Main body
+      ctx.moveTo(230, 80);
+      ctx.lineTo(230, 420);
+      ctx.quadraticCurveTo(230, 470, 350, 470);
+      ctx.quadraticCurveTo(470, 470, 470, 420);
+      ctx.lineTo(470, 80);
+      // Head (dome)
+      ctx.quadraticCurveTo(470, 30, 350, 30);
+      ctx.quadraticCurveTo(230, 30, 230, 80);
+      ctx.stroke();
+
+      // Vessel wall fill
+      ctx.fillStyle = selectedComp && selectedComp.id === 'vessel' ? 'rgba(113,128,150,0.3)' : 'rgba(74,85,104,0.15)';
+      ctx.fill();
+
+      // Head line (separation)
+      ctx.strokeStyle = hoveredComp && hoveredComp.id === 'head' ? '#9ca3af' : '#4a5568';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(240, 80);
+      ctx.lineTo(460, 80);
+      ctx.stroke();
+
+      // Bolts on head
+      for (let bx = 260; bx <= 440; bx += 30) {
+        ctx.fillStyle = '#6b7280';
+        ctx.beginPath();
+        ctx.arc(bx, 80, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // CRDM housings (tubes on top)
+      for (let cx = 290; cx <= 410; cx += 40) {
+        const isHovered = hoveredComp && hoveredComp.id === 'rods';
+        ctx.strokeStyle = isHovered ? '#c4b5fd' : '#a78bfa';
+        ctx.lineWidth = isHovered ? 3 : 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, 30);
+        ctx.lineTo(cx, 10);
+        ctx.stroke();
+        // Housing box
+        ctx.fillStyle = isHovered ? 'rgba(167,139,250,0.4)' : 'rgba(167,139,250,0.2)';
+        ctx.fillRect(cx - 6, 2, 12, 12);
+      }
+
+      // Core barrel
+      const barrelHL = hoveredComp && hoveredComp.id === 'barrel';
+      ctx.strokeStyle = barrelHL ? '#94a3b8' : '#475569';
+      ctx.lineWidth = barrelHL ? 3 : 2;
+      ctx.setLineDash([5, 5]);
+      ctx.strokeRect(255, 140, 190, 240);
+      ctx.setLineDash([]);
+
+      // Fuel assemblies
+      const fuelHL = (hoveredComp && hoveredComp.id === 'fuel') || (selectedComp && selectedComp.id === 'fuel');
+      for (let fx = 290; fx <= 400; fx += 22) {
+        for (let fy = 170; fy <= 340; fy += 22) {
+          ctx.fillStyle = fuelHL ? 'rgba(251,191,36,0.7)' : 'rgba(245,158,11,0.4)';
+          ctx.fillRect(fx - 4, fy - 4, 8, 8);
+          ctx.strokeStyle = fuelHL ? '#fbbf24' : '#b45309';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(fx - 4, fy - 4, 8, 8);
+        }
+      }
+
+      // Control rods (coming from top into fuel)
+      const rodsHL = hoveredComp && hoveredComp.id === 'rods';
+      for (let rx = 300; rx <= 400; rx += 40) {
+        ctx.fillStyle = rodsHL ? 'rgba(196,181,253,0.8)' : 'rgba(167,139,250,0.5)';
+        ctx.fillRect(rx - 3, 82, 6, 100);
+      }
+
+      // Coolant flow arrows
+      const coolHL = hoveredComp && hoveredComp.id === 'coolant';
+      ctx.strokeStyle = coolHL ? '#7dd3fc' : 'rgba(56,189,248,0.4)';
+      ctx.lineWidth = coolHL ? 3 : 2;
+      // Down flow (cold leg)
+      drawArrow(248, 130, 248, 380);
+      drawArrow(452, 130, 452, 380);
+      // Up flow through core
+      drawArrow(330, 380, 330, 130);
+      drawArrow(370, 380, 370, 130);
+      // Bottom turnaround
+      ctx.beginPath();
+      ctx.moveTo(248, 380);
+      ctx.quadraticCurveTo(248, 430, 330, 430);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(452, 380);
+      ctx.quadraticCurveTo(452, 430, 370, 430);
+      ctx.stroke();
+
+      // Nozzles
+      const nozHL = hoveredComp && hoveredComp.id === 'nozzle';
+      ctx.fillStyle = nozHL ? '#67e8f9' : '#22d3ee';
+      // Hot legs
+      ctx.fillRect(470, 150, 60, 20);
+      ctx.fillRect(470, 200, 60, 20);
+      // Cold legs
+      ctx.fillStyle = nozHL ? '#67e8f9' : '#0ea5e9';
+      ctx.fillRect(170, 160, 60, 20);
+      ctx.fillRect(170, 210, 60, 20);
+
+      // Labels
+      ctx.font = '11px system-ui';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('Hot Leg →', 530, 165);
+      ctx.fillText('Hot Leg →', 530, 215);
+      ctx.fillText('← Cold Leg', 100, 175);
+      ctx.fillText('← Cold Leg', 100, 225);
+
+      // Component labels on right side
+      ctx.font = 'bold 12px system-ui';
+      const labels = [
+        { text: 'CRDM Housings', y: 15, comp: 'rods' },
+        { text: 'Vessel Head', y: 55, comp: 'head' },
+        { text: 'Control Rods', y: 115, comp: 'rods' },
+        { text: 'Fuel Assemblies', y: 260, comp: 'fuel' },
+        { text: 'Core Barrel', y: 380, comp: 'barrel' },
+        { text: 'Coolant Flow ↑↓', y: 450, comp: 'coolant' },
+      ];
+      labels.forEach(l => {
+        const isHL = hoveredComp && hoveredComp.id === l.comp;
+        ctx.fillStyle = isHL ? '#00b4d8' : '#64748b';
+        ctx.textAlign = 'left';
+        ctx.fillText(l.text, 560, l.y);
+      });
+      ctx.textAlign = 'start';
+
+      // Title
+      ctx.font = 'bold 14px system-ui';
+      ctx.fillStyle = '#00b4d8';
+      ctx.fillText('PWR Reactor Vessel Cutaway', 20, 490);
+    }
+
+    function drawArrow(x1, y1, x2, y2) {
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - 8 * Math.cos(angle - 0.4), y2 - 8 * Math.sin(angle - 0.4));
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - 8 * Math.cos(angle + 0.4), y2 - 8 * Math.sin(angle + 0.4));
+      ctx.stroke();
+    }
+
+    function hitTest(mx, my) {
+      // Check smaller components first for priority
+      const order = ['rods', 'fuel', 'head', 'nozzle', 'coolant', 'barrel', 'vessel'];
+      for (const id of order) {
+        const c = components.find(cc => cc.id === id);
+        if (mx >= c.x && mx <= c.x + c.w && my >= c.y && my <= c.y + c.h) return c;
+      }
+      return null;
+    }
+
+    cv.addEventListener('mousemove', function(e) {
+      const rect = cv.getBoundingClientRect();
+      const scaleX = W / rect.width;
+      const scaleY = H / rect.height;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const my = (e.clientY - rect.top) * scaleY;
+      const comp = hitTest(mx, my);
+      if (comp !== hoveredComp) {
+        hoveredComp = comp;
+        cv.style.cursor = comp ? 'pointer' : 'default';
+        drawVessel();
+      }
+    });
+
+    cv.addEventListener('click', function(e) {
+      const rect = cv.getBoundingClientRect();
+      const scaleX = W / rect.width;
+      const scaleY = H / rect.height;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const my = (e.clientY - rect.top) * scaleY;
+      const comp = hitTest(mx, my);
+      if (comp) {
+        selectedComp = comp;
+        document.getElementById('rv-info').innerHTML = comp.info;
+        drawVessel();
+      }
+    });
+
+    drawVessel();
+  })();
+
+  // ───────────────────────────────────────────
+  // INTERACTIVE 2: Defense in Depth Builder
+  // ───────────────────────────────────────────
+  (function(){
+    // Drag and drop
+    const source = document.getElementById('did-source');
+    const target = document.getElementById('did-target');
+
+    function addDragListeners(el) {
+      el.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('text/plain', e.target.id);
+        e.target.style.opacity = '0.5';
+      });
+      el.addEventListener('dragend', function(e) {
+        e.target.style.opacity = '1';
+      });
+    }
+
+    document.querySelectorAll('.drag-item').forEach(addDragListeners);
+
+    [source, target].forEach(zone => {
+      zone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        zone.classList.add('over');
+      });
+      zone.addEventListener('dragleave', function() {
+        zone.classList.remove('over');
+      });
+      zone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        zone.classList.remove('over');
+        const id = e.dataTransfer.getData('text/plain');
+        const item = document.getElementById(id);
+        if (item) zone.appendChild(item);
+      });
+    });
+
+    // Draw concentric rings visualization
+    const cv = document.getElementById('did-canvas');
+    const ctx = cv.getContext('2d');
+
+    function drawDiDRings(correctOrder) {
+      const W = cv.width, H = cv.height;
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#0d1a2d';
+      ctx.fillRect(0, 0, W, H);
+
+      const cx = W / 2, cy = H / 2;
+      const colors = ['#f59e0b', '#ef4444', '#64748b', '#6366f1', '#22c55e'];
+      const labels = ['Fuel Pellet', 'Cladding', 'Vessel', 'Containment', 'Shield Bldg'];
+      const maxR = 120;
+
+      if (!correctOrder) {
+        // Show empty template
+        ctx.font = '14px system-ui';
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'center';
+        ctx.fillText('Complete the drag-and-drop to see the barrier diagram', cx, cy);
+        ctx.textAlign = 'start';
+        return;
+      }
+
+      for (let i = 4; i >= 0; i--) {
+        const r = maxR - i * 20 + 40;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = colors[i] + '20';
+        ctx.fill();
+        ctx.strokeStyle = colors[i];
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+
+      // Labels
+      ctx.font = 'bold 11px system-ui';
+      ctx.textAlign = 'center';
+      for (let i = 0; i < 5; i++) {
+        const r = maxR - i * 20 + 40;
+        ctx.fillStyle = colors[i];
+        ctx.fillText(labels[i], cx + r + 5, cy - r + 15);
+      }
+
+      // Center icon
+      ctx.font = '24px system-ui';
+      ctx.fillText('☢', cx, cy + 8);
+
+      // Title
+      ctx.font = 'bold 13px system-ui';
+      ctx.fillStyle = '#00b4d8';
+      ctx.fillText('Defense in Depth — 5 Barriers', cx, 25);
+
+      // Arrow labels
+      ctx.font = '11px system-ui';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('← Innermost', cx - maxR - 80, cy);
+      ctx.fillText('Outermost →', cx + maxR + 30, cy);
+      ctx.textAlign = 'start';
+    }
+
+    drawDiDRings(false);
+
+    window.checkDiD = function() {
+      const items = target.querySelectorAll('.drag-item');
+      if (items.length < 5) {
+        document.getElementById('did-result').innerHTML = '<span style="color:var(--gold);">Drag all 5 barriers to the target zone first.</span>';
+        return;
+      }
+      let correct = true;
+      items.forEach((item, i) => {
+        const expected = i + 1;
+        const actual = parseInt(item.dataset.order);
+        if (actual === expected) {
+          item.classList.add('correct');
+          item.classList.remove('incorrect');
+        } else {
+          item.classList.add('incorrect');
+          item.classList.remove('correct');
+          correct = false;
+        }
+      });
+      if (correct) {
+        document.getElementById('did-result').innerHTML = '<span style="color:var(--success);">&#10003; Correct! Fuel pellet → cladding → vessel → containment → shield building. Each barrier independently prevents radioactive release.</span>';
+        drawDiDRings(true);
+      } else {
+        document.getElementById('did-result').innerHTML = '<span style="color:var(--error);">Not quite — think about which barrier is closest to the fuel and which is the outermost structure. Red items are in the wrong position.</span>';
+      }
+    };
+
+    window.resetDiD = function() {
+      const items = target.querySelectorAll('.drag-item');
+      items.forEach(item => {
+        item.classList.remove('correct', 'incorrect');
+        source.appendChild(item);
+      });
+      document.getElementById('did-result').innerHTML = '';
+      drawDiDRings(false);
+    };
+  })();
+
+  // ───────────────────────────────────────────
+  // INTERACTIVE 3: Decay Heat Cooldown Simulator
+  // ───────────────────────────────────────────
+  (function(){
+    const cv = document.getElementById('dh-canvas');
+    const ctx = cv.getContext('2d');
+    const W = cv.width, H = cv.height;
+
+    let animId = null, t = 0, scenario = null, running = false;
+
+    // Decay heat as fraction of full power (ANS 5.1 approximation)
+    function decayHeat(seconds) {
+      // Simplified Todreas & Kazimi approximation
+      if (seconds <= 0) return 0.07;
+      return 0.066 * Math.pow(seconds, -0.2);
+    }
+
+    // Temperature model
+    function coreTemp(seconds, scene) {
+      const dh = decayHeat(seconds);
+      const fullPowerTemp = 600; // °F operating temp
+      const ambientTemp = 100;
+
+      if (scene === 'normal') {
+        // ECCS running, cooling effective
+        const cooling = 1.0;
+        return ambientTemp + (fullPowerTemp - ambientTemp) * dh / 0.07 * 0.5;
+      } else if (scene === 'loca') {
+        // ECCS kicks in after 30s, partially effective
+        const eccsDelay = 30;
+        if (seconds < eccsDelay) {
+          return fullPowerTemp + (seconds / eccsDelay) * 400; // Rising
+        } else {
+          const peak = fullPowerTemp + 400;
+          const cooled = (seconds - eccsDelay) * 0.8;
+          return Math.max(ambientTemp + 200, peak - cooled);
+        }
+      } else if (scene === 'fukushima') {
+        // No cooling for extended period
+        if (seconds < 3600) {
+          return fullPowerTemp + seconds * 0.5; // Steady rise
+        } else if (seconds < 7200) {
+          return fullPowerTemp + 1800 + (seconds - 3600) * 0.3;
+        } else {
+          return Math.min(5000, fullPowerTemp + 2340 + (seconds - 7200) * 0.15);
+        }
+      }
+      return fullPowerTemp;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#0d1a2d';
+      ctx.fillRect(0, 0, W, H);
+
+      const margin = { left: 80, right: 40, top: 40, bottom: 60 };
+      const plotW = W - margin.left - margin.right;
+      const plotH = H - margin.top - margin.bottom;
+
+      // Grid
+      ctx.strokeStyle = 'rgba(100,116,139,0.2)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 5; i++) {
+        const y = margin.top + (plotH / 5) * i;
+        ctx.beginPath();
+        ctx.moveTo(margin.left, y);
+        ctx.lineTo(W - margin.right, y);
+        ctx.stroke();
+      }
+
+      // Axes
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(margin.left, margin.top);
+      ctx.lineTo(margin.left, H - margin.bottom);
+      ctx.lineTo(W - margin.right, H - margin.bottom);
+      ctx.stroke();
+
+      // Y-axis label: Temperature
+      ctx.save();
+      ctx.translate(20, H / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.font = 'bold 12px system-ui';
+      ctx.fillStyle = '#94a3b8';
+      ctx.textAlign = 'center';
+      ctx.fillText('Core Temperature (°F)', 0, 0);
+      ctx.restore();
+
+      // X-axis label
+      ctx.font = 'bold 12px system-ui';
+      ctx.fillStyle = '#94a3b8';
+      ctx.textAlign = 'center';
+      ctx.fillText('Time After SCRAM', W / 2, H - 10);
+
+      // Temperature scale
+      const maxTemp = scenario === 'fukushima' ? 5000 : 1200;
+      ctx.font = '11px system-ui';
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#64748b';
+      for (let i = 0; i <= 5; i++) {
+        const temp = maxTemp - (maxTemp / 5) * i;
+        const y = margin.top + (plotH / 5) * i;
+        ctx.fillText(Math.round(temp) + '°F', margin.left - 8, y + 4);
+      }
+
+      // Time scale
+      const maxTime = scenario === 'fukushima' ? 14400 : 3600; // 4h or 1h
+      ctx.textAlign = 'center';
+      const timeSteps = 6;
+      for (let i = 0; i <= timeSteps; i++) {
+        const sec = (maxTime / timeSteps) * i;
+        const x = margin.left + (plotW / timeSteps) * i;
+        let label;
+        if (sec < 60) label = sec + 's';
+        else if (sec < 3600) label = Math.round(sec / 60) + 'm';
+        else label = (sec / 3600).toFixed(1) + 'h';
+        ctx.fillText(label, x, H - margin.bottom + 20);
+      }
+
+      // Critical temperature lines
+      if (scenario === 'fukushima') {
+        // Zircaloy oxidation threshold
+        const zircY = margin.top + plotH * (1 - 2200 / maxTemp);
+        ctx.strokeStyle = 'rgba(239,68,68,0.5)';
+        ctx.setLineDash([5, 5]);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(margin.left, zircY);
+        ctx.lineTo(W - margin.right, zircY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#ef4444';
+        ctx.font = '10px system-ui';
+        ctx.textAlign = 'left';
+        ctx.fillText('Zircaloy oxidation (~2200°F)', margin.left + 5, zircY - 5);
+
+        // Fuel melt
+        const meltY = margin.top + plotH * (1 - 4900 / maxTemp);
+        ctx.strokeStyle = 'rgba(239,68,68,0.3)';
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(margin.left, meltY);
+        ctx.lineTo(W - margin.right, meltY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillText('UO₂ fuel melt (~4900°F)', margin.left + 5, meltY - 5);
+      }
+
+      if (!scenario || !running) {
+        ctx.font = '16px system-ui';
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'center';
+        ctx.fillText('Choose a scenario to begin simulation', W / 2, H / 2);
+        ctx.textAlign = 'start';
+        return;
+      }
+
+      // Plot temperature curve
+      const steps = Math.min(t, 300);
+      const colors = { normal: '#22c55e', loca: '#f4a261', fukushima: '#ef4444' };
+      ctx.strokeStyle = colors[scenario];
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let i = 0; i <= steps; i++) {
+        const sec = (i / 300) * maxTime;
+        const temp = coreTemp(sec, scenario);
+        const x = margin.left + (sec / maxTime) * plotW;
+        const y = margin.top + plotH * (1 - Math.min(temp, maxTemp) / maxTemp);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Decay heat curve (secondary, dashed)
+      ctx.strokeStyle = 'rgba(0,180,216,0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      for (let i = 1; i <= steps; i++) {
+        const sec = Math.max(1, (i / 300) * maxTime);
+        const dh = decayHeat(sec);
+        const dhTemp = 600 * dh / 0.07; // Scale to temperature equiv
+        const x = margin.left + (sec / maxTime) * plotW;
+        const y = margin.top + plotH * (1 - Math.min(dhTemp, maxTemp) / maxTemp);
+        if (i === 1) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Current point
+      if (steps > 0) {
+        const curSec = (steps / 300) * maxTime;
+        const curTemp = coreTemp(curSec, scenario);
+        const cx2 = margin.left + (curSec / maxTime) * plotW;
+        const cy2 = margin.top + plotH * (1 - Math.min(curTemp, maxTemp) / maxTemp);
+        ctx.beginPath();
+        ctx.arc(cx2, cy2, 6, 0, Math.PI * 2);
+        ctx.fillStyle = colors[scenario];
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Temperature readout
+        ctx.font = 'bold 13px system-ui';
+        ctx.fillStyle = colors[scenario];
+        ctx.textAlign = 'left';
+        ctx.fillText(Math.round(curTemp) + '°F', cx2 + 12, cy2 - 8);
+      }
+
+      // Legend
+      ctx.font = '11px system-ui';
+      ctx.textAlign = 'left';
+      const lx = margin.left + 10, ly = margin.top + 15;
+      ctx.fillStyle = colors[scenario];
+      ctx.fillRect(lx, ly - 8, 20, 3);
+      ctx.fillText('Core Temperature', lx + 25, ly - 3);
+      ctx.fillStyle = 'rgba(0,180,216,0.5)';
+      ctx.fillRect(lx, ly + 10, 20, 3);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('Decay Heat (relative)', lx + 25, ly + 15);
+      ctx.textAlign = 'start';
+    }
+
+    function animate() {
+      if (!running) return;
+      t += 2;
+      if (t > 300) {
+        running = false;
+        // Final status
+        const maxTime = scenario === 'fukushima' ? 14400 : 3600;
+        const finalTemp = coreTemp(maxTime, scenario);
+        const statusEl = document.getElementById('dh-status');
+        if (scenario === 'normal') {
+          statusEl.textContent = 'Stable at ' + Math.round(finalTemp) + '°F — cooling systems nominal';
+          statusEl.style.color = '#22c55e';
+        } else if (scenario === 'loca') {
+          statusEl.textContent = 'Recovered — ECCS stabilized at ' + Math.round(finalTemp) + '°F';
+          statusEl.style.color = '#f4a261';
+        } else {
+          statusEl.textContent = 'FUEL DAMAGE — ' + Math.round(finalTemp) + '°F exceeds zircaloy oxidation threshold';
+          statusEl.style.color = '#ef4444';
+        }
+        draw();
+        return;
+      }
+      draw();
+      animId = requestAnimationFrame(animate);
+    }
+
+    window.dhStart = function(scene) {
+      if (animId) cancelAnimationFrame(animId);
+      scenario = scene;
+      t = 0;
+      running = true;
+      const labels = { normal: 'Normal Shutdown — all systems running', loca: 'LOCA — ECCS activating...', fukushima: 'Fukushima — no cooling available!' };
+      const statusEl = document.getElementById('dh-status');
+      statusEl.textContent = labels[scene];
+      statusEl.style.color = scene === 'normal' ? '#22c55e' : scene === 'loca' ? '#f4a261' : '#ef4444';
+      animate();
+    };
+
+    window.dhReset = function() {
+      if (animId) cancelAnimationFrame(animId);
+      running = false;
+      scenario = null;
+      t = 0;
+      document.getElementById('dh-status').textContent = 'Ready — choose a scenario';
+      document.getElementById('dh-status').style.color = '';
+      draw();
+    };
+
+    draw();
+  })();
+
+  // ───────────────────────────────────────────
+  // QUIZ
+  // ───────────────────────────────────────────
+  const quizAnswers = {
+    q1: { correct: 'b', explain: { correct: 'Correct! The pressurizer keeps RCS pressure at ~2,235 psi so coolant stays liquid in the reactor. (Source: USNRC Reactor Concepts Manual, Ch. 4)', wrong: 'The pressurizer maintains RCS pressure (~2,235 psi) to prevent boiling. Steam generation happens in the steam generators (a separate component). (Source: USNRC Reactor Concepts Manual, Ch. 4)' }},
+    q2: { correct: 'c', explain: { correct: 'Correct! Fuel pellet → cladding → reactor vessel → containment → shield building. (Source: IAEA INSAG-10)', wrong: 'Defense in Depth has five physical barriers: fuel pellet, fuel cladding, reactor vessel, containment, and shield building. (Source: IAEA INSAG-10)' }},
+    q3: { correct: 'a', explain: { correct: 'Correct! Control rods are held up by electromagnets. De-energize = gravity drops them in 2-4 seconds. This is a fail-safe design. (Source: Lamarsh & Baratta, Ch. 7)', wrong: 'Control rods drop by gravity — electromagnets hold them up and simply release. This fail-safe design means a power loss automatically inserts all rods. (Source: Lamarsh & Baratta, Ch. 7)' }},
+    q4: { correct: 'd', explain: { correct: 'Correct! The earthquake triggered a successful SCRAM. But the tsunami destroyed the EDGs, so cooling pumps had no power. Decay heat (7% → 1% over hours) melted the fuel without active cooling. (Source: INPO 11-005)', wrong: 'The SCRAM worked perfectly — the chain reaction stopped. But fission products generate decay heat even after shutdown. Without cooling (the tsunami destroyed backup generators), this heat melted the fuel. (Source: INPO 11-005)' }},
+    q5: { correct: 'b', explain: { correct: 'Correct! Class 1E is the NRC designation for electrical equipment and systems essential to emergency reactor shutdown, containment isolation, or core cooling. (Source: IEEE 308-2020)', wrong: 'Class 1E designates electrical equipment essential to reactor safety — things like safety bus power, ECCS pump motors, and RPS circuits. (Source: IEEE 308-2020)' }},
+    q6: { correct: 'c', explain: { correct: 'Correct! EDGs must auto-start and achieve rated voltage and frequency within 10 seconds of a loss-of-offsite-power signal. (Source: 10 CFR 50.63; Reg Guide 1.9)', wrong: 'EDGs must start within 10 seconds per NRC requirements. This ensures safety systems have power almost immediately after losing the grid. (Source: 10 CFR 50.63; Reg Guide 1.9)' }}
+  };
+
+  function gradeQuiz() {
+    let score = 0;
+    for (const [qName, data] of Object.entries(quizAnswers)) {
+      const qNum = qName.replace('q', '');
+      const selected = document.querySelector('input[name="' + qName + '"]:checked');
+      const fb = document.getElementById('fb' + qNum);
+      if (!selected) {
+        fb.className = 'quiz-feedback incorrect';
+        fb.textContent = 'Please select an answer.';
+        fb.style.display = 'block';
+        continue;
+      }
+      if (selected.value === data.correct) {
+        score++;
+        fb.className = 'quiz-feedback correct';
+        fb.textContent = data.explain.correct;
+      } else {
+        fb.className = 'quiz-feedback incorrect';
+        fb.textContent = data.explain.wrong;
+      }
+      fb.style.display = 'block';
+    }
+    const result = document.getElementById('quiz-result');
+    result.style.display = 'block';
+    if (score === 6) {
+      result.textContent = 'Perfect! 6/6 — You understand reactor internals and safety systems!';
+      result.style.color = 'var(--success)';
+    } else if (score >= 4) {
+      result.textContent = score + '/6 — Good understanding! Review the missed questions above.';
+      result.style.color = 'var(--teal)';
+    } else {
+      result.textContent = score + '/6 — Review the material above and try again.';
+      result.style.color = 'var(--gold)';
+    }
+  }
+
+  // ───────────────────────────────────────────
+  // AI TUTOR
+  // ───────────────────────────────────────────
+  const tutorKB = {
+    'reactor vessel': 'The Reactor Pressure Vessel (RPV) is a massive carbon steel cylinder (8-12" thick walls) containing the nuclear fuel, control rods, and coolant. In a PWR, it operates at ~2,235 psi and 550-600°F. The vessel is designed to ASME Section III standards and inspected per ASME Section XI. RPV integrity is so critical that the NRC monitors neutron embrittlement to ensure vessel walls maintain adequate fracture toughness over the plant\'s 40-60 year life. (Source: USNRC NUREG/BR-0024; ASME Boiler & Pressure Vessel Code)',
+    'fuel': 'Nuclear fuel assemblies contain hundreds of fuel rods, each filled with ~300 uranium dioxide (UO₂) pellets in zircaloy cladding tubes. A typical PWR has 157-193 fuel assemblies with ~100 metric tons of uranium total. The ceramic UO₂ pellets operate at center temperatures up to 3,600°F while the cladding stays below 750°F. During refueling (every 18-24 months), about 1/3 of the assemblies are replaced. Each pellet (about the size of a pencil eraser) contains as much energy as 1 ton of coal. (Source: Lamarsh & Baratta, Ch. 4; USNRC "Backgrounder on Nuclear Fuel")',
+    'control rod': 'Control rods contain neutron-absorbing materials like silver-indium-cadmium (Ag-In-Cd) alloy or boron carbide (B₄C). When inserted, they absorb neutrons and reduce the fission rate. The Control Rod Drive Mechanisms (CRDMs) use electromagnetic jacks — the rods are held UP by magnets, so loss of power drops them by gravity (fail-safe design). Full insertion takes 2-4 seconds during a SCRAM. A typical PWR has 53-69 rod cluster control assemblies. (Source: Lamarsh & Baratta, Ch. 7; USNRC Reactor Concepts Manual)',
+    'defense in depth': 'Defense in Depth is the nuclear safety philosophy of multiple independent barriers. The 5 physical barriers are: (1) Fuel pellet ceramic matrix, (2) Zircaloy fuel cladding, (3) Reactor pressure vessel, (4) Primary containment (steel-lined reinforced concrete), (5) Shield building/secondary containment. Beyond physical barriers, DiD also includes administrative controls, engineered safety features (ECCS, containment spray), and emergency planning. No single failure can breach all barriers. (Source: IAEA INSAG-10; USNRC "Backgrounder on Defense-in-Depth")',
+    'eccs': 'The Emergency Core Cooling System (ECCS) provides emergency water injection to keep the core covered after a Loss of Coolant Accident (LOCA). It includes: High-Pressure Safety Injection (HPSI) for small breaks, accumulators (passive — nitrogen-pressurized tanks) for medium breaks, and Low-Pressure Safety Injection (LPSI) for large breaks. ECCS activates automatically on low RCS pressure signals. The system is designed with full redundancy — any single train can cool the core alone. (Source: 10 CFR 50.46; USNRC Reactor Concepts Manual Ch. 6)',
+    'decay heat': 'After a reactor SCRAM, fission products continue generating heat even though the chain reaction has stopped. Immediately after shutdown, decay heat is ~7% of full power (~200 MW for a typical 3,000 MW thermal reactor). It drops to ~1.5% after 1 hour and ~0.5% after 1 day, but remains significant for days to weeks. The ANS 5.1 standard provides the accepted decay heat curves used in safety analysis. Fukushima demonstrated what happens when decay heat removal fails: without cooling, fuel temperatures eventually exceed the zircaloy oxidation threshold (~2,200°F), leading to fuel damage. (Source: ANS Standard 5.1-2014; INPO 11-005)',
+    'class 1e': 'Class 1E is the NRC designation (IEEE 308) for electrical equipment essential to reactor safety. This includes: safety bus power supplies, ECCS pump motors, reactor protection system circuits, containment isolation valve actuators, and emergency lighting. Class 1E equipment must meet stringent requirements: seismic qualification (IEEE 344), environmental qualification (IEEE 323), cable separation (IEEE 384/RG 1.75), and periodic testing per Technical Specifications. Nuclear electricians spend most of their critical maintenance time on Class 1E systems. (Source: IEEE 308-2020; 10 CFR 50.49)',
+    'edg': 'Emergency Diesel Generators (EDGs) are the backup power source if offsite power is lost (a "Loss of Offsite Power" or LOOP event). NRC requires EDGs to auto-start and achieve rated voltage/frequency within 10 seconds. Most plants have 2-4 EDGs, each capable of powering all safety loads for one train. They typically produce 4,000-7,000 kW each and carry a minimum 7-day fuel supply. EDG maintenance and testing is one of the most important jobs for nuclear electricians — you\'re maintaining the last line of electrical defense. (Source: 10 CFR 50.63; Reg Guide 1.9; IEEE 387)',
+    'scram': 'A reactor SCRAM (Safety Control Rod Axe Man, or possibly just an acronym from Enrico Fermi\'s era) is an emergency reactor shutdown. The reactor protection system (RPS) monitors dozens of parameters — if any exceed setpoints, ALL control rods automatically drop into the core within 2-4 seconds. Common SCRAM triggers include: high neutron flux, low RCS pressure, high containment pressure, low steam generator level, and seismic events. The system uses 2-out-of-4 logic to prevent spurious trips while ensuring reliability. After a SCRAM, operators must maintain cooling for decay heat removal. (Source: USNRC Reactor Concepts Manual; Lamarsh & Baratta Ch. 7)',
+    'trades': 'Nuclear trades workers maintain every physical system in the plant. Electricians handle 4.16kV safety buses, EDGs, motor control centers, Class 1E circuits, and cable routing. I&C technicians maintain the RPS, process instrumentation, control rod position indicators, and post-accident monitoring systems (PAMS). Mechanics and pipefitters work on RCS pumps, safety valves, heat exchangers, and ECCS piping. Welders perform ASME Section III safety-related welds with NDE (nondestructive examination). All trades work under 10 CFR 50.120 training requirements using the Systematic Approach to Training (SAT). (Source: NEI 06-13; 10 CFR 50.120)'
+  };
+
+  function askTutor() {
+    const q = document.getElementById('tutor-question').value.toLowerCase().trim();
+    if (!q) return;
+    const resp = document.getElementById('tutor-response');
+    let best = null, bestScore = 0;
+    for (const [topic, answer] of Object.entries(tutorKB)) {
+      const keywords = topic.split(/\s+/);
+      let score = 0;
+      keywords.forEach(kw => { if (q.includes(kw)) score += 2; });
+      // Partial matches
+      if (q.includes('vessel') || q.includes('rpv')) { if (topic === 'reactor vessel') score += 3; }
+      if (q.includes('fuel') || q.includes('pellet') || q.includes('assembly')) { if (topic === 'fuel') score += 3; }
+      if (q.includes('control') || q.includes('rod')) { if (topic === 'control rod') score += 3; }
+      if (q.includes('defense') || q.includes('depth') || q.includes('barrier')) { if (topic === 'defense in depth') score += 3; }
+      if (q.includes('eccs') || q.includes('emergency') && q.includes('cool')) { if (topic === 'eccs') score += 3; }
+      if (q.includes('decay') || q.includes('heat') || q.includes('fukushima')) { if (topic === 'decay heat') score += 3; }
+      if (q.includes('class') || q.includes('1e')) { if (topic === 'class 1e') score += 3; }
+      if (q.includes('diesel') || q.includes('edg') || q.includes('generator')) { if (topic === 'edg') score += 3; }
+      if (q.includes('scram') || q.includes('trip') || q.includes('shutdown')) { if (topic === 'scram') score += 3; }
+      if (q.includes('trade') || q.includes('electrician') || q.includes('mechanic') || q.includes('welder')) { if (topic === 'trades') score += 3; }
+      if (score > bestScore) { bestScore = score; best = answer; }
+    }
+    resp.innerHTML = best && bestScore >= 2
+      ? '<div style="margin-top:0.5rem;">' + best + '</div>'
+      : '<div style="margin-top:0.5rem; color:var(--gray);">I can help with topics like: reactor vessel, fuel assemblies, control rods, defense in depth, ECCS, decay heat, Class 1E, EDGs, SCRAM, and trades careers. Try asking about one of those!</div>';
+    document.getElementById('tutor-question').value = '';
+  }
+
+  document.getElementById('tutor-question').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') askTutor();
+  });
+
+  // ───────────────────────────────────────────
+  // PROGRESS TRACKING
+  // ───────────────────────────────────────────
+  (function(){
+    let sections = document.querySelectorAll('.content-section, .widget, .quiz');
+    let viewed = new Set();
+    function checkProgress() {
+      sections.forEach((s, i) => {
+        const rect = s.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.75) viewed.add(i);
+      });
+      const pct = Math.round((viewed.size / sections.length) * 100);
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.querySelector('.progress-label').textContent = 'Module Progress: ' + pct + '%';
+    }
+    document.querySelector('.main').addEventListener('scroll', checkProgress);
+    checkProgress();
+  })();
+  </script>
+</body>
+</html>
