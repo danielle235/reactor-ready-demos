@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Citations & Sources — Reactor Ready</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --blue: #1a3a5c;
+      --teal: #00b4d8;
+      --teal-light: #90e0ef;
+      --gold: #f4a261;
+      --white: #f8fafc;
+      --gray: #94a3b8;
+      --dark-card: #111f35;
+      --success: #22c55e;
+      --error: #ef4444;
+      --border: rgba(0,180,216,0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; background: var(--dark-card);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.1rem; color: var(--teal); }
+    .nav-logo .atom { font-size: 1.5rem; }
+    .nav-badge { font-size: 0.7rem; background: var(--teal); color: var(--navy); padding: 0.2rem 0.5rem; border-radius: 999px; font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--gray); }
+    .container { display: flex; height: calc(100vh - 65px); }
+
+    .sidebar {
+      width: 280px; background: var(--dark-card); border-right: 1px solid var(--border);
+      overflow-y: auto; padding: 1.5rem 1rem;
+    }
+    .sidebar h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); margin-bottom: 1rem; }
+    .module-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem;
+      margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s; border: 1px solid transparent; text-decoration: none; color: inherit;
+    }
+    .module-item.active { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .module-item.complete { opacity: 0.7; }
+    .module-item:not(.locked):hover { background: rgba(0,180,216,0.05); }
+    .module-number {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%; background: var(--blue);
+      font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .module-item.active .module-number { background: var(--teal); color: var(--navy); }
+    .module-item.complete .module-number { background: var(--success); color: var(--navy); }
+    .module-info { flex: 1; }
+    .module-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .module-meta { font-size: 0.75rem; color: var(--gray); }
+    .module-check { font-size: 1.2rem; color: var(--success); }
+
+    .main { flex: 1; overflow-y: auto; padding: 2rem 3rem; max-width: 960px; margin: 0 auto; }
+    .breadcrumb { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; }
+    .breadcrumb a { color: var(--teal); text-decoration: none; }
+    .module-header { margin-bottom: 2.5rem; }
+    .module-title-main { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--teal); }
+    .module-subtitle { font-size: 1.3rem; color: var(--gray); margin-bottom: 1rem; }
+    .module-meta-main { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--gray); }
+
+    .info-card {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .info-card h3 { font-size: 1rem; font-weight: 700; color: var(--teal); margin-bottom: 0.75rem; }
+    .info-card p { font-size: 0.9rem; color: var(--gray); line-height: 1.6; }
+
+    /* Search & Filter */
+    .search-section { margin-bottom: 2rem; }
+    .search-bar {
+      display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;
+    }
+    .search-input {
+      flex: 1; padding: 0.75rem 1rem; background: var(--dark-card);
+      border: 1px solid var(--border); border-radius: 8px;
+      color: var(--white); font-size: 0.95rem; outline: none;
+    }
+    .search-input::placeholder { color: var(--gray); }
+    .search-input:focus { border-color: var(--teal); }
+    .search-count { font-size: 0.85rem; color: var(--gray); white-space: nowrap; }
+
+    .filter-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 0.4rem 0.9rem; border-radius: 999px; border: 1px solid var(--border);
+      background: transparent; color: var(--gray); font-size: 0.8rem; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: var(--teal); color: var(--teal); }
+    .filter-btn.active { background: var(--teal); border-color: var(--teal); color: var(--navy); font-weight: 600; }
+
+    /* Citation Cards */
+    .citations-grid { display: flex; flex-direction: column; gap: 1rem; }
+    .citation-card {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.25rem 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .citation-card:hover { border-color: rgba(0,180,216,0.5); }
+    .citation-card.hidden { display: none; }
+
+    .citation-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem; }
+    .citation-badge {
+      padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.7rem;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+    }
+    .badge-textbook { background: rgba(244,162,97,0.2); color: var(--gold); border: 1px solid rgba(244,162,97,0.4); }
+    .badge-regulatory { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .badge-industry { background: rgba(0,180,216,0.15); color: var(--teal); border: 1px solid rgba(0,180,216,0.3); }
+    .badge-academic { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.3); }
+    .badge-web { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+    .badge-government { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
+
+    .citation-title { font-size: 1rem; font-weight: 600; color: var(--white); flex: 1; line-height: 1.4; }
+    .citation-meta { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem; }
+    .citation-text {
+      font-size: 0.85rem; color: rgba(148,163,184,0.85);
+      font-family: 'Georgia', serif; line-height: 1.6;
+      padding: 0.75rem; background: rgba(10,22,40,0.5);
+      border-radius: 6px; border-left: 3px solid var(--border);
+    }
+    .citation-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; }
+    .citation-modules { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .module-tag {
+      font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px;
+      background: rgba(0,180,216,0.1); color: var(--teal-light); border: 1px solid rgba(0,180,216,0.2);
+    }
+    .copy-btn {
+      padding: 0.3rem 0.75rem; border-radius: 6px; border: 1px solid var(--border);
+      background: transparent; color: var(--gray); font-size: 0.75rem; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .copy-btn:hover { border-color: var(--teal); color: var(--teal); }
+    .copy-btn.copied { border-color: var(--success); color: var(--success); }
+
+    .section-divider {
+      display: flex; align-items: center; gap: 1rem; margin: 2.5rem 0 1.5rem;
+    }
+    .section-divider h2 { font-size: 1.1rem; font-weight: 700; color: var(--teal); white-space: nowrap; }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .section-count { font-size: 0.8rem; color: var(--gray); white-space: nowrap; }
+
+    /* MIT OCW Banner */
+    .ocw-banner {
+      background: linear-gradient(135deg, rgba(161,0,0,0.15), rgba(0,180,216,0.1));
+      border: 1px solid rgba(161,0,0,0.3); border-radius: 12px;
+      padding: 1.5rem; margin-bottom: 2rem;
+      display: flex; gap: 1.5rem; align-items: flex-start;
+    }
+    .ocw-logo {
+      width: 52px; height: 52px; background: #a10000; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 900; color: white; text-align: center;
+      line-height: 1.2; flex-shrink: 0; letter-spacing: 0.05em;
+    }
+    .ocw-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .ocw-info p { font-size: 0.85rem; color: var(--gray); line-height: 1.6; }
+    .ocw-info a { color: var(--teal); text-decoration: none; }
+    .ocw-info a:hover { text-decoration: underline; }
+
+    /* Stats bar */
+    .stats-bar {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem; text-align: center;
+    }
+    .stat-num { font-size: 2rem; font-weight: 800; color: var(--teal); }
+    .stat-label { font-size: 0.75rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* No results */
+    .no-results {
+      text-align: center; padding: 3rem; color: var(--gray);
+      display: none;
+    }
+    .no-results .icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    /* Navigation */
+    .module-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .nav-btn {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1.25rem; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--dark-card);
+      color: var(--white); text-decoration: none; font-size: 0.9rem;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .nav-btn:hover { border-color: var(--teal); color: var(--teal); }
+    .nav-btn.primary { background: var(--teal); border-color: var(--teal); color: var(--navy); font-weight: 600; }
+    .nav-btn.primary:hover { background: var(--teal-light); }
+    .nav-direction { font-size: 0.75rem; color: var(--gray); }
+    .nav-btn.primary .nav-direction { color: rgba(10,22,40,0.7); }
+
+    /* Complete banner */
+    .complete-banner {
+      background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(0,180,216,0.1));
+      border: 1px solid rgba(34,197,94,0.3); border-radius: 12px;
+      padding: 2rem; margin-top: 3rem; text-align: center;
+    }
+    .complete-banner .icon { font-size: 3rem; margin-bottom: 1rem; }
+    .complete-banner h2 { font-size: 1.5rem; font-weight: 700; color: var(--success); margin-bottom: 0.75rem; }
+    .complete-banner p { color: var(--gray); font-size: 0.95rem; line-height: 1.6; max-width: 600px; margin: 0 auto 1.5rem; }
+    .cta-btn {
+      display: inline-block; padding: 0.85rem 2rem; background: var(--teal);
+      color: var(--navy); border-radius: 8px; font-weight: 700; font-size: 1rem;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .cta-btn:hover { background: var(--teal-light); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <span class="atom">⚛</span>
+    Reactor Ready
+    <span class="nav-badge">BETA</span>
+  </div>
+  <div class="nav-right">
+    <span>MIT OCW Demo Series</span>
+    <span>|</span>
+    <span>6 of 6</span>
+  </div>
+</nav>
+
+<div class="container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h3>Course Modules</h3>
+    <a href="module-1-nuclear-101.html" class="module-item complete">
+      <div class="module-number">1</div>
+      <div class="module-info">
+        <div class="module-title">Nuclear 101</div>
+        <div class="module-meta">30 min &bull; Fundamentals</div>
+      </div>
+      <span class="module-check">&#10003;</span>
+    </a>
+    <a href="module-2-how-plant-works.html" class="module-item complete">
+      <div class="module-number">2</div>
+      <div class="module-info">
+        <div class="module-title">How a Plant Works</div>
+        <div class="module-meta">30 min &bull; Systems</div>
+      </div>
+      <span class="module-check">&#10003;</span>
+    </a>
+    <a href="module-3-radiation-safety.html" class="module-item complete">
+      <div class="module-number">3</div>
+      <div class="module-info">
+        <div class="module-title">Radiation Safety</div>
+        <div class="module-meta">30 min &bull; Safety</div>
+      </div>
+      <span class="module-check">&#10003;</span>
+    </a>
+    <a href="module-4-inside-reactor.html" class="module-item complete">
+      <div class="module-number">4</div>
+      <div class="module-info">
+        <div class="module-title">Inside the Reactor</div>
+        <div class="module-meta">30 min &bull; Engineering</div>
+      </div>
+      <span class="module-check">&#10003;</span>
+    </a>
+    <a href="module-5-career-path.html" class="module-item complete">
+      <div class="module-number">5</div>
+      <div class="module-info">
+        <div class="module-title">Your Career Path</div>
+        <div class="module-meta">30 min &bull; Careers</div>
+      </div>
+      <span class="module-check">&#10003;</span>
+    </a>
+    <a href="module-6-citations.html" class="module-item active">
+      <div class="module-number">6</div>
+      <div class="module-info">
+        <div class="module-title">Citations &amp; Sources</div>
+        <div class="module-meta">Reference &bull; All Modules</div>
+      </div>
+    </a>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="#">Reactor Ready</a> &rsaquo; MIT OCW Demo &rsaquo; Citations &amp; Sources
+    </div>
+
+    <div class="module-header">
+      <div class="module-title-main">Citations &amp; Sources</div>
+      <div class="module-subtitle">Every claim, every fact, every figure — traced to its source.</div>
+      <div class="module-meta-main">
+        <span>&#128218; Reference Module</span>
+        <span>&#128196; 32 Sources</span>
+        <span>&#127891; 6 Categories</span>
+      </div>
+    </div>
+
+    <!-- MIT OCW Banner -->
+    <div class="ocw-banner">
+      <div class="ocw-logo">MIT<br>OCW</div>
+      <div class="ocw-info">
+        <h3>Primary Academic Source: MIT OpenCourseWare 22.01</h3>
+        <p>
+          This course is built on lecture materials from <strong>22.01: Introduction to Nuclear Engineering and Ionizing Radiation</strong>,
+          taught at MIT and freely available at
+          <a href="https://ocw.mit.edu/courses/22-01-introduction-to-nuclear-engineering-and-ionizing-radiation-fall-2016/" target="_blank">ocw.mit.edu</a>.
+          All MIT OCW materials are licensed under Creative Commons Attribution Non-Commercial Share-Alike 4.0.
+          This content adapts, contextualizes, and supplements — not replaces — the original MIT coursework.
+        </p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-num">32</div>
+        <div class="stat-label">Total Sources</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Categories</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Modules Covered</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Open Access</div>
+      </div>
+    </div>
+
+    <!-- About this page -->
+    <div class="info-card">
+      <h3>About This Reference Page</h3>
+      <p>
+        Every factual claim in this course — salary figures, regulatory requirements, physics equations,
+        workforce projections — comes from a verifiable public source. This page lists all of them.
+        Use the search bar to find sources by keyword, or filter by category to browse by type.
+        Click "Copy Citation" on any card to copy a formatted APA-style citation to your clipboard.
+      </p>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="search-section">
+      <div class="search-bar">
+        <input class="search-input" type="text" id="searchInput" placeholder="Search sources by title, author, or keyword..." oninput="filterCitations()" />
+        <span class="search-count" id="searchCount">32 sources</span>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="setFilter('all', this)">All (32)</button>
+        <button class="filter-btn" onclick="setFilter('textbook', this)">Textbooks (5)</button>
+        <button class="filter-btn" onclick="setFilter('regulatory', this)">Regulatory (7)</button>
+        <button class="filter-btn" onclick="setFilter('industry', this)">Industry (8)</button>
+        <button class="filter-btn" onclick="setFilter('academic', this)">Academic (5)</button>
+        <button class="filter-btn" onclick="setFilter('government', this)">Government (4)</button>
+        <button class="filter-btn" onclick="setFilter('web', this)">Web Resources (3)</button>
+      </div>
+    </div>
+
+    <div class="no-results" id="noResults">
+      <div class="icon">&#128269;</div>
+      <p>No sources match your search. Try different keywords.</p>
+    </div>
+
+    <!-- Citations List -->
+    <div class="citations-grid" id="citationsGrid">
+
+      <!-- TEXTBOOKS -->
+      <div class="section-divider" data-category="textbook">
+        <h2>Textbooks</h2>
+        <div class="divider-line"></div>
+        <div class="section-count">5 sources</div>
+      </div>
+
+      <div class="citation-card" data-category="textbook" data-keywords="lamarsh baratta nuclear engineering introduction">
+        <div class="citation-header">
+          <span class="citation-badge badge-textbook">Textbook</span>
+          <div class="citation-title">Introduction to Nuclear Engineering, 3rd Edition</div>
+        </div>
+        <div class="citation-meta">Lamarsh, J. R., &amp; Baratta, A. J. &bull; Prentice Hall, 2001</div>
+        <div class="citation-text">
+          Lamarsh, J. R., &amp; Baratta, A. J. (2001). <em>Introduction to nuclear engineering</em> (3rd ed.). Prentice Hall.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 1</span>
+            <span class="module-tag">Module 2</span>
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Lamarsh, J. R., & Baratta, A. J. (2001). Introduction to nuclear engineering (3rd ed.). Prentice Hall.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="textbook" data-keywords="knief nuclear engineering analysis">
+        <div class="citation-header">
+          <span class="citation-badge badge-textbook">Textbook</span>
+          <div class="citation-title">Nuclear Engineering: Theory and Technology of Commercial Nuclear Power</div>
+        </div>
+        <div class="citation-meta">Knief, R. A. &bull; American Nuclear Society, 2008</div>
+        <div class="citation-text">
+          Knief, R. A. (2008). <em>Nuclear engineering: Theory and technology of commercial nuclear power</em> (2nd ed.). American Nuclear Society.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 2</span>
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Knief, R. A. (2008). Nuclear engineering: Theory and technology of commercial nuclear power (2nd ed.). American Nuclear Society.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="textbook" data-keywords="turner radiation protection atoms interactions">
+        <div class="citation-header">
+          <span class="citation-badge badge-textbook">Textbook</span>
+          <div class="citation-title">Atoms, Radiation, and Radiation Protection, 3rd Edition</div>
+        </div>
+        <div class="citation-meta">Turner, J. E. &bull; Wiley-VCH, 2007</div>
+        <div class="citation-text">
+          Turner, J. E. (2007). <em>Atoms, radiation, and radiation protection</em> (3rd ed.). Wiley-VCH.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 3</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Turner, J. E. (2007). Atoms, radiation, and radiation protection (3rd ed.). Wiley-VCH.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="textbook" data-keywords="glasstone sesonske nuclear reactor engineering design">
+        <div class="citation-header">
+          <span class="citation-badge badge-textbook">Textbook</span>
+          <div class="citation-title">Nuclear Reactor Engineering: Reactor Systems Engineering, 4th Edition</div>
+        </div>
+        <div class="citation-meta">Glasstone, S., &amp; Sesonske, A. &bull; Chapman &amp; Hall, 1994</div>
+        <div class="citation-text">
+          Glasstone, S., &amp; Sesonske, A. (1994). <em>Nuclear reactor engineering: Reactor systems engineering</em> (4th ed., Vol. 2). Chapman &amp; Hall.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Glasstone, S., & Sesonske, A. (1994). Nuclear reactor engineering: Reactor systems engineering (4th ed., Vol. 2). Chapman & Hall.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="textbook" data-keywords="shultis faw radiation shielding health physics">
+        <div class="citation-header">
+          <span class="citation-badge badge-textbook">Textbook</span>
+          <div class="citation-title">Radiation Shielding</div>
+        </div>
+        <div class="citation-meta">Shultis, J. K., &amp; Faw, R. E. &bull; American Nuclear Society, 2000</div>
+        <div class="citation-text">
+          Shultis, J. K., &amp; Faw, R. E. (2000). <em>Radiation shielding</em>. American Nuclear Society.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 3</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Shultis, J. K., & Faw, R. E. (2000). Radiation shielding. American Nuclear Society.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <!-- REGULATORY -->
+      <div class="section-divider" data-category="regulatory">
+        <h2>Regulatory Documents</h2>
+        <div class="divider-line"></div>
+        <div class="section-count">7 sources</div>
+      </div>
+
+      <div class="citation-card" data-category="regulatory" data-keywords="10 CFR 20 radiation protection standards dose limits">
+        <div class="citation-header">
+          <span class="citation-badge badge-regulatory">Regulatory</span>
+          <div class="citation-title">10 CFR Part 20 — Standards for Protection Against Radiation</div>
+        </div>
+        <div class="citation-meta">U.S. Nuclear Regulatory Commission &bull; Code of Federal Regulations</div>
+        <div class="citation-text">
+          U.S. Nuclear Regulatory Commission. (2024). <em>10 CFR Part 20: Standards for protection against radiation</em>. Code of Federal Regulations. https://www.nrc.gov/reading-rm/doc-collections/cfr/part020/
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 3</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Nuclear Regulatory Commission. (2024). 10 CFR Part 20: Standards for protection against radiation. Code of Federal Regulations. https://www.nrc.gov/reading-rm/doc-collections/cfr/part020/')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="regulatory" data-keywords="10 CFR 50 domestic licensing production utilization facilities">
+        <div class="citation-header">
+          <span class="citation-badge badge-regulatory">Regulatory</span>
+          <div class="citation-title">10 CFR Part 50 — Domestic Licensing of Production and Utilization Facilities</div>
+        </div>
+        <div class="citation-meta">U.S. Nuclear Regulatory Commission &bull; Code of Federal Regulations</div>
+        <div class="citation-text">
+          U.S. Nuclear Regulatory Commission. (2024). <em>10 CFR Part 50: Domestic licensing of production and utilization facilities</em>. Code of Federal Regulations. https://www.nrc.gov/reading-rm/doc-collections/cfr/part050/
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 2</span>
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Nuclear Regulatory Commission. (2024). 10 CFR Part 50: Domestic licensing of production and utilization facilities. Code of Federal Regulations. https://www.nrc.gov/reading-rm/doc-collections/cfr/part050/')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="regulatory" data-keywords="10 CFR 73.56 access authorization background investigation fitness for duty">
+        <div class="citation-header">
+          <span class="citation-badge badge-regulatory">Regulatory</span>
+          <div class="citation-title">10 CFR 73.56 — Personnel Access Authorization Requirements</div>
+        </div>
+        <div class="citation-meta">U.S. Nuclear Regulatory Commission &bull; Code of Federal Regulations</div>
+        <div class="citation-text">
+          U.S. Nuclear Regulatory Commission. (2024). <em>10 CFR 73.56: Personnel access authorization requirements for nuclear power plants</em>. Code of Federal Regulations. https://www.nrc.gov/reading-rm/doc-collections/cfr/part073/part073-0056.html
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 5</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Nuclear Regulatory Commission. (2024). 10 CFR 73.56: Personnel access authorization requirements for nuclear power plants. Code of Federal Regulations. https://www.nrc.gov/reading-rm/doc-collections/cfr/part073/part073-0056.html')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="regulatory" data-keywords="NUREG defense in depth safety philosophy reactor">
+        <div class="citation-header">
+          <span class="citation-badge badge-regulatory">Regulatory</span>
+          <div class="citation-title">NUREG-0800: Standard Review Plan — Defense in Depth</div>
+        </div>
+        <div class="citation-meta">U.S. Nuclear Regulatory Commission &bull; NUREG-0800, Chapter 19</div>
+        <div class="citation-text">
+          U.S. Nuclear Regulatory Commission. (2007). <em>NUREG-0800: Standard review plan for the review of safety analysis reports for nuclear power plants: LWR edition</em> (Rev. 3, Chapter 19). NRC.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Nuclear Regulatory Commission. (2007). NUREG-0800: Standard review plan for the review of safety analysis reports for nuclear power plants: LWR edition (Rev. 3, Chapter 19). NRC.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="regulatory" data-keywords="NRC regulatory guide 8.29 occupational dose radiation worker">
+        <div class="citation-header">
+          <span class="citation-badge badge-regulatory">Regulatory</span>
+          <div class="citation-title">Regulatory Guide 8.29 — Instruction Concerning Risks from Occupational Radiation Exposure</div>
+        </div>
+        <div class="citation-meta">U.S. Nuclear Regulatory Commission &bull; Regulatory Guide 8.29, Rev. 2</div>
+        <div class="citation-text">
+          U.S. Nuclear Regulatory Commission. (2013). <em>Regulatory guide 8.29: Instruction concerning risks from occupational radiation exposure</em> (Rev. 2). NRC.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 3</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Nuclear Regulatory Commission. (2013). Regulatory guide 8.29: Instruction concerning risks from occupational radiation exposure (Rev. 2). NRC.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="regulatory" data-keywords="ALARA as low as reasonably achievable radiation dose optimization">
+        <div class="citation-header">
+          <span class="citation-badge badge-regulatory">Regulatory</span>
+          <div class="citation-title">Regulatory Guide 8.8 — Information Relevant to Ensuring That Occupational Radiation Exposures at Nuclear Power Stations Will Be ALARA</div>
+        </div>
+        <div class="citation-meta">U.S. Nuclear Regulatory Commission &bull; Regulatory Guide 8.8, Rev. 3</div>
+        <div class="citation-text">
+          U.S. Nuclear Regulatory Commission. (1978). <em>Regulatory guide 8.8: Information relevant to ensuring that occupational radiation exposures at nuclear power stations will be as low as is reasonably achievable</em> (Rev. 3). NRC.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 3</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Nuclear Regulatory Commission. (1978). Regulatory guide 8.8: Information relevant to ensuring that occupational radiation exposures at nuclear power stations will be as low as is reasonably achievable (Rev. 3). NRC.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="regulatory" data-keywords="ICRP 103 radiation protection recommendations dose limits">
+        <div class="citation-header">
+          <span class="citation-badge badge-regulatory">Regulatory</span>
+          <div class="citation-title">ICRP Publication 103 — The 2007 Recommendations of the International Commission on Radiological Protection</div>
+        </div>
+        <div class="citation-meta">International Commission on Radiological Protection &bull; Annals of the ICRP, 2007</div>
+        <div class="citation-text">
+          International Commission on Radiological Protection. (2007). <em>The 2007 recommendations of the International Commission on Radiological Protection</em> (ICRP Publication 103). Annals of the ICRP, 37(2–4).
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 3</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'International Commission on Radiological Protection. (2007). The 2007 recommendations of the International Commission on Radiological Protection (ICRP Publication 103). Annals of the ICRP, 37(2–4).')">Copy Citation</button>
+        </div>
+      </div>
+
+      <!-- INDUSTRY REPORTS -->
+      <div class="section-divider" data-category="industry">
+        <h2>Industry Reports</h2>
+        <div class="divider-line"></div>
+        <div class="section-count">8 sources</div>
+      </div>
+
+      <div class="citation-card" data-category="industry" data-keywords="NEI nuclear energy institute workforce report jobs shortage">
+        <div class="citation-header">
+          <span class="citation-badge badge-industry">Industry</span>
+          <div class="citation-title">2024 Nuclear Energy Workforce Report</div>
+        </div>
+        <div class="citation-meta">Nuclear Energy Institute (NEI) &bull; 2024</div>
+        <div class="citation-text">
+          Nuclear Energy Institute. (2024). <em>2024 nuclear energy workforce report</em>. NEI. https://www.nei.org/resources/reports-briefs/nuclear-energy-workforce-report
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 5</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Nuclear Energy Institute. (2024). 2024 nuclear energy workforce report. NEI. https://www.nei.org/resources/reports-briefs/nuclear-energy-workforce-report')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="industry" data-keywords="NEI state nuclear power plants electricity generation capacity factor">
+        <div class="citation-header">
+          <span class="citation-badge badge-industry">Industry</span>
+          <div class="citation-title">Nuclear by the Numbers</div>
+        </div>
+        <div class="citation-meta">Nuclear Energy Institute (NEI) &bull; 2024</div>
+        <div class="citation-text">
+          Nuclear Energy Institute. (2024). <em>Nuclear by the numbers</em>. NEI. https://www.nei.org/resources/statistics
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 1</span>
+            <span class="module-tag">Module 2</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Nuclear Energy Institute. (2024). Nuclear by the numbers. NEI. https://www.nei.org/resources/statistics')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="industry" data-keywords="NATL NANTeL national academy nuclear training passport training record">
+        <div class="citation-header">
+          <span class="citation-badge badge-industry">Industry</span>
+          <div class="citation-title">National Academy for Nuclear Training (NANTeL) — About &amp; Training Programs</div>
+        </div>
+        <div class="citation-meta">Institute of Nuclear Power Operations (INPO) / NANTeL &bull; 2024</div>
+        <div class="citation-text">
+          Institute of Nuclear Power Operations. (2024). <em>NANTeL: National Academy for Nuclear Training e-Learning</em>. INPO. https://www.nantel.org/
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 5</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Institute of Nuclear Power Operations. (2024). NANTeL: National Academy for Nuclear Training e-Learning. INPO. https://www.nantel.org/')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="industry" data-keywords="INPO systematic approach training SAT performance based nuclear">
+        <div class="citation-header">
+          <span class="citation-badge badge-industry">Industry</span>
+          <div class="citation-title">Guidelines for the Systematic Approach to Training</div>
+        </div>
+        <div class="citation-meta">Institute of Nuclear Power Operations (INPO) &bull; INPO 92-004</div>
+        <div class="citation-text">
+          Institute of Nuclear Power Operations. (1992). <em>Guidelines for the systematic approach to training</em> (INPO 92-004). INPO.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 5</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Institute of Nuclear Power Operations. (1992). Guidelines for the systematic approach to training (INPO 92-004). INPO.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="industry" data-keywords="World Nuclear Association reactor information nuclear power plants operating">
+        <div class="citation-header">
+          <span class="citation-badge badge-industry">Industry</span>
+          <div class="citation-title">World Nuclear Association — Nuclear Power Reactors</div>
+        </div>
+        <div class="citation-meta">World Nuclear Association &bull; 2024</div>
+        <div class="citation-text">
+          World Nuclear Association. (2024). <em>Nuclear power reactors</em>. WNA. https://world-nuclear.org/information-library/nuclear-fuel-cycle/nuclear-power-reactors/nuclear-power-reactors
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 2</span>
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'World Nuclear Association. (2024). Nuclear power reactors. WNA. https://world-nuclear.org/information-library/nuclear-fuel-cycle/nuclear-power-reactors/nuclear-power-reactors')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="industry" data-keywords="EPRI electric power research institute nuclear safety plant operations">
+        <div class="citation-header">
+          <span class="citation-badge badge-industry">Industry</span>
+          <div class="citation-title">Nuclear Power Plant Safety Systems Overview</div>
+        </div>
+        <div class="citation-meta">Electric Power Research Institute (EPRI) &bull; Technical Report, 2020</div>
+        <div class="citation-text">
+          Electric Power Research Institute. (2020). <em>Nuclear power plant safety systems overview</em> (Technical Report). EPRI.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Electric Power Research Institute. (2020). Nuclear power plant safety systems overview (Technical Report). EPRI.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="industry" data-keywords="nuclear talent scout NTS reactor ready workforce hiring trades electrician">
+        <div class="citation-header">
+          <span class="citation-badge badge-industry">Industry</span>
+          <div class="citation-title">Nuclear Talent Scout — Candidate Resources &amp; Placement Data</div>
+        </div>
+        <div class="citation-meta">Nuclear Talent Scout (NTS) / Naked Nuclear &bull; 2024</div>
+        <div class="citation-text">
+          Nuclear Talent Scout. (2024). <em>Candidate resources: Transitioning skilled trades into nuclear careers</em>. https://www.nucleartalentscout.com/
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 5</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Nuclear Talent Scout. (2024). Candidate resources: Transitioning skilled trades into nuclear careers. https://www.nucleartalentscout.com/')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="industry" data-keywords="Texas power grid nuclear fleet Comanche Peak STP South Texas Project electricity">
+        <div class="citation-header">
+          <span class="citation-badge badge-industry">Industry</span>
+          <div class="citation-title">Texas Nuclear Fleet — Plant Operations &amp; Employment Data</div>
+        </div>
+        <div class="citation-meta">Nuclear Energy Institute (NEI) / Texas utility filings &bull; 2024</div>
+        <div class="citation-text">
+          Nuclear Energy Institute. (2024). <em>Nuclear plant locations and employment: Texas</em>. NEI. https://www.nei.org/resources/statistics/state-nuclear-profiles
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 5</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Nuclear Energy Institute. (2024). Nuclear plant locations and employment: Texas. NEI. https://www.nei.org/resources/statistics/state-nuclear-profiles')">Copy Citation</button>
+        </div>
+      </div>
+
+      <!-- ACADEMIC -->
+      <div class="section-divider" data-category="academic">
+        <h2>Academic &amp; MIT OCW</h2>
+        <div class="divider-line"></div>
+        <div class="section-count">5 sources</div>
+      </div>
+
+      <div class="citation-card" data-category="academic" data-keywords="MIT OCW 22.01 introduction nuclear engineering ionizing radiation course lecture">
+        <div class="citation-header">
+          <span class="citation-badge badge-academic">Academic</span>
+          <div class="citation-title">MIT OCW 22.01: Introduction to Nuclear Engineering and Ionizing Radiation</div>
+        </div>
+        <div class="citation-meta">Forget, B. &bull; MIT OpenCourseWare, Fall 2016</div>
+        <div class="citation-text">
+          Forget, B. (2016). <em>22.01: Introduction to nuclear engineering and ionizing radiation</em>. MIT OpenCourseWare. https://ocw.mit.edu/courses/22-01-introduction-to-nuclear-engineering-and-ionizing-radiation-fall-2016/
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 1</span>
+            <span class="module-tag">Module 2</span>
+            <span class="module-tag">Module 3</span>
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Forget, B. (2016). 22.01: Introduction to nuclear engineering and ionizing radiation. MIT OpenCourseWare. https://ocw.mit.edu/courses/22-01-introduction-to-nuclear-engineering-and-ionizing-radiation-fall-2016/')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="academic" data-keywords="MIT nuclear reactor lab research educational fission chain reaction">
+        <div class="citation-header">
+          <span class="citation-badge badge-academic">Academic</span>
+          <div class="citation-title">MIT Nuclear Reactor Laboratory — Educational Resources</div>
+        </div>
+        <div class="citation-meta">Massachusetts Institute of Technology &bull; 2024</div>
+        <div class="citation-text">
+          Massachusetts Institute of Technology Nuclear Reactor Laboratory. (2024). <em>Educational resources: How nuclear reactors work</em>. MIT-NRL. https://web.mit.edu/nrl/
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 1</span>
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Massachusetts Institute of Technology Nuclear Reactor Laboratory. (2024). Educational resources: How nuclear reactors work. MIT-NRL. https://web.mit.edu/nrl/')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="academic" data-keywords="Fukushima accident decay heat loss of coolant analysis lessons learned">
+        <div class="citation-header">
+          <span class="citation-badge badge-academic">Academic</span>
+          <div class="citation-title">The Fukushima Daiichi Accident: Description and Context</div>
+        </div>
+        <div class="citation-meta">International Atomic Energy Agency (IAEA) &bull; IAEA Safety Reports Series No. 92, 2015</div>
+        <div class="citation-text">
+          International Atomic Energy Agency. (2015). <em>The Fukushima Daiichi accident: Description and context of the accident</em> (IAEA Safety Reports Series No. 92, Vol. 1). IAEA.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'International Atomic Energy Agency. (2015). The Fukushima Daiichi accident: Description and context of the accident (IAEA Safety Reports Series No. 92, Vol. 1). IAEA.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="academic" data-keywords="Three Mile Island TMI accident history lessons NRC report">
+        <div class="citation-header">
+          <span class="citation-badge badge-academic">Academic</span>
+          <div class="citation-title">Three Mile Island: A Report to the Commissioners and to the Public (Rogovin Report)</div>
+        </div>
+        <div class="citation-meta">Rogovin, M., &amp; Frampton, G. T. &bull; NRC Special Inquiry Group, 1980</div>
+        <div class="citation-text">
+          Rogovin, M., &amp; Frampton, G. T. (1980). <em>Three Mile Island: A report to the commissioners and to the public</em>. NRC Special Inquiry Group.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Rogovin, M., & Frampton, G. T. (1980). Three Mile Island: A report to the commissioners and to the public. NRC Special Inquiry Group.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="academic" data-keywords="linear no threshold LNT radiation dose response cancer risk epidemiology">
+        <div class="citation-header">
+          <span class="citation-badge badge-academic">Academic</span>
+          <div class="citation-title">BEIR VII: Health Risks from Exposure to Low Levels of Ionizing Radiation</div>
+        </div>
+        <div class="citation-meta">National Academies of Sciences &bull; The National Academies Press, 2006</div>
+        <div class="citation-text">
+          National Academies of Sciences, Engineering, and Medicine. (2006). <em>Health risks from exposure to low levels of ionizing radiation: BEIR VII Phase 2</em>. The National Academies Press. https://doi.org/10.17226/11340
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 3</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'National Academies of Sciences, Engineering, and Medicine. (2006). Health risks from exposure to low levels of ionizing radiation: BEIR VII Phase 2. The National Academies Press. https://doi.org/10.17226/11340')">Copy Citation</button>
+        </div>
+      </div>
+
+      <!-- GOVERNMENT -->
+      <div class="section-divider" data-category="government">
+        <h2>Government Sources</h2>
+        <div class="divider-line"></div>
+        <div class="section-count">4 sources</div>
+      </div>
+
+      <div class="citation-card" data-category="government" data-keywords="BLS bureau labor statistics nuclear technician salary wage occupation outlook">
+        <div class="citation-header">
+          <span class="citation-badge badge-government">Government</span>
+          <div class="citation-title">Occupational Outlook Handbook — Nuclear Technicians</div>
+        </div>
+        <div class="citation-meta">U.S. Bureau of Labor Statistics &bull; 2024</div>
+        <div class="citation-text">
+          U.S. Bureau of Labor Statistics. (2024). <em>Occupational outlook handbook: Nuclear technicians</em>. BLS. https://www.bls.gov/ooh/life-physical-and-social-science/nuclear-technicians.htm
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 5</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Bureau of Labor Statistics. (2024). Occupational outlook handbook: Nuclear technicians. BLS. https://www.bls.gov/ooh/life-physical-and-social-science/nuclear-technicians.htm')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="government" data-keywords="DOE department energy used nuclear fuel spent inventory storage sites">
+        <div class="citation-header">
+          <span class="citation-badge badge-government">Government</span>
+          <div class="citation-title">Spent Nuclear Fuel Storage — Consolidated Interim Storage</div>
+        </div>
+        <div class="citation-meta">U.S. Department of Energy &bull; Office of Nuclear Energy, 2024</div>
+        <div class="citation-text">
+          U.S. Department of Energy, Office of Nuclear Energy. (2024). <em>Spent nuclear fuel storage</em>. DOE. https://www.energy.gov/ne/nuclear-energy-science-and-technology/spent-nuclear-fuel-storage
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 2</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Department of Energy, Office of Nuclear Energy. (2024). Spent nuclear fuel storage. DOE. https://www.energy.gov/ne/nuclear-energy-science-and-technology/spent-nuclear-fuel-storage')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="government" data-keywords="NRC nuclear reactor concepts manual training operators technical">
+        <div class="citation-header">
+          <span class="citation-badge badge-government">Government</span>
+          <div class="citation-title">Nuclear Reactor Concepts Workshop Manual</div>
+        </div>
+        <div class="citation-meta">U.S. Nuclear Regulatory Commission &bull; NUREG/BR-0058, Rev. 4</div>
+        <div class="citation-text">
+          U.S. Nuclear Regulatory Commission. (2016). <em>Nuclear reactor concepts workshop manual</em> (NUREG/BR-0058, Rev. 4). NRC.
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 1</span>
+            <span class="module-tag">Module 2</span>
+            <span class="module-tag">Module 4</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Nuclear Regulatory Commission. (2016). Nuclear reactor concepts workshop manual (NUREG/BR-0058, Rev. 4). NRC.')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="government" data-keywords="EIA energy information administration electricity generation nuclear share United States">
+        <div class="citation-header">
+          <span class="citation-badge badge-government">Government</span>
+          <div class="citation-title">Electric Power Monthly — Nuclear Generation Statistics</div>
+        </div>
+        <div class="citation-meta">U.S. Energy Information Administration (EIA) &bull; 2024</div>
+        <div class="citation-text">
+          U.S. Energy Information Administration. (2024). <em>Electric power monthly: Nuclear generation statistics</em>. EIA. https://www.eia.gov/electricity/monthly/
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 1</span>
+            <span class="module-tag">Module 2</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Energy Information Administration. (2024). Electric power monthly: Nuclear generation statistics. EIA. https://www.eia.gov/electricity/monthly/')">Copy Citation</button>
+        </div>
+      </div>
+
+      <!-- WEB RESOURCES -->
+      <div class="section-divider" data-category="web">
+        <h2>Web Resources</h2>
+        <div class="divider-line"></div>
+        <div class="section-count">3 sources</div>
+      </div>
+
+      <div class="citation-card" data-category="web" data-keywords="NRC nuclear regulatory commission website information reactor safety">
+        <div class="citation-header">
+          <span class="citation-badge badge-web">Web</span>
+          <div class="citation-title">NRC.gov — Nuclear Reactor Information for the Public</div>
+        </div>
+        <div class="citation-meta">U.S. Nuclear Regulatory Commission &bull; 2024</div>
+        <div class="citation-text">
+          U.S. Nuclear Regulatory Commission. (2024). <em>Nuclear reactors: Navigating NRC.gov</em>. NRC. https://www.nrc.gov/reactors.html
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 1</span>
+            <span class="module-tag">Module 2</span>
+            <span class="module-tag">Module 3</span>
+            <span class="module-tag">Module 4</span>
+            <span class="module-tag">Module 5</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'U.S. Nuclear Regulatory Commission. (2024). Nuclear reactors: Navigating NRC.gov. NRC. https://www.nrc.gov/reactors.html')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="web" data-keywords="Naked Nuclear podcast nuclear workforce education episode interview">
+        <div class="citation-header">
+          <span class="citation-badge badge-web">Web</span>
+          <div class="citation-title">Naked Nuclear Podcast — Episodes &amp; Expert Interviews</div>
+        </div>
+        <div class="citation-meta">Allen, D. &bull; Naked Nuclear, 2022–2024</div>
+        <div class="citation-text">
+          Allen, D. (Host). (2022–2024). <em>Naked Nuclear</em> [Audio podcast]. https://www.nakednuclear.com/
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 1</span>
+            <span class="module-tag">Module 5</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Allen, D. (Host). (2022–2024). Naked Nuclear [Audio podcast]. https://www.nakednuclear.com/')">Copy Citation</button>
+        </div>
+      </div>
+
+      <div class="citation-card" data-category="web" data-keywords="health physics society fact sheets radiation doses biological effects">
+        <div class="citation-header">
+          <span class="citation-badge badge-web">Web</span>
+          <div class="citation-title">Health Physics Society — Radiation Fact Sheets</div>
+        </div>
+        <div class="citation-meta">Health Physics Society &bull; 2024</div>
+        <div class="citation-text">
+          Health Physics Society. (2024). <em>Radiation fact sheets</em>. HPS. https://hps.org/publicinformation/radfactsheets/
+        </div>
+        <div class="citation-footer">
+          <div class="citation-modules">
+            <span class="module-tag">Module 3</span>
+          </div>
+          <button class="copy-btn" onclick="copyCitation(this, 'Health Physics Society. (2024). Radiation fact sheets. HPS. https://hps.org/publicinformation/radfactsheets/')">Copy Citation</button>
+        </div>
+      </div>
+
+    </div>
+    <!-- End citations grid -->
+
+    <!-- Course Complete Banner -->
+    <div class="complete-banner">
+      <div class="icon">&#127941;</div>
+      <h2>You've Completed the Course</h2>
+      <p>
+        You've made it through all six modules — from nuclear fundamentals to reactor engineering to your own career path.
+        The nuclear workforce needs skilled trades workers who understand this technology.
+        That's you, now. Ready to take the next step?
+      </p>
+      <a class="cta-btn" href="https://forms.clickup.com/20124732/f/k651w-5551/4VA92A2B0QA0RJEHJB" target="_blank">
+        Apply to Nuclear Talent Scout &rarr;
+      </a>
+    </div>
+
+    <!-- Module Navigation -->
+    <div class="module-nav">
+      <a href="module-5-career-path.html" class="nav-btn">
+        <span>&larr;</span>
+        <div>
+          <div class="nav-direction">Previous</div>
+          <div>Module 5: Your Career Path</div>
+        </div>
+      </a>
+      <span style="color: var(--gray); font-size: 0.85rem;">End of Course</span>
+    </div>
+  </main>
+</div>
+
+<script>
+  let activeFilter = 'all';
+
+  function setFilter(category, btn) {
+    activeFilter = category;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterCitations();
+  }
+
+  function filterCitations() {
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.citation-card');
+    const dividers = document.querySelectorAll('.section-divider');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const cat = card.dataset.category;
+      const keywords = (card.dataset.keywords || '') + ' ' + card.innerText.toLowerCase();
+      const catMatch = activeFilter === 'all' || cat === activeFilter;
+      const textMatch = !query || keywords.includes(query);
+
+      if (catMatch && textMatch) {
+        card.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    // Show/hide section dividers based on whether their category has visible cards
+    dividers.forEach(div => {
+      const cat = div.dataset.category;
+      if (activeFilter !== 'all' && cat !== activeFilter) {
+        div.style.display = 'none';
+        return;
+      }
+      const hasVisible = [...cards].some(c => c.dataset.category === cat && !c.classList.contains('hidden'));
+      div.style.display = hasVisible ? 'flex' : 'none';
+    });
+
+    document.getElementById('searchCount').textContent = visibleCount + ' source' + (visibleCount !== 1 ? 's' : '');
+    document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  function copyCitation(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.classList.remove('copied');
+      }, 2000);
+    }).catch(() => {
+      // Fallback: select text
+      const el = btn.closest('.citation-card').querySelector('.citation-text');
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    });
+  }
+</script>
+
+</body>
+</html>
