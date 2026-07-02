@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 6: Regulatory Framework — Reactor Ready</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --blue: #1a3a5c;
+      --teal: #00b4d8;
+      --teal-light: #90e0ef;
+      --gold: #f4a261;
+      --white: #f8fafc;
+      --gray: #94a3b8;
+      --dark-card: #111f35;
+      --success: #22c55e;
+      --error: #ef4444;
+      --border: rgba(0,180,216,0.2);
+      --alpha: #ef4444;
+      --beta: #f59e0b;
+      --gamma: #a78bfa;
+      --neutron: #60a5fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; background: var(--dark-card);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.1rem; color: var(--teal); }
+    .nav-logo .atom { font-size: 1.5rem; }
+    .nav-badge { font-size: 0.7rem; background: var(--teal); color: var(--navy); padding: 0.2rem 0.5rem; border-radius: 999px; font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--gray); }
+    .container { display: flex; height: calc(100vh - 65px); }
+
+    .sidebar {
+      width: 280px; background: var(--dark-card); border-right: 1px solid var(--border);
+      overflow-y: auto; padding: 1.5rem 1rem;
+    }
+    .sidebar h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); margin-bottom: 1rem; }
+    .module-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem;
+      margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s; border: 1px solid transparent; text-decoration: none; color: inherit;
+    }
+    .module-item.active { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .module-item.complete { opacity: 0.7; }
+    .module-item.locked { opacity: 0.5; cursor: not-allowed; }
+    .module-item:not(.locked):hover { background: rgba(0,180,216,0.05); }
+    .module-number {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%; background: var(--blue);
+      font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .module-item.active .module-number { background: var(--teal); color: var(--navy); }
+    .module-item.complete .module-number { background: var(--success); color: var(--navy); }
+    .module-info { flex: 1; }
+    .module-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .module-meta { font-size: 0.75rem; color: var(--gray); }
+    .module-lock { font-size: 1.2rem; color: var(--gray); }
+
+    .main { flex: 1; overflow-y: auto; padding: 2rem 3rem; max-width: 900px; margin: 0 auto; }
+    .breadcrumb { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; }
+    .breadcrumb a { color: var(--teal); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .progress-section { margin-bottom: 2rem; }
+    .progress-label { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem; }
+    .progress-bar { height: 8px; background: var(--blue); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+    .module-header { margin-bottom: 2.5rem; }
+    .module-title-main { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--teal); }
+    .module-subtitle { font-size: 1.3rem; color: var(--gray); margin-bottom: 1rem; }
+    .module-meta-main { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--gray); }
+
+    .objectives {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .objectives h3 { font-size: 1.1rem; color: var(--teal); margin-bottom: 1rem; }
+    .objectives ol { margin-left: 1.5rem; }
+    .objectives li { margin-bottom: 0.75rem; line-height: 1.6; }
+
+    .content-card {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .card-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1rem; }
+    .card-text { line-height: 1.7; margin-bottom: 1rem; }
+    .callout {
+      background: rgba(0,180,216,0.1); border-left: 3px solid var(--teal);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .callout strong { color: var(--teal); }
+    .analogy-box {
+      background: rgba(244,162,97,0.1); border-left: 3px solid var(--gold);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .analogy-box strong { color: var(--gold); }
+    .warning-box {
+      background: rgba(239,68,68,0.1); border-left: 3px solid var(--error);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .warning-box strong { color: var(--error); }
+
+    /* CFR TABLE */
+    .cfr-table {
+      width: 100%; border-collapse: collapse; margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    .cfr-table th {
+      text-align: left; padding: 0.75rem; border-bottom: 2px solid var(--border);
+      color: var(--teal); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .cfr-table td {
+      padding: 0.75rem; border-bottom: 1px solid var(--border); line-height: 1.5;
+    }
+    .cfr-table tr:last-child td { border-bottom: none; }
+    .cfr-badge {
+      display: inline-block; background: rgba(0,180,216,0.15); border: 1px solid var(--border);
+      color: var(--teal); font-size: 0.75rem; font-weight: 600;
+      padding: 0.15rem 0.5rem; border-radius: 4px; white-space: nowrap;
+    }
+
+    /* INTERACTIVE SHARED STYLES */
+    .int-container {
+      background: rgba(0,180,216,0.04); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem;
+    }
+    .int-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+    .int-badge {
+      background: var(--gold); color: var(--navy); font-size: 0.7rem; font-weight: 700;
+      padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .int-label { font-size: 0.95rem; font-weight: 600; color: var(--teal); }
+    .int-controls {
+      display: flex; gap: 0.75rem; justify-content: center; align-items: center;
+      flex-wrap: wrap; margin-bottom: 0.5rem;
+    }
+    .int-btn {
+      padding: 0.5rem 1.2rem; border: none; border-radius: 6px; font-weight: 600;
+      cursor: pointer; font-family: inherit; font-size: 0.8rem; transition: all 0.15s;
+    }
+    .int-btn.primary { background: var(--teal); color: var(--navy); }
+    .int-btn.primary:hover { filter: brightness(1.1); }
+    .int-btn.secondary { background: var(--blue); color: var(--white); border: 1px solid var(--border); }
+    .int-btn.secondary:hover { border-color: var(--teal); }
+    .int-btn.gold { background: var(--gold); color: var(--navy); }
+    .int-btn.gold:hover { filter: brightness(1.1); }
+    .int-btn.active { outline: 2px solid var(--white); outline-offset: 2px; }
+    .int-status { text-align: center; font-size: 0.8rem; color: var(--gray); min-height: 1.2rem; margin-top: 0.25rem; }
+    .int-insight {
+      margin-top: 0.75rem; padding: 0.75rem 1rem;
+      background: rgba(244,162,97,0.1); border: 1px solid rgba(244,162,97,0.3);
+      border-radius: 8px; font-size: 0.85rem; line-height: 1.6; text-align: center;
+    }
+
+    /* REGULATORY SCENARIO CHALLENGE */
+    .scenario-card {
+      background: rgba(0,180,216,0.06); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem;
+    }
+    .scenario-title {
+      font-size: 1rem; font-weight: 600; color: var(--gold); margin-bottom: 0.5rem;
+    }
+    .scenario-text {
+      font-size: 0.9rem; color: var(--white); line-height: 1.6; margin-bottom: 1rem;
+    }
+    .scenario-step-label {
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--gray); margin-bottom: 0.5rem; margin-top: 0.75rem;
+    }
+    .scenario-options {
+      display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.5rem;
+    }
+    .scenario-option {
+      display: block; width: 100%; padding: 0.6rem 0.9rem;
+      background: var(--dark-card); border: 1px solid var(--border); border-radius: 6px;
+      color: var(--white); font-size: 0.85rem; cursor: pointer;
+      font-family: inherit; text-align: left; transition: all 0.15s;
+    }
+    .scenario-option:hover:not(:disabled) { border-color: var(--teal); background: rgba(0,180,216,0.08); }
+    .scenario-option.correct { background: rgba(34,197,94,0.15); border-color: var(--success); color: var(--success); }
+    .scenario-option.incorrect { background: rgba(239,68,68,0.12); border-color: var(--error); color: var(--error); }
+    .scenario-option.reveal { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.4); color: #86efac; }
+    .scenario-option:disabled { cursor: default; }
+    .scenario-result {
+      margin-top: 0.75rem; padding: 0.75rem; border-radius: 6px;
+      font-size: 0.85rem; line-height: 1.6; display: none;
+    }
+    .scenario-result.show { display: block; }
+    .scenario-result.correct { background: rgba(34,197,94,0.1); border: 1px solid var(--success); color: var(--success); }
+    .scenario-result.incorrect { background: rgba(239,68,68,0.1); border: 1px solid var(--error); color: var(--error); }
+    .scenario-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 1rem;
+    }
+    .scenario-counter {
+      font-size: 0.8rem; color: var(--gray);
+    }
+    .scenario-score {
+      font-size: 0.9rem; font-weight: 600;
+    }
+
+    /* QUIZ */
+    .quiz-container {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .quiz-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1.5rem; }
+    .quiz-question { margin-bottom: 2rem; }
+    .question-text { font-weight: 600; margin-bottom: 1rem; line-height: 1.6; }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .quiz-option {
+      background: rgba(0,180,216,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem;
+    }
+    .quiz-option:hover { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .quiz-option.correct { background: rgba(34,197,94,0.1); border-color: var(--success); }
+    .quiz-option.incorrect { background: rgba(239,68,68,0.1); border-color: var(--error); }
+    .option-letter {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%; background: var(--blue);
+      font-weight: 600; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .quiz-option.correct .option-letter { background: var(--success); }
+    .quiz-option.incorrect .option-letter { background: var(--error); }
+    .quiz-feedback {
+      display: none; margin-top: 1rem; padding: 0.75rem; border-radius: 8px;
+      font-size: 0.9rem; line-height: 1.6;
+    }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid var(--success); }
+    .quiz-feedback.incorrect { background: rgba(239,68,68,0.1); color: var(--error); border: 1px solid var(--error); }
+
+    /* AI TUTOR */
+    .tutor-container {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .tutor-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .tutor-icon { font-size: 1.5rem; }
+    .tutor-title { font-size: 1.1rem; font-weight: 600; color: var(--teal); }
+    .tutor-input { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    #tutor-question {
+      flex: 1; background: var(--blue); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem; color: var(--white);
+      font-size: 0.95rem; font-family: inherit;
+    }
+    #tutor-question::placeholder { color: var(--gray); }
+    #ask-tutor {
+      background: var(--teal); color: var(--navy); border: none;
+      border-radius: 8px; padding: 0.75rem 1.5rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    #tutor-response {
+      background: rgba(0,180,216,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1rem; line-height: 1.7; display: none;
+    }
+    #tutor-response.show { display: block; }
+
+    .nav-buttons {
+      display: flex; justify-content: space-between; gap: 1rem;
+      margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .nav-btn {
+      background: var(--teal); color: var(--navy); border: none; border-radius: 8px;
+      padding: 0.75rem 1.5rem; font-weight: 600; cursor: pointer;
+      font-size: 1rem; font-family: inherit; text-decoration: none;
+    }
+    .nav-btn:hover { opacity: 0.9; }
+    .nav-btn.secondary { background: var(--blue); color: var(--white); }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo"><span class="atom">&#9883;</span><span>Reactor Ready</span></div>
+    <div class="nav-right">
+      <span>by Naked Nuclear</span>
+      <span style="color:var(--border);">|</span>
+      <span>Nuclear Wrapper Course</span>
+      <span style="color:var(--border);">|</span>
+      <span class="nav-badge">DEMO BUILD</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar">
+      <h3>Course Modules</h3>
+      <a href="module-1-welcome.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Welcome to Nuclear</div><div class="module-meta">30 min</div></div>
+      </a>
+      <a href="module-2-reactors.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">How Reactors Work</div><div class="module-meta">35 min</div></div>
+      </a>
+      <a href="module-3-radiation-safety.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Radiation Safety</div><div class="module-meta">40 min</div></div>
+      </a>
+      <a href="module-4-inside-reactor.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Inside the Reactor</div><div class="module-meta">45 min</div></div>
+      </a>
+      <a href="module-5-career-path.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Your Career Path</div><div class="module-meta">30 min</div></div>
+      </a>
+      <div class="module-item active">
+        <div class="module-number">&#9679;</div>
+        <div class="module-info"><div class="module-title">Regulatory Framework</div><div class="module-meta">30 min</div></div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">7</div>
+        <div class="module-info"><div class="module-title">QA &amp; Human Performance</div><div class="module-meta">35 min</div></div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">8</div>
+        <div class="module-info"><div class="module-title">Advanced Reactors</div><div class="module-meta">30 min</div></div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">9</div>
+        <div class="module-info"><div class="module-title">Citations &amp; Sources</div><div class="module-meta">Reference</div></div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="breadcrumb"><a href="module-1-welcome.html">Reactor Ready</a> &rarr; Module 6</div>
+
+      <div class="progress-section">
+        <div class="progress-label">Course Progress: Module 6 of 9</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:67%"></div></div>
+      </div>
+
+      <div class="module-header">
+        <h1 class="module-title-main">The Rules That Keep It Safe</h1>
+        <p class="module-subtitle">Understanding Nuclear Regulation, Licensing, and Compliance</p>
+        <div class="module-meta-main">
+          <div>&#9201; 30 min</div>
+          <div>&#128196; Reading + Interactive</div>
+          <div>&#10003; 1 Knowledge Check</div>
+          <div>&#127918; 1 Interactive Scenario Challenge</div>
+        </div>
+      </div>
+
+      <div class="objectives">
+        <h3>Learning Objectives</h3>
+        <p style="color:var(--gray);margin-bottom:1rem;font-size:0.9rem;">By the end of this module, you will be able to:</p>
+        <ol>
+          <li>Understand the role of the NRC (Nuclear Regulatory Commission) as the federal regulator</li>
+          <li>Identify key regulations: 10 CFR 50 (reactor licensing), 10 CFR 20 (radiation protection), 10 CFR 73 (security)</li>
+          <li>Explain the difference between regulations, technical specifications, and plant procedures</li>
+          <li>Define "defense in depth" from a regulatory perspective</li>
+          <li>Understand worker licensing and access authorization requirements</li>
+        </ol>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 1: WHO WATCHES THE WATCHMEN -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">Who Watches the Watchmen? — The NRC</h2>
+        <p class="card-text">
+          Nuclear power in the United States is one of the most regulated industries in the world. The agency responsible? The <strong>Nuclear Regulatory Commission (NRC)</strong> — an independent federal agency that exists for one purpose: to protect the public health and safety and the environment.
+        </p>
+
+        <p class="card-text">
+          The NRC was created in 1975 when Congress split the old Atomic Energy Commission (AEC) in two. The AEC had a conflict of interest — it was supposed to both promote nuclear energy AND regulate it. Congress decided those two jobs needed to be separated. The NRC got regulation. The Department of Energy got promotion and research.
+        </p>
+
+        <p class="card-text">
+          Here's how the NRC is structured:
+        </p>
+
+        <table class="cfr-table">
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Who / What</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Commissioners</strong></td>
+              <td>5 commissioners, appointed by the President, confirmed by Senate. Max 3 from any one political party.</td>
+              <td>Set policy, approve regulations, issue licenses. Serve 5-year terms.</td>
+            </tr>
+            <tr>
+              <td><strong>Headquarters</strong></td>
+              <td>Rockville, Maryland</td>
+              <td>Rulemaking, national policy, license review, major enforcement actions.</td>
+            </tr>
+            <tr>
+              <td><strong>4 Regional Offices</strong></td>
+              <td>Region I (King of Prussia, PA), II (Atlanta, GA), III (Lisle, IL), IV (Arlington, TX)</td>
+              <td>Inspections, enforcement for plants in their region.</td>
+            </tr>
+            <tr>
+              <td><strong>Resident Inspectors</strong></td>
+              <td>2 per plant (minimum), stationed on-site permanently</td>
+              <td>Monitor day-to-day operations, review maintenance, investigate events. They have an office INSIDE your plant.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="analogy-box">
+          <strong>&#128161; Analogy:</strong> Think of the NRC like a building inspector who doesn't just show up once when the building is complete. They have a permanent office on the construction site. They watch every weld, every concrete pour, every electrical panel. And they have the authority to stop work at any time. That's what NRC resident inspectors do — 24/7, year-round, at every US nuclear plant.
+        </div>
+
+        <div class="callout">
+          <strong>Fun fact:</strong> NRC resident inspectors can enter any part of the plant at any time, without prior notice, day or night. They report directly to the regional office — not to plant management. This independence is by design.
+          <span style="color:var(--gray);font-size:0.85rem;"> (Source: NRC Inspection Manual, Chapter 0102)</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 2: THE RULEBOOK -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">The Rulebook — Key Regulations</h2>
+        <p class="card-text">
+          NRC regulations live in <strong>Title 10 of the Code of Federal Regulations (10 CFR)</strong>. Each part covers a different aspect of nuclear operations. As a trades worker, you'll encounter these most often:
+        </p>
+
+        <table class="cfr-table">
+          <thead>
+            <tr>
+              <th>Regulation</th>
+              <th>What It Covers</th>
+              <th>Why It Matters to You</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="cfr-badge">10 CFR 50</span></td>
+              <td>Domestic Licensing of Production and Utilization Facilities</td>
+              <td>The reactor license itself. Everything the plant is allowed to do — and not do — flows from this license. Violating your license is a federal offense.</td>
+            </tr>
+            <tr>
+              <td><span class="cfr-badge">10 CFR 20</span></td>
+              <td>Standards for Protection Against Radiation</td>
+              <td>Your dose limits, ALARA requirements, contamination controls. The rules behind your dosimeter readings and radiation work permits.</td>
+            </tr>
+            <tr>
+              <td><span class="cfr-badge">10 CFR 73</span></td>
+              <td>Physical Protection of Plants and Materials</td>
+              <td>Security rules — access control, vital area boundaries, the armed security force, cyber security. Why you badge in and why you NEVER hold a door open.</td>
+            </tr>
+            <tr>
+              <td><span class="cfr-badge">10 CFR 26</span></td>
+              <td>Fitness for Duty Programs</td>
+              <td>Drug and alcohol testing, fatigue management, mandatory rest requirements. The federal rules that govern your work hours and testing schedule.</td>
+            </tr>
+            <tr>
+              <td><span class="cfr-badge">10 CFR 55</span></td>
+              <td>Operators' Licenses</td>
+              <td>Who can control the reactor. Licensed reactor operators (RO) and senior reactor operators (SRO) must pass NRC exams. Not your license as a tradesperson, but you'll work alongside these people.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="card-text">
+          Beyond federal regulations, each plant has its own set of rules called <strong>Technical Specifications (Tech Specs)</strong>. Tech Specs are derived from the plant's Safety Analysis Report and approved by the NRC as part of the operating license. They contain specific, binding limits — things like minimum water levels, maximum temperatures, and which safety systems must be operable.
+        </p>
+
+        <div class="warning-box">
+          <strong>&#128680; Technical Specifications are NOT suggestions:</strong> Every nuclear plant has a Technical Specifications book — hundreds of pages of specific limits and conditions. If a Tech Spec is violated, it triggers a <strong>Limiting Condition for Operation (LCO)</strong>. The plant must take corrective action within a defined time window or shut down. Violations must be reported to the NRC. This is the most serious day-to-day regulatory boundary at any plant.
+          <span style="color:var(--gray);font-size:0.85rem;display:block;margin-top:0.5rem;"> (Source: 10 CFR 50, Appendix A, General Design Criteria)</span>
+        </div>
+
+        <div class="callout">
+          <strong>Defense in Depth:</strong> You'll hear this phrase constantly in nuclear. It means no single layer of protection is relied upon — multiple independent barriers exist. The fuel cladding, the reactor pressure vessel, the containment building — each is an independent layer. Regulations are designed to protect all of these layers simultaneously. <span style="color:var(--gray);font-size:0.85rem;">(Source: IAEA Safety Standards Series No. SSR-2/1)</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 3: GETTING YOUR BADGE -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">Getting Your Badge — Access Authorization</h2>
+        <p class="card-text">
+          Before you can work unescorted at a nuclear plant, you go through <strong>Access Authorization</strong> — one of the most thorough background investigations outside of government security clearances. Plan for 4–8 weeks. It is not optional, and it cannot be rushed.
+        </p>
+
+        <p class="card-text">Here's what the investigation covers:</p>
+
+        <ul style="line-height:2;margin-left:1.5rem;margin-bottom:1rem;">
+          <li><strong>Criminal history check</strong> — federal, state, local, and international where applicable</li>
+          <li><strong>Credit history</strong> — financial stress is considered a potential security risk</li>
+          <li><strong>Employment verification</strong> — 5–10 years of work history confirmed</li>
+          <li><strong>Education verification</strong> — degrees and certifications confirmed</li>
+          <li><strong>References</strong> — character references interviewed by security</li>
+          <li><strong>Psychological evaluation</strong> — not just for operators; required for many roles with unescorted access</li>
+          <li><strong>Drug screening</strong> — initial test plus ongoing random testing under 10 CFR 26</li>
+        </ul>
+
+        <div class="callout">
+          <strong>For trades workers:</strong> As an electrician, pipefitter, or welder doing nuclear outage work, you will go through this process. Some plants use a <strong>PADS (Personnel Access Data System)</strong> — a shared database so background checks from one plant can transfer to another. If you've worked nuclear before and maintained good standing, re-authorization may be faster.
+          <span style="color:var(--gray);font-size:0.85rem;"> (Source: 10 CFR 73.56)</span>
+        </div>
+
+        <p class="card-text">Once cleared, you'll receive a badge granting <strong>unescorted access</strong> to specified plant areas. The Fitness for Duty program (10 CFR 26) then governs your ongoing eligibility:</p>
+
+        <table class="cfr-table">
+          <thead>
+            <tr>
+              <th>10 CFR 26 Requirement</th>
+              <th>What It Means for You</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Random drug/alcohol testing</td>
+              <td>You can be selected for testing any day, any time. No advance notice. A positive result = immediate removal of unescorted access.</td>
+            </tr>
+            <tr>
+              <td>Maximum work hours</td>
+              <td>16 hours max in any 24-hour period. 26 hours max in any 48-hour period. 72 hours max in any 7-day period.</td>
+            </tr>
+            <tr>
+              <td>Minimum rest</td>
+              <td>10 hours off between shifts (minimum). You must report fatigue to your supervisor if you cannot safely perform your job.</td>
+            </tr>
+            <tr>
+              <td>Self-reporting</td>
+              <td>You must self-report any arrest, criminal charge, or change in fitness status — even off-site and off-hours.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="analogy-box">
+          <strong>&#128161; Think of it this way:</strong> Commercial airline pilots have strict rest requirements and random testing. Nuclear workers have similar standards — because the consequences of impaired judgment are severe in both fields. The fatigue rules exist because real accidents have been caused by tired workers making preventable mistakes.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 4: THE SAFETY CULTURE PYRAMID -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">Beyond Compliance — The Safety Culture Pyramid</h2>
+        <p class="card-text">
+          Regulations are the floor, not the ceiling. The nuclear industry has built a culture of voluntary excellence on top of the regulatory minimum. Four pillars hold up this culture:
+        </p>
+
+        <table class="cfr-table">
+          <thead>
+            <tr>
+              <th>Organization / Program</th>
+              <th>What It Does</th>
+              <th>Your Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>INPO</strong><br><span style="font-size:0.8rem;color:var(--gray);">Institute of Nuclear Power Operations</span></td>
+              <td>Industry self-regulation body. Evaluates every US plant on a regular cycle. INPO ratings affect plant reputation, insurance, and Wall Street.</td>
+              <td>You may encounter INPO evaluators during plant visits. Their findings carry real weight — sometimes more than NRC inspections.</td>
+            </tr>
+            <tr>
+              <td><strong>SAT</strong><br><span style="font-size:0.8rem;color:var(--gray);">Systematic Approach to Training</span></td>
+              <td>Nuclear's training methodology. Analysis → Design → Development → Implementation → Evaluation (ADDIE-based). Every training task is tied to a job analysis.</td>
+              <td>Every task you're trained to do in nuclear has been analyzed, designed, and verified. "We've always done it this way" is NOT an acceptable answer.</td>
+            </tr>
+            <tr>
+              <td><strong>CAP</strong><br><span style="font-size:0.8rem;color:var(--gray);">Corrective Action Program</span></td>
+              <td>Every problem, near-miss, or concern gets documented in a Condition Report (CR). CRs are tracked, investigated, and resolved. No problem is too small to write up.</td>
+              <td>You are expected to write CRs. Finding and reporting problems is GOOD. Hiding problems — or not writing them up — is a violation of safety culture.</td>
+            </tr>
+            <tr>
+              <td><strong>OE</strong><br><span style="font-size:0.8rem;color:var(--gray);">Operating Experience</span></td>
+              <td>Lessons learned from events at any plant — worldwide — are shared and applied everywhere. If a plant in France has a maintenance error, US plants review it.</td>
+              <td>You may receive OE briefings before jobs. Pay attention. Someone else already paid the price for that lesson.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="warning-box">
+          <strong>&#128680; The most important rule in nuclear safety culture:</strong> <em>"I didn't know"</em> is never acceptable. The industry has systems — training, procedures, pre-job briefings, operating experience, stop-work authority — specifically designed to make sure you DO know. If you don't understand something, you have both the right and the responsibility to stop work and ask.
+        </div>
+
+        <div class="callout">
+          <strong>Stop-Work Authority:</strong> Every worker at a nuclear plant — from the most experienced engineer to a first-day contractor — has the right to stop any job they believe is unsafe or doesn't match the procedure. Using stop-work authority is NOT career-limiting. Failing to use it when you should have is.
+          <span style="color:var(--gray);font-size:0.85rem;"> (Source: NRC Safety Culture Policy Statement, 76 FR 34773)</span>
+        </div>
+
+        <!-- INTERACTIVE: Regulatory Scenario Challenge -->
+        <div class="int-container">
+          <div class="int-header">
+            <span class="int-badge">Interactive</span>
+            <span class="int-label">Regulatory Scenario Challenge</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1.25rem;">
+            Three real-world scenarios. For each one, identify which regulation applies and what the correct action is. Get it right and understand why — these situations will come up on the job.
+          </p>
+          <div id="scenario-game"></div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- KNOWLEDGE CHECK -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="quiz-container">
+        <h2 class="quiz-title">Knowledge Check</h2>
+
+        <div class="quiz-question" id="q1">
+          <p class="question-text">1. The NRC was created in 1975 by splitting the old AEC. Why was this split necessary?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(1,'A',false)"><div class="option-letter">A</div><div>The AEC was too small to handle both jobs at once</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'B',true)"><div class="option-letter">B</div><div>The AEC had a conflict of interest — promoting nuclear while also regulating it</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'C',false)"><div class="option-letter">C</div><div>Congress wanted to reduce the federal workforce</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'D',false)"><div class="option-letter">D</div><div>The AEC only covered military nuclear programs</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-1"></div>
+        </div>
+
+        <div class="quiz-question" id="q2">
+          <p class="question-text">2. Which regulation governs your dose limits and ALARA requirements as a nuclear worker?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(2,'A',false)"><div class="option-letter">A</div><div>10 CFR 50 — the reactor operating license</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'B',true)"><div class="option-letter">B</div><div>10 CFR 20 — Standards for Protection Against Radiation</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'C',false)"><div class="option-letter">C</div><div>10 CFR 73 — Physical Protection</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'D',false)"><div class="option-letter">D</div><div>10 CFR 55 — Operators' Licenses</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-2"></div>
+        </div>
+
+        <div class="quiz-question" id="q3">
+          <p class="question-text">3. What are Technical Specifications (Tech Specs)?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(3,'A',false)"><div class="option-letter">A</div><div>Training manuals that describe how to operate equipment</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'B',false)"><div class="option-letter">B</div><div>INPO guidelines that plants voluntarily follow</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'C',true)"><div class="option-letter">C</div><div>Plant-specific, NRC-approved binding limits on how the reactor must be operated</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'D',false)"><div class="option-letter">D</div><div>Vendor manuals for specific pieces of equipment</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-3"></div>
+        </div>
+
+        <div class="quiz-question" id="q4">
+          <p class="question-text">4. Under 10 CFR 26, what is the MINIMUM required time off between shifts for nuclear workers?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(4,'A',false)"><div class="option-letter">A</div><div>6 hours</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'B',false)"><div class="option-letter">B</div><div>8 hours</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'C',true)"><div class="option-letter">C</div><div>10 hours</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'D',false)"><div class="option-letter">D</div><div>12 hours</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-4"></div>
+        </div>
+
+        <div class="quiz-question" id="q5">
+          <p class="question-text">5. A coworker notices a minor equipment discrepancy that doesn't affect current operations. According to nuclear safety culture, they should:</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(5,'A',false)"><div class="option-letter">A</div><div>Handle it quietly to avoid the paperwork</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'B',false)"><div class="option-letter">B</div><div>Report it only if it becomes a bigger problem</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'C',true)"><div class="option-letter">C</div><div>Write a Condition Report (CR) immediately — no problem is too small</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'D',false)"><div class="option-letter">D</div><div>Wait until the end of the shift to tell the supervisor</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-5"></div>
+        </div>
+      </div>
+
+      <!-- AI TUTOR -->
+      <div class="tutor-container">
+        <div class="tutor-header">
+          <div class="tutor-icon">&#129302;</div>
+          <div>
+            <div class="tutor-title">ARIA AI Tutor</div>
+            <div style="font-size:0.85rem;color:var(--gray);">Ask me about nuclear regulation</div>
+          </div>
+        </div>
+        <div class="tutor-input">
+          <input type="text" id="tutor-question" placeholder="Ask a question about the NRC, CFR regulations, access authorization..." />
+          <button id="ask-tutor" onclick="askTutor()">Ask</button>
+        </div>
+        <div id="tutor-response"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="module-5-career-path.html" class="nav-btn secondary">&larr; Back to Module 5</a>
+        <a href="module-7-qa-human-performance.html" class="nav-btn">Continue to Module 7 &rarr;</a>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  // ───────────────────────────────────────────
+  // Regulatory Scenario Challenge
+  // ───────────────────────────────────────────
+  (function(){
+    const scenarios = [
+      {
+        title: 'Scenario 1: The Dosimeter Reading',
+        text: 'You are a maintenance electrician in your third quarter of the year at a nuclear plant. Your dosimeter reads 450 mrem for this quarter. The plant\'s annual administrative limit is 1,500 mrem. A supervisor asks you to take on an additional job in a radiation area expected to add 800 mrem to your dose. The NRC annual limit is 5,000 mrem.',
+        steps: [
+          {
+            label: 'Which regulation governs this situation?',
+            options: ['10 CFR 50 — Reactor License', '10 CFR 20 — Radiation Protection', '10 CFR 73 — Physical Security', '10 CFR 26 — Fitness for Duty'],
+            correct: 1,
+            correctFeedback: 'Correct. 10 CFR 20 governs radiation dose limits and the ALARA principle. Your dose and any additional exposure are tracked against the 5,000 mrem/year whole-body limit established in 10 CFR 20.1201.',
+            incorrectFeedback: 'This is a radiation dose question — that\'s 10 CFR 20 (Standards for Protection Against Radiation). Dose limits, ALARA, and exposure tracking all live here.'
+          },
+          {
+            label: 'What should you do about the additional job?',
+            options: ['Accept — 450 + 800 = 1,250 mrem, still under the 5,000 mrem NRC limit', 'Decline — you would exceed the plant\'s 1,500 mrem administrative limit', 'Accept — the supervisor approved it, so it\'s fine', 'Decline — any additional dose violates ALARA automatically'],
+            correct: 1,
+            correctFeedback: 'Correct. 450 + 800 = 1,250 mrem — technically under the NRC\'s 5,000 mrem limit, but it exceeds the plant\'s 1,500 mrem administrative limit. Administrative limits are binding at your plant, not optional guidance. This job would require Radiation Protection management approval and a review of whether the dose can be reduced.',
+            incorrectFeedback: 'Even though 1,250 mrem is under the NRC\'s 5,000 mrem limit, it exceeds your plant\'s 1,500 mrem administrative limit. Plant administrative limits are enforceable. Exceeding them without RP management approval is a violation. The NRC limit is the legal ceiling; the plant limit is the operating limit.'
+          }
+        ]
+      },
+      {
+        title: 'Scenario 2: The Security Door',
+        text: 'You\'re carrying a heavy toolbox through a security access point in a Protected Area. Your hands are full. A coworker you recognize says, "Just hold the door — I forgot my badge today and I don\'t want to go all the way back." You\'ve worked with this person for three weeks and they clearly work here.',
+        steps: [
+          {
+            label: 'Which regulation governs access control at nuclear plants?',
+            options: ['10 CFR 20 — Radiation Protection', '10 CFR 50 — Reactor License', '10 CFR 73 — Physical Protection', '10 CFR 26 — Fitness for Duty'],
+            correct: 2,
+            correctFeedback: 'Correct. 10 CFR 73 governs physical protection of nuclear plants — access control, vital areas, security personnel, and the rules around badges and entry points. Every person entering a Protected Area must independently authenticate.',
+            incorrectFeedback: 'Physical security — badge access, protected areas, and access control — is governed by 10 CFR 73 (Physical Protection of Plants and Materials). This is one of the most serious compliance areas in nuclear.'
+          },
+          {
+            label: 'What do you do?',
+            options: ['Hold the door — you know them and they clearly work here', 'Let them in and tell them to get a new badge tomorrow', 'Decline to hold the door and tell them to report to security', 'Ignore it — not your job to enforce security rules'],
+            correct: 2,
+            correctFeedback: 'Correct. NEVER hold a security door, no matter who\'s asking — even if you know them, even if they work there, even if it\'s your supervisor. Every person must independently badge through access points. This is called "piggybacking" or "tailgating" and it\'s a reportable security violation. Your coworker needs to report to security for a temporary badge. You are also expected to report the attempt.',
+            incorrectFeedback: 'You must NEVER hold a security door — this is called tailgating or piggybacking and it\'s a serious 10 CFR 73 violation regardless of who\'s asking. Familiarity is not authorization. Your coworker must go to security for a temporary credential. Additionally, under nuclear security culture, you should report that this was attempted.'
+          }
+        ]
+      },
+      {
+        title: 'Scenario 3: The Extra Shift',
+        text: 'You worked a 14-hour shift yesterday, finishing at 10 PM. It\'s now 6 AM — 8 hours later. Your supervisor calls and says the plant needs you on-site for an urgent 12-hour job. "It\'s an outage emergency. I need you here by 7 AM."',
+        steps: [
+          {
+            label: 'Which regulation applies to your work hours?',
+            options: ['10 CFR 50 — Reactor License', '10 CFR 20 — Radiation Protection', '10 CFR 55 — Operators\' Licenses', '10 CFR 26 — Fitness for Duty'],
+            correct: 3,
+            correctFeedback: 'Correct. 10 CFR 26 (Fitness for Duty Programs) sets minimum rest requirements and maximum work hours for nuclear workers. This is not just plant policy — it\'s federal regulation with legally mandated minimums.',
+            incorrectFeedback: 'Work hours, rest requirements, and fatigue management for nuclear workers are governed by 10 CFR 26 — Fitness for Duty Programs. These are federal requirements, not just plant suggestions.'
+          },
+          {
+            label: 'What is the correct response?',
+            options: ['Go in — outage emergencies override rest requirements', 'Go in — 8 hours is close enough to the 10-hour minimum', 'Decline — you have not had the 10-hour minimum rest period required by 10 CFR 26', 'Decline — you already worked 14 hours yesterday and any additional work is prohibited'],
+            correct: 2,
+            correctFeedback: 'Correct. 10 CFR 26.205 requires a minimum of 10 hours off between shifts. You have only had 8 hours. "Outage emergency" does NOT override this federal requirement. You should tell your supervisor you cannot legally report until 10 hours have passed (8 AM at the earliest). Outage pressure is real — but fatigue-related accidents are also real, and that\'s exactly why this rule exists.',
+            incorrectFeedback: '10 CFR 26.205 requires a minimum 10-hour break between shifts. You\'ve only had 8 hours. Outage pressure does not override federal fitness-for-duty minimums. You must decline and inform your supervisor you cannot return until you\'ve had the required rest. This protects you and the plant — fatigue is a documented cause of nuclear incidents.'
+          }
+        ]
+      }
+    ];
+
+    let currentScenario = 0;
+    let currentStep = 0;
+    let score = 0;
+    let totalAnswered = 0;
+    let stepAnswered = false;
+
+    function totalSteps() {
+      return scenarios.reduce(function(sum, s) { return sum + s.steps.length; }, 0);
+    }
+
+    function renderGame() {
+      const game = document.getElementById('scenario-game');
+      const scenario = scenarios[currentScenario];
+      const step = scenario.steps[currentStep];
+
+      game.innerHTML = `
+        <div class="scenario-card">
+          <div class="scenario-title">${scenario.title}</div>
+          <div class="scenario-text">${scenario.text}</div>
+          <div class="scenario-step-label">Step ${currentStep + 1} of ${scenario.steps.length}: ${step.label}</div>
+          <div class="scenario-options" id="step-options">
+            ${step.options.map(function(opt, i) {
+              return '<button class="scenario-option" id="opt-' + i + '" onclick="answerStep(' + i + ')">' + opt + '</button>';
+            }).join('')}
+          </div>
+          <div class="scenario-result" id="step-result"></div>
+        </div>
+        <div class="scenario-nav">
+          <div class="scenario-counter">Scenario ${currentScenario + 1} / ${scenarios.length} &bull; Question ${getGlobalStep() + 1} / ${totalSteps()}</div>
+          <div class="scenario-score" id="score-display" style="color:var(--teal);">Score: ${score} / ${totalAnswered}</div>
+        </div>
+        <div class="int-controls" style="margin-top:1rem;" id="nav-controls"></div>
+      `;
+    }
+
+    function getGlobalStep() {
+      var total = 0;
+      for (var i = 0; i < currentScenario; i++) {
+        total += scenarios[i].steps.length;
+      }
+      return total + currentStep;
+    }
+
+    window.answerStep = function(idx) {
+      if (stepAnswered) return;
+      stepAnswered = true;
+      totalAnswered++;
+
+      var scenario = scenarios[currentScenario];
+      var step = scenario.steps[currentStep];
+      var isCorrect = idx === step.correct;
+      if (isCorrect) score++;
+
+      var opts = document.querySelectorAll('.scenario-option');
+      opts.forEach(function(o) { o.disabled = true; });
+      opts[idx].classList.add(isCorrect ? 'correct' : 'incorrect');
+      if (!isCorrect) opts[step.correct].classList.add('reveal');
+
+      var result = document.getElementById('step-result');
+      result.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+      result.innerHTML = (isCorrect ? '&#10003; ' : '&#10007; ') + (isCorrect ? step.correctFeedback : step.incorrectFeedback);
+
+      document.getElementById('score-display').textContent = 'Score: ' + score + ' / ' + totalAnswered;
+
+      var navControls = document.getElementById('nav-controls');
+      var isLastStep = currentStep >= scenario.steps.length - 1;
+      var isLastScenario = currentScenario >= scenarios.length - 1;
+
+      if (isLastStep && isLastScenario) {
+        navControls.innerHTML = '<button class="int-btn gold" onclick="showFinalScore()">See Final Score &#10003;</button>';
+      } else if (isLastStep) {
+        navControls.innerHTML = '<button class="int-btn primary" onclick="nextScenario()">Next Scenario &rarr;</button>';
+      } else {
+        navControls.innerHTML = '<button class="int-btn primary" onclick="nextStep()">Next Question &rarr;</button>';
+      }
+    };
+
+    window.nextStep = function() {
+      currentStep++;
+      stepAnswered = false;
+      renderGame();
+    };
+
+    window.nextScenario = function() {
+      currentScenario++;
+      currentStep = 0;
+      stepAnswered = false;
+      renderGame();
+    };
+
+    window.showFinalScore = function() {
+      var pct = Math.round((score / totalSteps()) * 100);
+      var color = pct >= 80 ? 'var(--success)' : pct >= 60 ? 'var(--gold)' : 'var(--error)';
+      var message = pct >= 80
+        ? 'Excellent! You understand nuclear regulatory requirements. These scenarios reflect real situations you will encounter.'
+        : pct >= 60
+        ? 'Good effort. Review the scenarios where you answered incorrectly — these rules exist for serious reasons.'
+        : 'These concepts are critical for working safely at a nuclear plant. Review the regulations covered in this module.';
+
+      document.getElementById('scenario-game').innerHTML = `
+        <div class="scenario-card" style="text-align:center;">
+          <div style="font-size:3rem;font-weight:800;color:${color};margin-bottom:0.5rem;">${score} / ${totalSteps()}</div>
+          <div style="font-size:1.1rem;color:var(--gray);margin-bottom:1rem;">${pct}% Correct</div>
+          <div style="font-size:0.95rem;line-height:1.7;color:var(--white);max-width:500px;margin:0 auto 1.5rem;">${message}</div>
+          <button class="int-btn gold" onclick="restartGame()">&#8635; Try Again</button>
+        </div>
+      `;
+    };
+
+    window.restartGame = function() {
+      currentScenario = 0;
+      currentStep = 0;
+      score = 0;
+      totalAnswered = 0;
+      stepAnswered = false;
+      renderGame();
+    };
+
+    renderGame();
+  })();
+
+  // ───────────────────────────────────────────
+  // Quiz
+  // ───────────────────────────────────────────
+  const feedbackData = {
+    1: {
+      correct: 'Correct. The Atomic Energy Commission had an inherent conflict — promoting commercial nuclear power while also being responsible for regulating it. Congress split these roles in 1974 (Energy Reorganization Act), creating the NRC (regulation) and the Department of Energy (promotion and research). This independence is fundamental to public trust in nuclear safety. (Source: Energy Reorganization Act of 1974)',
+      incorrect: 'The AEC had a conflict of interest: it was both the primary promoter of civilian nuclear power AND its regulator. Congress recognized this was problematic and split the agency via the Energy Reorganization Act of 1974 — the NRC for regulation, the DOE for promotion and development. (Source: Energy Reorganization Act of 1974)'
+    },
+    2: {
+      correct: 'Correct. 10 CFR 20 (Standards for Protection Against Radiation) governs dose limits, ALARA requirements, contamination controls, and radiation monitoring. The specific whole-body limit of 5,000 mrem/year is in 10 CFR 20.1201. This is the regulation behind your dosimeter badge and every radiation work permit. (Source: 10 CFR 20)',
+      incorrect: '10 CFR 20 is the regulation governing radiation protection — dose limits (5,000 mrem/year whole body), ALARA requirements, and contamination controls. 10 CFR 50 is the reactor operating license. 10 CFR 73 is physical security. 10 CFR 55 covers reactor operator licenses. (Source: 10 CFR 20.1201)'
+    },
+    3: {
+      correct: 'Correct. Technical Specifications are plant-specific, NRC-approved conditions in the operating license that define exactly how the reactor must be operated — minimum safety system requirements, maximum power levels, required surveillances, and action timelines when limits are exceeded. They are binding regulatory requirements, not guidelines. (Source: 10 CFR 50, Appendix A)',
+      incorrect: 'Technical Specifications are plant-specific, NRC-approved binding limits that form part of the operating license. They specify exact conditions the reactor must meet — not general guidelines or vendor manuals. Violating a Tech Spec triggers a Limiting Condition for Operation (LCO) with mandatory action timelines. (Source: 10 CFR 50)'
+    },
+    4: {
+      correct: 'Correct. 10 CFR 26.205 specifies a minimum of 10 hours off between shifts for nuclear workers. This is a federal requirement, not just plant policy. The rule exists because fatigue has been identified as a contributing factor in actual nuclear incidents. Maximum shift length is also limited to 16 hours in any 24-hour period. (Source: 10 CFR 26.205)',
+      incorrect: '10 CFR 26.205 requires a minimum of 10 hours off between shifts. This is a federal requirement under the Fitness for Duty rule. Outage pressure cannot override it. Maximum shift length is 16 hours in any 24-hour period, and 26 hours in any 48-hour period. (Source: 10 CFR 26.205)'
+    },
+    5: {
+      correct: 'Correct. In nuclear safety culture, every problem gets documented — no matter how small. A Condition Report (CR) creates a formal record, triggers investigation, and ensures the issue is tracked to resolution. Many significant events have started as "minor" issues that were not reported early. Finding and reporting problems is explicitly valued behavior. (Source: NRC Safety Culture Policy Statement, 76 FR 34773)',
+      incorrect: 'Nuclear safety culture requires that every problem — no matter how minor — be documented in a Condition Report (CR). This is not bureaucracy for its own sake: many serious events have started as small unresolved issues. The industry values identifying and reporting problems early, not minimizing paperwork. (Source: NRC Safety Culture Policy Statement)'
+    }
+  };
+
+  function selectOption(qNum, letter, isCorrect) {
+    const q = document.getElementById('q'+qNum);
+    q.querySelectorAll('.quiz-option').forEach(o => o.style.pointerEvents='none');
+    event.currentTarget.classList.add(isCorrect?'correct':'incorrect');
+    const fb = document.getElementById('feedback-'+qNum);
+    fb.classList.add('show', isCorrect?'correct':'incorrect');
+    fb.textContent = (isCorrect?'\u2713 ':'\u2717 ') + feedbackData[qNum][isCorrect?'correct':'incorrect'];
+  }
+
+  // ───────────────────────────────────────────
+  // AI Tutor
+  // ───────────────────────────────────────────
+  const tutorKB = {
+    'nrc|nuclear regulatory commission|regulator|watchdog|inspector|resident inspector': 'The Nuclear Regulatory Commission (NRC) is an independent federal agency created in 1975 to regulate civilian use of nuclear materials. It has 5 presidentially-appointed commissioners, 4 regional offices, and at least 2 resident inspectors permanently stationed at every US nuclear plant. Resident inspectors can access any plant area at any time without notice. (Source: Energy Reorganization Act of 1974; NRC Inspection Manual Ch. 0102)',
+    '10 cfr 50|cfr50|operating license|tech spec|technical specification|lco|limiting condition': '10 CFR 50 covers domestic licensing of nuclear plants. Your plant\'s operating license (issued under 10 CFR 50) includes Technical Specifications (Tech Specs) — plant-specific, NRC-approved limits on how the reactor must be operated. Violating a Tech Spec triggers a Limiting Condition for Operation (LCO) with mandatory action timelines. Tech Spec violations are reportable events to the NRC.',
+    '10 cfr 20|cfr20|dose limit|alara|radiation limit|rem|mrem|occupational dose': '10 CFR 20 sets radiation protection standards. Key limits: 5,000 mrem/year whole body (TEDE), 50,000 mrem/year skin/extremities, 15,000 mrem/year eye lens. Most plants set administrative limits (1,000-2,000 mrem/year) well below the legal maximum. ALARA (As Low As Reasonably Achievable) is required by 10 CFR 20.1101. Your dosimeter tracks exposure against these limits.',
+    '10 cfr 73|cfr73|security|badge|access|tailgate|piggyback|door|protected area|vital area': '10 CFR 73 governs physical protection of nuclear plants. It requires controlled access to Protected Areas (and more restricted Vital Areas), an armed security force, and cyber security programs. NEVER hold a security door open for anyone — this is called tailgating/piggybacking and is a reportable security violation regardless of who\'s asking. Everyone must independently badge through access points.',
+    '10 cfr 26|cfr26|fitness for duty|drug test|fatigue|hours|rest|shift': '10 CFR 26 (Fitness for Duty) establishes: random drug and alcohol testing programs, maximum work hours (16 hrs in 24 hrs, 26 hrs in 48 hrs, 72 hrs in 7 days), and minimum rest requirements (10 hours between shifts). A positive drug test = immediate loss of unescorted access. You must self-report arrests or fitness changes even off-hours. Outage pressure does NOT override 10 CFR 26 requirements.',
+    'access authorization|background check|pads|clearance|unescorted': 'Access Authorization (10 CFR 73.56) requires a thorough background investigation before you can work unescorted at a nuclear plant: criminal history, credit check, employment verification (5-10 years), education verification, references, psychological evaluation, and initial drug test. Process takes 4-8 weeks. PADS (Personnel Access Data System) allows background check data to transfer between plants if you\'ve worked nuclear before.',
+    'inpo|safety culture|corrective action|condition report|cr|operating experience|oe|sat|systematic approach': 'Beyond NRC regulations, the nuclear industry operates on four safety culture pillars: INPO (Institute of Nuclear Power Operations — industry self-regulator); SAT (Systematic Approach to Training — structured, job-analysis-based training); CAP (Corrective Action Program — every problem gets a Condition Report); and OE (Operating Experience — lessons from any plant worldwide are shared and applied everywhere). No problem is too small to write up.',
+    'stop work|stop-work authority|refuse|unsafe': 'Every nuclear worker — from a first-day contractor to a senior engineer — has Stop-Work Authority: the right and responsibility to stop any job they believe is unsafe or not matching the procedure. Using stop-work authority is valued behavior, not career-limiting. Failure to use it when you should have is a safety culture concern. This right is backed by the NRC Safety Culture Policy Statement (76 FR 34773).',
+    'defense in depth|layers|containment|barrier': 'Defense in Depth is a fundamental nuclear safety concept: multiple independent barriers prevent a single failure from causing harm. The fuel itself, the fuel cladding, the reactor coolant system, the containment building — each is an independent layer. Regulations are designed to protect ALL layers simultaneously. No single barrier is relied upon exclusively. (Source: IAEA Safety Standards SSR-2/1)',
+    'default': 'I can answer questions about nuclear regulation. Try asking about: the NRC and its role, key regulations (10 CFR 20, 50, 73, 26), Technical Specifications, Access Authorization and background checks, Fitness for Duty work hour rules, nuclear safety culture, INPO, Corrective Action Programs, Stop-Work Authority, or Defense in Depth.'
+  };
+
+  function askTutor() {
+    const q = document.getElementById('tutor-question').value.toLowerCase();
+    const r = document.getElementById('tutor-response');
+    if(!q.trim()){ r.textContent='Please enter a question.'; r.classList.add('show'); return; }
+    let answer = tutorKB['default'];
+    for(const [pattern,text] of Object.entries(tutorKB)){
+      if(pattern==='default') continue;
+      if(pattern.split('|').some(kw=>q.includes(kw))){ answer=text; break; }
+    }
+    r.textContent = answer;
+    r.classList.add('show');
+  }
+  document.getElementById('tutor-question').addEventListener('keypress',function(e){
+    if(e.key==='Enter') askTutor();
+  });
+  </script>
+</body>
+</html>

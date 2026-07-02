@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 7: QA &amp; Human Performance — Reactor Ready</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --blue: #1a3a5c;
+      --teal: #00b4d8;
+      --teal-light: #90e0ef;
+      --gold: #f4a261;
+      --white: #f8fafc;
+      --gray: #94a3b8;
+      --dark-card: #111f35;
+      --success: #22c55e;
+      --error: #ef4444;
+      --border: rgba(0,180,216,0.2);
+      --alpha: #ef4444;
+      --beta: #f59e0b;
+      --gamma: #a78bfa;
+      --neutron: #60a5fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; background: var(--dark-card);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.1rem; color: var(--teal); }
+    .nav-logo .atom { font-size: 1.5rem; }
+    .nav-badge { font-size: 0.7rem; background: var(--teal); color: var(--navy); padding: 0.2rem 0.5rem; border-radius: 999px; font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--gray); }
+    .container { display: flex; height: calc(100vh - 65px); }
+
+    .sidebar {
+      width: 280px; background: var(--dark-card); border-right: 1px solid var(--border);
+      overflow-y: auto; padding: 1.5rem 1rem;
+    }
+    .sidebar h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); margin-bottom: 1rem; }
+    .module-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem;
+      margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s; border: 1px solid transparent; text-decoration: none; color: inherit;
+    }
+    .module-item.active { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .module-item.complete { opacity: 0.7; }
+    .module-item.locked { opacity: 0.5; cursor: not-allowed; }
+    .module-item:not(.locked):hover { background: rgba(0,180,216,0.05); }
+    .module-number {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%; background: var(--blue);
+      font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .module-item.active .module-number { background: var(--teal); color: var(--navy); }
+    .module-item.complete .module-number { background: var(--success); color: var(--navy); }
+    .module-info { flex: 1; }
+    .module-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .module-meta { font-size: 0.75rem; color: var(--gray); }
+    .module-lock { font-size: 1.2rem; color: var(--gray); }
+
+    .main { flex: 1; overflow-y: auto; padding: 2rem 3rem; max-width: 900px; margin: 0 auto; }
+    .breadcrumb { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; }
+    .breadcrumb a { color: var(--teal); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .progress-section { margin-bottom: 2rem; }
+    .progress-label { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem; }
+    .progress-bar { height: 8px; background: var(--blue); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+    .module-header { margin-bottom: 2.5rem; }
+    .module-title-main { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--teal); }
+    .module-subtitle { font-size: 1.3rem; color: var(--gray); margin-bottom: 1rem; }
+    .module-meta-main { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--gray); }
+
+    .objectives {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .objectives h3 { font-size: 1.1rem; color: var(--teal); margin-bottom: 1rem; }
+    .objectives ol { margin-left: 1.5rem; }
+    .objectives li { margin-bottom: 0.75rem; line-height: 1.6; }
+
+    .content-card {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .card-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1rem; }
+    .card-text { line-height: 1.7; margin-bottom: 1rem; }
+    .callout {
+      background: rgba(0,180,216,0.1); border-left: 3px solid var(--teal);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .callout strong { color: var(--teal); }
+    .analogy-box {
+      background: rgba(244,162,97,0.1); border-left: 3px solid var(--gold);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .analogy-box strong { color: var(--gold); }
+    .warning-box {
+      background: rgba(239,68,68,0.1); border-left: 3px solid var(--error);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .warning-box strong { color: var(--error); }
+
+    /* TOOL LIST */
+    .tool-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1.25rem 0;
+    }
+    .tool-card {
+      background: rgba(0,180,216,0.06); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.9rem 1rem;
+    }
+    .tool-name { font-weight: 700; color: var(--teal); margin-bottom: 0.3rem; font-size: 0.95rem; }
+    .tool-desc { font-size: 0.85rem; color: var(--gray); line-height: 1.5; }
+
+    /* INTERACTIVE SHARED STYLES */
+    .int-container {
+      background: rgba(0,180,216,0.04); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem;
+    }
+    .int-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+    .int-badge {
+      background: var(--gold); color: var(--navy); font-size: 0.7rem; font-weight: 700;
+      padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .int-label { font-size: 0.95rem; font-weight: 600; color: var(--teal); }
+    .int-controls {
+      display: flex; gap: 0.75rem; justify-content: center; align-items: center;
+      flex-wrap: wrap; margin-bottom: 0.5rem;
+    }
+    .int-btn {
+      padding: 0.5rem 1.2rem; border: none; border-radius: 6px; font-weight: 600;
+      cursor: pointer; font-family: inherit; font-size: 0.8rem; transition: all 0.15s;
+    }
+    .int-btn.primary { background: var(--teal); color: var(--navy); }
+    .int-btn.primary:hover { filter: brightness(1.1); }
+    .int-btn.secondary { background: var(--blue); color: var(--white); border: 1px solid var(--border); }
+    .int-btn.secondary:hover { border-color: var(--teal); }
+    .int-btn.gold { background: var(--gold); color: var(--navy); }
+    .int-btn.gold:hover { filter: brightness(1.1); }
+    .int-btn.active { outline: 2px solid var(--white); outline-offset: 2px; }
+    .int-status { text-align: center; font-size: 0.8rem; color: var(--gray); min-height: 1.2rem; margin-top: 0.25rem; }
+    .int-insight {
+      margin-top: 0.75rem; padding: 0.75rem 1rem;
+      background: rgba(244,162,97,0.1); border: 1px solid rgba(244,162,97,0.3);
+      border-radius: 8px; font-size: 0.85rem; line-height: 1.6; text-align: center;
+    }
+
+    /* ERROR TRAP SIMULATOR */
+    .trap-scenario {
+      background: rgba(0,180,216,0.06); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem;
+    }
+    .trap-scenario h4 { color: var(--teal); margin-bottom: 0.75rem; font-size: 1rem; }
+    .trap-scene {
+      background: var(--navy); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1rem; margin-bottom: 1rem;
+      font-size: 0.95rem; line-height: 1.7; color: var(--white);
+    }
+    .trap-scene em { color: var(--gold); font-style: normal; }
+    .trap-prompt { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.75rem; }
+    .trap-options {
+      display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .trap-option {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.7rem 1rem; cursor: pointer;
+      font-family: inherit; font-size: 0.85rem; color: var(--white);
+      text-align: left; transition: all 0.15s; display: flex; align-items: center; gap: 0.75rem;
+    }
+    .trap-option:hover { border-color: var(--teal); background: rgba(0,180,216,0.08); }
+    .trap-option.correct { background: rgba(34,197,94,0.12); border-color: var(--success); color: var(--success); }
+    .trap-option.wrong { background: rgba(239,68,68,0.08); border-color: var(--error); color: var(--error); }
+    .trap-option.disabled { cursor: not-allowed; }
+    .trap-option-letter {
+      width: 24px; height: 24px; border-radius: 50%; background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+    }
+    .trap-option.correct .trap-option-letter { background: var(--success); color: var(--navy); }
+    .trap-option.wrong .trap-option-letter { background: var(--error); color: var(--white); }
+    .trap-feedback {
+      display: none; padding: 0.75rem; border-radius: 8px;
+      font-size: 0.9rem; line-height: 1.6; margin-top: 0.5rem;
+    }
+    .trap-feedback.show { display: block; }
+    .trap-feedback.correct { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid rgba(34,197,94,0.4); }
+    .trap-feedback.wrong { background: rgba(239,68,68,0.1); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+    .trap-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 1rem;
+    }
+    .trap-progress {
+      font-size: 0.85rem; color: var(--gray);
+    }
+    .trap-score {
+      background: rgba(0,180,216,0.1); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1rem; text-align: center; margin-top: 1rem;
+    }
+    .trap-score-num { font-size: 2.5rem; font-weight: 800; color: var(--teal); }
+    .trap-score-label { color: var(--gray); font-size: 0.9rem; }
+
+    /* QUIZ */
+    .quiz-container {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .quiz-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1.5rem; }
+    .quiz-question { margin-bottom: 2rem; }
+    .question-text { font-weight: 600; margin-bottom: 1rem; line-height: 1.6; }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .quiz-option {
+      background: rgba(0,180,216,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem;
+    }
+    .quiz-option:hover { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .quiz-option.correct { background: rgba(34,197,94,0.1); border-color: var(--success); }
+    .quiz-option.incorrect { background: rgba(239,68,68,0.1); border-color: var(--error); }
+    .option-letter {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%; background: var(--blue);
+      font-weight: 600; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .quiz-option.correct .option-letter { background: var(--success); }
+    .quiz-option.incorrect .option-letter { background: var(--error); }
+    .quiz-feedback {
+      display: none; margin-top: 1rem; padding: 0.75rem; border-radius: 8px;
+      font-size: 0.9rem; line-height: 1.6;
+    }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid var(--success); }
+    .quiz-feedback.incorrect { background: rgba(239,68,68,0.1); color: var(--error); border: 1px solid var(--error); }
+
+    /* AI TUTOR */
+    .tutor-container {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .tutor-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .tutor-icon { font-size: 1.5rem; }
+    .tutor-title { font-size: 1.1rem; font-weight: 600; color: var(--teal); }
+    .tutor-input { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    #tutor-question {
+      flex: 1; background: var(--blue); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem; color: var(--white);
+      font-size: 0.95rem; font-family: inherit;
+    }
+    #tutor-question::placeholder { color: var(--gray); }
+    #ask-tutor {
+      background: var(--teal); color: var(--navy); border: none;
+      border-radius: 8px; padding: 0.75rem 1.5rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    #tutor-response {
+      background: rgba(0,180,216,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1rem; line-height: 1.7; display: none;
+    }
+    #tutor-response.show { display: block; }
+
+    .nav-buttons {
+      display: flex; justify-content: space-between; gap: 1rem;
+      margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .nav-btn {
+      background: var(--teal); color: var(--navy); border: none; border-radius: 8px;
+      padding: 0.75rem 1.5rem; font-weight: 600; cursor: pointer;
+      font-size: 1rem; font-family: inherit; text-decoration: none;
+    }
+    .nav-btn:hover { opacity: 0.9; }
+    .nav-btn.secondary { background: var(--blue); color: var(--white); }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { padding: 1.5rem; }
+      .tool-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo"><span class="atom">&#9883;</span><span>Reactor Ready</span></div>
+    <div class="nav-right">
+      <span>by Naked Nuclear</span>
+      <span style="color:var(--border);">|</span>
+      <span>Nuclear Wrapper Course</span>
+      <span style="color:var(--border);">|</span>
+      <span class="nav-badge">DEMO BUILD</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar">
+      <h3>Course Modules</h3>
+      <a href="module-1-welcome.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Welcome to Nuclear</div><div class="module-meta">30 min</div></div>
+      </a>
+      <a href="module-2-reactors.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">How Reactors Work</div><div class="module-meta">35 min</div></div>
+      </a>
+      <a href="module-3-radiation-safety.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Radiation Safety</div><div class="module-meta">40 min</div></div>
+      </a>
+      <a href="module-4-inside-reactor.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Inside the Reactor</div><div class="module-meta">45 min</div></div>
+      </a>
+      <a href="module-5-career-path.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Your Career Path</div><div class="module-meta">30 min</div></div>
+      </a>
+      <a href="module-6-regulatory.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Regulatory Framework</div><div class="module-meta">35 min</div></div>
+      </a>
+      <div class="module-item active">
+        <div class="module-number" style="background:var(--teal);color:var(--navy);">&#9679;</div>
+        <div class="module-info"><div class="module-title">QA &amp; Human Performance</div><div class="module-meta">30 min</div></div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">8</div>
+        <div class="module-info"><div class="module-title">Advanced Reactors</div><div class="module-meta">35 min</div></div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">9</div>
+        <div class="module-info"><div class="module-title">Citations &amp; Sources</div><div class="module-meta">Reference</div></div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="breadcrumb"><a href="module-1-welcome.html">Reactor Ready</a> &rarr; Module 7</div>
+
+      <div class="progress-section">
+        <div class="progress-label">Course Progress: Module 7 of 9</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:78%"></div></div>
+      </div>
+
+      <div class="module-header">
+        <h1 class="module-title-main">Getting It Right Every Time</h1>
+        <p class="module-subtitle">Nuclear Quality Assurance, Human Performance Tools, and Error Prevention</p>
+        <div class="module-meta-main">
+          <div>&#9201; 30 min</div>
+          <div>&#128196; Reading + Interactive</div>
+          <div>&#10003; 1 Knowledge Check</div>
+          <div>&#127918; 1 Interactive Simulator</div>
+        </div>
+      </div>
+
+      <div class="objectives">
+        <h3>Learning Objectives</h3>
+        <p style="color:var(--gray);margin-bottom:1rem;font-size:0.9rem;">By the end of this module, you will be able to:</p>
+        <ol>
+          <li>Understand why nuclear QA (NQA-1) is different from commercial quality standards</li>
+          <li>Learn the human performance error prevention tools used daily in nuclear plants</li>
+          <li>Understand the Corrective Action Program (CAP) and why every problem gets documented</li>
+          <li>Learn how nuclear's "questioning attitude" culture differs from other industries</li>
+          <li>Understand how trades workers apply these tools in their daily work</li>
+        </ol>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 1: NQA-1 -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">Nuclear Quality Is Different — NQA-1</h2>
+        <p class="card-text">
+          In most industries, quality means doing good work that meets spec. In nuclear, quality means something more demanding: <strong>provably correct, documented, and auditable for the life of the plant</strong>. That distinction changes everything about how work gets done.
+        </p>
+        <p class="card-text">
+          <strong>NQA-1</strong> (ASME Nuclear Quality Assurance standard) is the governing quality framework for nuclear construction, operation, and maintenance. It defines 18 criteria that cover the entire lifecycle of safety-related work — from how your organization is structured to how inspections are conducted and how problems get corrected.
+        </p>
+        <ul style="line-height:1.9;margin-left:1.5rem;margin-bottom:1rem;">
+          <li><strong>Organization &amp; Management:</strong> Who is responsible for quality, how authority is assigned, independence of QA oversight</li>
+          <li><strong>Design Control:</strong> Calculations must be reviewed and approved; changes must go through the same rigor as originals</li>
+          <li><strong>Procurement:</strong> Parts and materials for safety-related systems require documented pedigree — not just a receipt</li>
+          <li><strong>Instructions, Procedures, Drawings:</strong> Written, approved documents guide every safety-related task — no improvisation</li>
+          <li><strong>Inspection:</strong> Independent verification of completed work by a qualified QC inspector, separate from the craft worker</li>
+          <li><strong>Nonconforming Items:</strong> Anything that doesn't meet spec gets tagged, documented, and dispositioned — never quietly set aside</li>
+          <li><strong>Corrective Action:</strong> Every identified problem gets documented, analyzed, and fixed — then tracked to closure</li>
+        </ul>
+
+        <div class="analogy-box">
+          <strong>Commercial vs. Nuclear — Same Skill, Different Documentation:</strong><br>
+          A welder in commercial construction proves they did good work by the weld holding. A welder in nuclear proves good work with: a written procedure, a qualified process, a qualified welder certificate, pre-heat records, inspection hold points, NDE (non-destructive examination) results, a QC inspector sign-off, and a traveler document that will be stored for 40+ years. The weld is the same. The evidence trail is completely different.
+        </div>
+
+        <div class="callout">
+          <strong>For trades workers:</strong> Every weld, every cable pull, every valve replacement in a nuclear plant has a Quality Control inspector watching and a paper trail that will be auditable for the life of the plant. You don't just sign your name to say it's done — you sign your name to say it was done correctly, to the approved procedure, with the right parts, under the right conditions. <span style="color:var(--gray);font-size:0.85rem;">(Source: ASME NQA-1; 10 CFR 50 Appendix B)</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 2: HUMAN PERFORMANCE TOOLS -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">Human Performance Tools — Your Daily Toolkit</h2>
+        <p class="card-text">
+          Human error is the leading contributor to nuclear events. The industry's response wasn't to blame workers — it was to develop systematic tools that make errors less likely and easier to catch before they matter. These aren't bureaucratic checkboxes. They're practical habits that every nuclear worker uses every day, on every safety-related task.
+        </p>
+
+        <div class="tool-grid">
+          <div class="tool-card">
+            <div class="tool-name">STAR</div>
+            <div class="tool-desc"><strong>Stop, Think, Act, Review.</strong> Before every task, pause. What am I about to do? What could go wrong? Did I do it right? Use it before every safety-related action — especially the ones you've done a hundred times before.</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-name">Self-Checking</div>
+            <div class="tool-desc"><strong>Touch, verify, then act.</strong> Point at the component. Read the label aloud. Confirm it matches the procedure. Then perform the action. One step at a time — not two steps ahead.</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-name">Peer Checking</div>
+            <div class="tool-desc"><strong>Two sets of eyes on critical steps.</strong> For safety-related work, a second qualified person independently verifies the action (concurrent verification) or the result (independent verification). The checker doesn't just watch — they verify independently.</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-name">Pre-Job Brief</div>
+            <div class="tool-desc"><strong>Every job starts with a team meeting.</strong> Scope of work, hazards (radiation, electrical, fall), special instructions, contingency plan if something unexpected happens. No job starts until every person on the crew understands the plan.</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-name">3-Way Communication</div>
+            <div class="tool-desc"><strong>Sender states → Receiver repeats back → Sender confirms.</strong> Prevents miscommunication for verbal instructions. If you can't confirm a readback, don't proceed. Used constantly in control rooms and during critical maintenance evolutions.</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-name">Phonetic Alphabet</div>
+            <div class="tool-desc"><strong>Alpha, Bravo, Charlie, Delta...</strong> Prevents misidentification of components over radio. "B" and "D" sound alike. "Bravo" and "Delta" don't. Used when verbally identifying components — especially valves, breakers, and instrument tags.</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-name">Procedure Use &amp; Adherence</div>
+            <div class="tool-desc"><strong>Steps are read, performed, and signed off one at a time.</strong> You don't read ahead and work from memory. You don't skip steps because they seem obvious. You don't fill in the blanks after the fact. The procedure is your authorization to work.</div>
+          </div>
+          <div class="tool-card">
+            <div class="tool-name">Place-Keeping</div>
+            <div class="tool-desc"><strong>Track exactly where you are in a procedure.</strong> Use a physical marker (finger, card) on the current step. If interrupted, mark your place, note your status, don't proceed from memory. Interruption is one of the biggest error precursors in nuclear work.</div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>For trades workers:</strong> You already know how to pull wire and terminate panels. In nuclear, you'll also learn to STAR before every termination, peer-check every safety-related connection, and use the phonetic alphabet when identifying terminals on a radio call. The skill doesn't change. The discipline does. <span style="color:var(--gray);font-size:0.85rem;">(Source: INPO Human Performance Reference Manual; INPO 06-003)</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 3: CORRECTIVE ACTION PROGRAM -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">When Things Go Wrong — The Corrective Action Program</h2>
+        <p class="card-text">
+          Every nuclear plant has a <strong>Corrective Action Program (CAP)</strong>. It is the single most important quality system in the plant. The premise is simple: if you find a problem and document it, you can fix it before it matters. If you don't document it, it will compound until it does.
+        </p>
+        <p class="card-text">
+          When you identify any issue — a leaking fitting, a procedure that seems wrong, a near-miss, an equipment anomaly, or even a "something feels off" — you write a <strong>Condition Report (CR)</strong>. The CR is reviewed, triaged by severity, and assigned for resolution.
+        </p>
+        <ul style="line-height:1.9;margin-left:1.5rem;margin-bottom:1rem;">
+          <li><strong>Condition Report (CR):</strong> The entry point. Anyone can write one. Low threshold for entry — when in doubt, write it.</li>
+          <li><strong>Apparent Cause Evaluation (ACE):</strong> Used for moderate-significance issues. Identifies the most apparent cause and corrective actions.</li>
+          <li><strong>Root Cause Analysis (RCA):</strong> Required for significant events. Structured investigation to find the fundamental cause — not just the symptom — and the organizational factors behind it.</li>
+          <li><strong>Trending:</strong> CAP data is analyzed for patterns. Ten separate minor CRs about the same system might trigger a deeper look. The system is designed to catch patterns before they become events.</li>
+          <li><strong>Operating Experience (OE):</strong> INPO distributes lessons learned from events at other plants. Your plant is expected to review applicable OE and determine if corrective actions are needed.</li>
+        </ul>
+
+        <div class="analogy-box">
+          <strong>Think of CAP like a near-miss reporting system at a construction site — but mandatory and comprehensive.</strong> Except in nuclear, you don't just report near-misses. You report anything that isn't quite right, any procedure that's unclear, any tool that might not be calibrated. The culture is: finding a problem is good, hiding a problem is the worst thing you can do.
+        </div>
+
+        <div class="warning-box">
+          <strong>&#9888; Career-ending move:</strong> Hiding a problem in nuclear — bypassing a deficiency, failing to tag out nonconforming equipment, not writing a CR because you "fixed it yourself" — is a career-ending decision. The culture rewards finding and reporting problems. It has zero tolerance for concealment. This isn't a legal technicality; it's how Three Mile Island and Davis-Besse happened — small problems that weren't reported, compounding quietly until they weren't small anymore.
+          <span style="color:var(--gray);font-size:0.85rem;display:block;margin-top:0.5rem;">(Source: 10 CFR 50 Appendix B, Criterion XVI; INPO AP-913)</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- CARD 4: QUESTIONING ATTITUDE -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">The Questioning Attitude</h2>
+        <p class="card-text">
+          Nuclear's most important cultural principle isn't a tool or a procedure — it's a mindset. <strong>The questioning attitude</strong> means never assuming that the way things look is the way things are, and never proceeding when something doesn't seem right.
+        </p>
+        <ul style="line-height:1.9;margin-left:1.5rem;margin-bottom:1rem;">
+          <li><strong>"What could go wrong?"</strong> isn't pessimism — it's professional rigor. Running through failure modes before you act is expected, not neurotic.</li>
+          <li><strong>Procedure compliance:</strong> If a procedure step seems wrong, unclear, or doesn't match plant conditions — STOP. Don't deviate and don't freelance. Contact your supervisor, the procedure owner, or engineering. A procedure change request (PCR) is the path forward.</li>
+          <li><strong>Technical curiosity:</strong> You're expected to understand WHY you're doing something, not just HOW. Blind compliance without understanding breeds error. If a step doesn't make sense, ask until it does.</li>
+          <li><strong>Raising concerns:</strong> The NRC requires every licensee to maintain a <strong>Safety Conscious Work Environment (SCWE)</strong>. You have the right — and the professional obligation — to raise safety concerns without fear of retaliation.</li>
+          <li><strong>Employee protection:</strong> <strong>10 CFR 50.7</strong> prohibits discrimination against employees who raise safety concerns. This includes internal concerns, concerns raised to the NRC, or participation in NRC investigations. These are federal protections.</li>
+        </ul>
+
+        <div class="analogy-box">
+          <strong>The Davis-Besse Lesson (2002):</strong> Reactor head corrosion was discovered at the Davis-Besse plant that had eaten nearly all the way through the carbon steel vessel head, leaving only a thin stainless steel liner. The corrosion had been developing for years. Multiple opportunities to identify it were missed because workers and supervisors normalized what they saw — boric acid deposits are common, nothing seemed dramatically wrong. The questioning attitude means not normalizing abnormal conditions. "It's always looked like that" is not an acceptable answer in nuclear.
+          <span style="color:var(--gray);font-size:0.85rem;display:block;margin-top:0.5rem;">(Source: NRC Special Inspection Report 50-346/02-09; NRC Event Report)</span>
+        </div>
+
+        <div class="callout">
+          <strong>For trades workers:</strong> In most industries, raising concerns makes you difficult. In nuclear, NOT raising concerns makes you a liability. The culture actively rewards people who stop work and ask questions. If you're ever in a situation where stopping to ask feels uncomfortable — that discomfort is the system working. Trust it. <span style="color:var(--gray);font-size:0.85rem;">(Source: NRC RIS 2005-18; INPO 12-012 SCWE)</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- INTERACTIVE: ERROR TRAP SIMULATOR -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="content-card">
+        <h2 class="card-title">&#127918; Human Performance Error Trap Simulator</h2>
+        <p class="card-text">
+          Each scenario below contains an <strong>error trap</strong> — a situation where human error is likely. Read the scenario, identify the trap, then select the correct human performance tool to prevent it.
+        </p>
+
+        <div class="int-container">
+          <div class="int-header">
+            <span class="int-badge">Interactive</span>
+            <span class="int-label">Error Trap Simulator — 4 Scenarios</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1.25rem;">Work through all four scenarios. Each tests a different human performance tool.</p>
+
+          <div id="trap-game"></div>
+
+          <div class="int-insight">
+            <strong style="color:var(--gold);">Key takeaway:</strong> Error traps are predictable. Wrong component, miscommunication, procedure deviation, and fatigue are four of the most common precursors to nuclear events. Human performance tools exist specifically because these situations are recurring — not rare. Recognizing the trap before you walk into it is the skill.
+            <br><span style="font-size:0.8rem;color:var(--gray);">Source: INPO Human Performance Reference Manual; INPO 06-003 "Human Performance Tools"</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- KNOWLEDGE CHECK -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="quiz-container">
+        <h2 class="quiz-title">Knowledge Check</h2>
+
+        <div class="quiz-question" id="q1">
+          <p class="question-text">1. What does NQA-1 stand for, and why does it matter for a trades worker?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(1,'A',false)"><div class="option-letter">A</div><div>National Quality Assessment — it's an optional certification standard for nuclear contractors</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'B',true)"><div class="option-letter">B</div><div>ASME Nuclear Quality Assurance standard — it governs all safety-related work and requires documented, auditable procedures and inspections</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'C',false)"><div class="option-letter">C</div><div>Nuclear Quality Audit — a periodic inspection of plant equipment by the NRC</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'D',false)"><div class="option-letter">D</div><div>It's the same as ISO 9001 — nuclear just uses a different name for it</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-1"></div>
+        </div>
+
+        <div class="quiz-question" id="q2">
+          <p class="question-text">2. You're sent to close valve MV-2B. When you arrive, you see MV-2A and MV-2B side by side. Which human performance tool should you use before touching anything?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(2,'A',false)"><div class="option-letter">A</div><div>3-Way Communication — radio back to the control room to confirm the valve number</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'B',false)"><div class="option-letter">B</div><div>Pre-Job Brief — hold a team meeting before closing either valve</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'C',true)"><div class="option-letter">C</div><div>Self-Checking — stop, point at the component, read the tag aloud (MV-2B), confirm it matches your work order, then act</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'D',false)"><div class="option-letter">D</div><div>Place-Keeping — mark your position in the procedure before doing anything</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-2"></div>
+        </div>
+
+        <div class="quiz-question" id="q3">
+          <p class="question-text">3. What is the Corrective Action Program (CAP), and what is the threshold for writing a Condition Report?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(3,'A',false)"><div class="option-letter">A</div><div>CAP is for major safety events only — write a CR when something actually breaks or causes a shutdown</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'B',false)"><div class="option-letter">B</div><div>CAP is a disciplinary system — CRs are written when workers violate procedures</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'C',true)"><div class="option-letter">C</div><div>CAP is the plant's system for documenting and resolving ALL problems — the threshold is low: when in doubt, write the CR</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'D',false)"><div class="option-letter">D</div><div>CAP is managed by the NRC — plant workers don't write CRs directly</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-3"></div>
+        </div>
+
+        <div class="quiz-question" id="q4">
+          <p class="question-text">4. During a maintenance task, a procedure step doesn't match plant conditions — the component described isn't where the procedure says it should be. What is the correct response?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(4,'A',false)"><div class="option-letter">A</div><div>Proceed carefully — the procedure is probably just outdated, and experienced workers adapt on the fly</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'B',false)"><div class="option-letter">B</div><div>Skip the step — if the component isn't there, it can't be that important</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'C',false)"><div class="option-letter">C</div><div>Complete the rest of the steps first, then ask about the discrepant step afterward</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'D',true)"><div class="option-letter">D</div><div>STOP. Do not deviate. Contact your supervisor or the procedure owner to resolve the discrepancy before proceeding</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-4"></div>
+        </div>
+
+        <div class="quiz-question" id="q5">
+          <p class="question-text">5. What federal regulation protects nuclear workers who raise safety concerns from retaliation?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(5,'A',false)"><div class="option-letter">A</div><div>10 CFR 20 — the radiation protection standard</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'B',false)"><div class="option-letter">B</div><div>NQA-1 Criterion XII — the inspection standard</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'C',true)"><div class="option-letter">C</div><div>10 CFR 50.7 — prohibits discrimination against employees who raise nuclear safety concerns</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'D',false)"><div class="option-letter">D</div><div>10 CFR 50 Appendix B — the quality assurance criteria</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-5"></div>
+        </div>
+      </div>
+
+      <!-- AI TUTOR -->
+      <div class="tutor-container">
+        <div class="tutor-header">
+          <div class="tutor-icon">&#129302;</div>
+          <div>
+            <div class="tutor-title">ARIA AI Tutor</div>
+            <div style="font-size:0.85rem;color:var(--gray);">Ask me about quality assurance and human performance</div>
+          </div>
+        </div>
+        <div class="tutor-input">
+          <input type="text" id="tutor-question" placeholder="Ask a question about QA or human performance tools..." />
+          <button id="ask-tutor" onclick="askTutor()">Ask</button>
+        </div>
+        <div id="tutor-response"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="module-6-regulatory.html" class="nav-btn secondary">&larr; Back to Module 6</a>
+        <a href="module-8-advanced-reactors.html" class="nav-btn">Continue to Module 8 &rarr;</a>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  // ───────────────────────────────────────────
+  // INTERACTIVE: Human Performance Error Trap Simulator
+  // ───────────────────────────────────────────
+  (function(){
+    const scenarios = [
+      {
+        title: 'Scenario 1 of 4: The Identical Valves',
+        scene: 'You are sent to valve <em>MV-2B</em> to close it for planned maintenance. When you arrive at the panel, you find <em>MV-2A and MV-2B right next to each other</em>, identical in appearance — same color, same size, same handwheel. The only difference is the tag. You\'re thinking about the next job and reach for the valve on the right.',
+        trap: 'Error trap: Wrong component selection due to similar-looking components in close proximity.',
+        options: [
+          { text: 'STAR — Stop, Think, Act, Review before reaching for anything', correct: false, feedback: 'STAR is a great habit and you should always use it — but for this specific trap (two identical valves side by side), the most targeted tool is Self-Checking: physically touch the tag, read the valve number aloud, and confirm it matches your work document before you act. STAR is the overarching mindset; Self-Checking is the specific action.' },
+          { text: 'Self-Checking — Touch the tag, read "MV-2B" aloud, confirm it matches your work order, THEN close it', correct: true, feedback: '✓ Correct. Self-Checking is the right tool here. Touch the component, read the tag aloud, verify it matches your work order. For safety-related work, point-touch-verify is the habit that prevents wrong-component errors. Identical-looking components in close proximity is one of the most common error traps in nuclear maintenance.' },
+          { text: 'Peer Checking — Ask a coworker to verify which valve is 2B', correct: false, feedback: 'Peer checking adds a second set of eyes and is valuable, but the primary tool for verifying a component identity before you act is Self-Checking. In many situations you\'ll be working alone — you need to be able to self-verify. Peer checking is required for critical steps (concurrent or independent verification) but doesn\'t replace self-checking.' },
+          { text: 'Phonetic Alphabet — Radio the control room saying "Mike-Victor-Two-Bravo"', correct: false, feedback: 'The phonetic alphabet prevents miscommunication during verbal instructions — it\'s the right tool when someone reads you a component ID over the radio. Here, you already have the written work order with you. The error trap is physical identification, not verbal communication. Use Self-Checking on the physical component.' },
+        ]
+      },
+      {
+        title: 'Scenario 2 of 4: The Radio Misunderstanding',
+        scene: 'Your supervisor radios you from the control room: <em>"Close the breaker on bus 1-Alpha-E."</em> You heard <em>"bus 1-Alpha-3"</em> and are about to act on that. The bus in question is a safety-related 480V distribution panel. Closing the wrong breaker could de-energize critical equipment.',
+        trap: 'Error trap: Verbal miscommunication on a safety-related component identifier.',
+        options: [
+          { text: 'Self-Checking — Verify the component before acting on what you heard', correct: false, feedback: 'Self-checking is for verifying you\'re at the right component. It doesn\'t help if you misheard the component identifier in the first place. The trap here is verbal — you received unclear verbal information. The tool that addresses the communication itself is 3-Way Communication.' },
+          { text: '3-Way Communication — Repeat back exactly what you heard, then wait for the supervisor to confirm or correct', correct: true, feedback: '✓ Correct. 3-Way Communication: you heard "1-Alpha-3" — so you transmit back "I copy, close breaker on bus 1-Alpha-3." Your supervisor corrects: "Negative — 1-Alpha-Echo, not 3." Now you have the right information before you act. Without the readback, you act on a misheard identifier and potentially de-energize the wrong equipment. This is why 3-way communication is mandatory for safety-related verbal instructions.' },
+          { text: 'Phonetic Alphabet only — Ask your supervisor to repeat using phonetic alphabet', correct: false, feedback: 'The phonetic alphabet is part of the solution — it prevents the ambiguity that caused the misunderstanding. But the primary tool once you\'ve received a verbal instruction (even an ambiguous one) is 3-Way Communication. You repeat back what you heard, get it confirmed or corrected. Using phonetic alphabet going forward prevents recurrence; 3-way comm catches the error in this specific situation.' },
+          { text: 'Proceed — Close the breaker on bus 1-Alpha-3 and note the discrepancy in the log afterward', correct: false, feedback: 'This is the wrong answer. Acting on an unverified verbal instruction for safety-related work and logging it afterward is a serious procedure violation. You never proceed on uncertain information with safety-related equipment. Stop, use 3-Way Communication to confirm, then act.' },
+        ]
+      },
+      {
+        title: 'Scenario 3 of 4: The "Better" Route',
+        scene: 'You are pulling a cable run and the approved procedure says: <em>"Route cable through penetration P-114."</em> When you get there, <em>P-114 looks completely full</em>. Penetration P-115, right next to it, is empty and would work just as well geometrically. You\'re behind schedule and it would be easy to just use P-115.',
+        trap: 'Error trap: Pressure to deviate from an approved procedure because an "equivalent" path looks available.',
+        options: [
+          { text: 'Use P-115 — it\'s physically equivalent and you\'re behind schedule', correct: false, feedback: 'This is a procedure violation and potentially a significant safety issue. P-114 and P-115 may look equivalent but have completely different fire ratings, seismic qualifications, separation requirements, or system classifications. Penetration selection for cable routing is a design-controlled decision — not a field judgment call. Deviating without authorization violates the procedure and potentially the plant\'s licensing basis.' },
+          { text: 'Use P-115 but write a Condition Report afterward to document the change', correct: false, feedback: 'Writing a CR after the fact does not authorize the deviation. You cannot take an unauthorized action and then document it into acceptability. The CR should be written BEFORE proceeding — to flag that P-114 appears full and request evaluation of how to proceed. The sequence matters.' },
+          { text: 'STOP — never deviate from an approved procedure. Contact your supervisor immediately to report that P-114 appears full and request disposition', correct: true, feedback: '✓ Correct. When plant conditions don\'t match the procedure, you stop. Penetration routing decisions involve fire protection, system separation, seismic qualification, and licensing basis — these are not field judgment calls. Your supervisor contacts engineering, who evaluates the situation and either issues a procedure revision, a field change, or a design change. The questioning attitude means recognizing that what "looks equivalent" may not be.' },
+          { text: 'Skip P-114 and P-115 — route the cable a different way entirely to avoid the issue', correct: false, feedback: 'Same problem: any deviation from the approved procedure requires written authorization. You don\'t get to substitute your judgment for the engineering basis behind the procedure, regardless of what seems geometrically simple. Stop work and get disposition from your supervisor and engineering.' },
+        ]
+      },
+      {
+        title: 'Scenario 4 of 4: Hour 11 of 12',
+        scene: 'It\'s hour 11 of a 12-hour outage shift. You need to perform one more safety-related <em>torque check on a reactor coolant pump seal assembly</em> — a task you\'ve done many times. You\'re tired. Your focus is drifting. You just want to finish and go home. The task has three steps and two sign-offs.',
+        trap: 'Error trap: Fatigue and end-of-shift pressure — high error probability on a critical task.',
+        options: [
+          { text: 'Complete the task quickly from memory — you\'ve done it 50 times and know it cold', correct: false, feedback: 'This is one of the most common paths to error in nuclear maintenance. Familiarity breeds overconfidence, and fatigue compounds it. "I\'ve done it 50 times" is when self-checking and procedure use are most often skipped — and when errors most often occur. A reactor coolant pump seal is a safety-significant component. Doing this from memory while fatigued is exactly the situation procedure adherence was designed to prevent.' },
+          { text: 'Re-brief yourself and your peer checker, use the procedure step-by-step, and recognize fatigue as a risk factor in your pre-task check', correct: true, feedback: '✓ Correct. Fatigue is one of INPO\'s top error precursors. The correct response is to recognize it explicitly, treat it like any other hazard, and compensate with stricter technique — not less. Re-brief. Use the procedure. Require your peer checker to be present and engaged, not just going through the motions. If you have serious doubt about your ability to complete the task safely, STOP and discuss with your supervisor. Delay is always better than error.' },
+          { text: 'Ask a coworker to do it — you\'re too tired and they\'re fresher', correct: false, feedback: 'Delegating without authorization is a procedure issue — and the coworker would need to be qualified and have the work authority. But more importantly, this answer sidesteps the correct response: recognize fatigue as an error precursor, use your human performance tools, and if necessary discuss with your supervisor. Transferring work requires supervisor involvement, not informal delegation.' },
+          { text: 'Complete the task fast and do a thorough review of your sign-offs in the morning', correct: false, feedback: 'Safety-related sign-offs must be completed at the time of the work, not retrospectively. Verifying your own work hours after the fact (and after fatigue may have caused errors) defeats the purpose of real-time documentation. Never defer quality verification on safety-related tasks.' },
+        ]
+      }
+    ];
+
+    let current = 0;
+    let answered = 0;
+    let score = 0;
+    const container = document.getElementById('trap-game');
+
+    function render(){
+      if(current >= scenarios.length){
+        // Show final score
+        const pct = Math.round((score / scenarios.length) * 100);
+        const color = pct >= 75 ? 'var(--success)' : pct >= 50 ? 'var(--gold)' : 'var(--error)';
+        container.innerHTML = `
+          <div class="trap-score">
+            <div class="trap-score-num" style="color:${color};">${score} / ${scenarios.length}</div>
+            <div class="trap-score-label" style="margin-top:0.5rem;">${pct >= 75 ? 'Excellent — you\'re thinking like a nuclear professional.' : pct >= 50 ? 'Good start — review the tools you missed.' : 'Keep studying — these tools save lives.'}</div>
+          </div>
+          <div style="text-align:center;margin-top:1.25rem;">
+            <button class="int-btn primary" onclick="restartSim()">Try Again</button>
+          </div>
+        `;
+        return;
+      }
+      const s = scenarios[current];
+      const opts = s.options.map((o, i) => `
+        <button class="trap-option" onclick="pickOption(${i})" id="trap-opt-${i}">
+          <div class="trap-option-letter">${String.fromCharCode(65+i)}</div>
+          <div>${o.text}</div>
+        </button>
+      `).join('');
+
+      container.innerHTML = `
+        <div class="trap-scenario">
+          <h4>${s.title}</h4>
+          <div class="trap-scene">${s.scene}</div>
+          <div class="trap-prompt">&#9888; <em style="color:var(--gold);">${s.trap}</em></div>
+          <div class="trap-prompt">Which human performance tool addresses this situation?</div>
+          <div class="trap-options" id="trap-opts">${opts}</div>
+          <div class="trap-feedback" id="trap-fb"></div>
+          <div class="trap-nav">
+            <div class="trap-progress">Question ${current+1} of ${scenarios.length} &nbsp;|&nbsp; Score: ${score} correct</div>
+            <button class="int-btn gold" id="trap-next" onclick="nextScenario()" style="display:none;">
+              ${current < scenarios.length-1 ? 'Next Scenario &rarr;' : 'See Results'}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    window.pickOption = function(idx){
+      const s = scenarios[current];
+      const o = s.options[idx];
+      // Disable all options
+      document.querySelectorAll('.trap-option').forEach(btn => {
+        btn.classList.add('disabled');
+        btn.onclick = null;
+      });
+      // Mark selected
+      const btn = document.getElementById('trap-opt-'+idx);
+      btn.classList.add(o.correct ? 'correct' : 'wrong');
+      // Highlight correct if wrong
+      if(!o.correct){
+        s.options.forEach((opt, i) => {
+          if(opt.correct) document.getElementById('trap-opt-'+i).classList.add('correct');
+        });
+      } else {
+        score++;
+      }
+      // Show feedback
+      const fb = document.getElementById('trap-fb');
+      fb.textContent = o.feedback;
+      fb.classList.add('show', o.correct ? 'correct' : 'wrong');
+      // Show next button
+      document.getElementById('trap-next').style.display = 'inline-block';
+    };
+
+    window.nextScenario = function(){
+      current++;
+      render();
+    };
+
+    window.restartSim = function(){
+      current = 0; score = 0;
+      render();
+    };
+
+    render();
+  })();
+
+  // ───────────────────────────────────────────
+  // Quiz
+  // ───────────────────────────────────────────
+  const feedbackData = {
+    1: {
+      correct: "Correct. NQA-1 is ASME's Nuclear Quality Assurance standard — it's what makes nuclear quality different from commercial quality. It requires 18 criteria covering organization, design control, procurement, inspection, and corrective action. Every safety-related task you perform will be governed by NQA-1. (Source: ASME NQA-1; 10 CFR 50 Appendix B)",
+      incorrect: "NQA-1 = ASME Nuclear Quality Assurance standard. It's the governing QA framework for nuclear work and is completely different from ISO 9001. ISO 9001 assumes errors are costly. NQA-1 assumes errors could be catastrophic — so it requires documented procedures, independent inspection, and 40-year paper trails. (Source: ASME NQA-1; 10 CFR 50 Appendix B)"
+    },
+    2: {
+      correct: "Correct. Self-Checking is the targeted tool for this error trap: two identical components in close proximity. Touch the tag, read the valve number aloud, confirm it matches your work order — THEN act. The physical point-touch-verify habit is what prevents wrong-component errors. (Source: INPO Human Performance Reference Manual)",
+      incorrect: "Self-Checking is the right answer. Touch the tag on MV-2B, read the number aloud, confirm it matches your work order, then act. Peer checking adds a second person; 3-way communication addresses verbal transmission; the phonetic alphabet prevents verbal misidentification. But for verifying a physical component before you touch it, Self-Checking is the specific tool. (Source: INPO 06-003)"
+    },
+    3: {
+      correct: "Correct. The Corrective Action Program (CAP) is the plant's system for documenting and fixing ALL problems, not just major events. The threshold for writing a Condition Report is intentionally low — 'when in doubt, write it.' Low-threshold reporting lets the system catch patterns before they escalate. (Source: 10 CFR 50 Appendix B Criterion XVI; INPO AP-913)",
+      incorrect: "CAP = Corrective Action Program — every nuclear plant's system for documenting and resolving any problem, concern, or anomaly. The threshold is LOW: if something seems off, write a CR. Trending of low-significance CRs often reveals patterns that prevent major events. CAP is run by the plant (not the NRC), and any worker can write a CR. (Source: INPO AP-913)"
+    },
+    4: {
+      correct: "Correct. When plant conditions don't match the procedure, you STOP. You don't deviate, improvise, or proceed and document it later. Contact your supervisor, who will engage engineering to evaluate and authorize how to proceed. Procedure deviations require written authorization. (Source: NQA-1 Criterion V; 10 CFR 50 Appendix B)",
+      incorrect: "The answer is STOP. When a procedure step doesn't match plant conditions, you stop work and contact your supervisor. You never deviate from an approved procedure without written authorization. The engineering basis behind the step may not be visible to you — it could be a fire protection requirement, a seismic separation requirement, or a licensing basis condition. (Source: NQA-1 Criterion V)"
+    },
+    5: {
+      correct: "Correct. 10 CFR 50.7 prohibits retaliation against nuclear plant employees who raise safety concerns, report violations to the NRC, or participate in NRC proceedings. This is a federal protection. The related requirement for a Safety Conscious Work Environment (SCWE) is coditioned through 10 CFR 50 Appendix C and NRC policy. (Source: 10 CFR 50.7; NRC Enforcement Policy)",
+      incorrect: "10 CFR 50.7 is the correct answer. It prohibits discrimination against employees who raise nuclear safety concerns — including concerns raised internally, to the NRC, or in NRC proceedings. 10 CFR 20 covers radiation protection. NQA-1 covers quality assurance. 10 CFR 50 Appendix B covers QA criteria. Safety concern whistleblower protection = 10 CFR 50.7. (Source: 10 CFR 50.7)"
+    }
+  };
+
+  function selectOption(qNum, letter, isCorrect){
+    const q = document.getElementById('q'+qNum);
+    q.querySelectorAll('.quiz-option').forEach(o => o.style.pointerEvents='none');
+    event.currentTarget.classList.add(isCorrect?'correct':'incorrect');
+    const fb = document.getElementById('feedback-'+qNum);
+    fb.classList.add('show', isCorrect?'correct':'incorrect');
+    fb.textContent = (isCorrect?'\u2713 ':'\u2717 ') + feedbackData[qNum][isCorrect?'correct':'incorrect'];
+  }
+
+  // ───────────────────────────────────────────
+  // AI Tutor
+  // ───────────────────────────────────────────
+  const tutorKB = {
+    'nqa|nqa-1|quality assurance|asme|criterion|appendix b': "NQA-1 is the ASME Nuclear Quality Assurance standard — the governing QA framework for nuclear work. It contains 18 criteria covering organization, design control, procurement, document control, instructions/procedures, control of materials, control of special processes, inspection, test control, measurement/test equipment, handling/storage/shipping, inspection/test status, nonconforming materials, corrective action, QA records, audits, and more. Nuclear plants also implement 10 CFR 50 Appendix B, which has 18 parallel criteria with regulatory force. (Source: ASME NQA-1; 10 CFR 50 Appendix B)",
+    'star|stop think act|self.check|self-check|point touch': "Human performance tools for individual workers: STAR (Stop, Think, Act, Review) — a mindset habit before every task. Self-Checking — touch the component, read the label aloud, confirm it matches your work document, then act. These prevent two of the most common error types: rushing into action without thinking, and wrong-component selection. Both are required before every safety-related action, not just complex ones. (Source: INPO Human Performance Reference Manual)",
+    'peer check|peer.check|concurrent verification|independent verification': "Peer Checking comes in two forms: (1) Concurrent Verification — the checker watches and verifies the action as it happens; (2) Independent Verification — the checker independently determines the correct result without being told what was done. Which type is required is specified in the procedure. The checker is a second qualified person — not just a coworker who happens to be nearby. They verify independently, not just watch. (Source: INPO 06-003)",
+    'three.way|3.way|3-way|readback|repeat back': "3-Way Communication: Sender states the message → Receiver repeats it back verbatim → Sender confirms the readback is correct (or corrects it). If the readback is wrong, the sender says 'Negative' and repeats the original message. Only after confirmation does the receiver act. Used for all safety-related verbal instructions — component identifiers, switch positions, valve numbers. Never act on a verbal instruction for safety-related work without completing the 3-way cycle. (Source: INPO 06-003)",
+    'phonetic|alpha bravo|nato|component id': "The phonetic alphabet (NATO): Alpha, Bravo, Charlie, Delta, Echo, Foxtrot, Golf, Hotel, India, Juliet, Kilo, Lima, Mike, November, Oscar, Papa, Quebec, Romeo, Sierra, Tango, Uniform, Victor, Whiskey, X-ray, Yankee, Zulu. Used when speaking component identifiers over radio — prevents confusion between similar-sounding letters (B/D/E/P/T/V). For numbers: say each digit separately (one-four-two, not one hundred forty-two). (Source: INPO 06-003)",
+    'procedure|procedure use|adherence|place.keep|place-keep': "Procedure Use and Adherence: Approved procedures are your authorization to work. You read each step, perform the action, and sign/initial before moving to the next step. No reading ahead and working from memory. No skipping steps. No filling blanks in retrospectively. Place-Keeping: use a physical marker (finger, index card) to track your position. If interrupted: mark your place, note status to your supervisor, don't proceed from memory. Interruption is a top error precursor. (Source: NQA-1 Criterion V; INPO 06-003)",
+    'pre-job|pre job|prejob|brief|job brief': "Pre-Job Briefs: Required before any safety-related maintenance task. Covers: scope of work (what are we actually doing?), hazards (radiation, electrical, fall, chemical), special instructions from the RWP or work order, contingency plan (what do we do if X happens?), roles and responsibilities (who does what, who peer-checks what), and expected plant response. Every person on the crew must understand the plan before work starts. If something changes mid-job, a re-brief is required. (Source: INPO AP-928)",
+    'cap|corrective action|condition report|cr|root cause|rca|apparent cause|ace|trending': "Corrective Action Program (CAP): The plant's quality system for documenting and resolving all problems. Entry point = Condition Report (CR) — any worker can write one, threshold is LOW (when in doubt, write it). CRs are triaged: Low significance → basic corrective action. Moderate → Apparent Cause Evaluation (ACE). Significant → Root Cause Analysis (RCA). Data is trended to catch patterns. INPO distributes Operating Experience (OE) from events at other plants — your plant reviews applicable OE for corrective actions. (Source: 10 CFR 50 Appendix B Criterion XVI; INPO AP-913)",
+    'questioning attitude|scwe|safety conscious|raise concern|10 cfr 50.7|employee protection|whistleblower': "Questioning Attitude: Nuclear's core cultural principle. Means: never normalizing abnormal conditions, asking 'what could go wrong?' as a professional habit, stopping work when something doesn't seem right, and raising safety concerns without fear. Safety Conscious Work Environment (SCWE): NRC requires plants to maintain a work environment where concerns can be raised freely. 10 CFR 50.7: Federal protection against retaliation for raising safety concerns, reporting to NRC, or participating in NRC proceedings. Davis-Besse (2002) is the canonical example of what happens when questioning attitude fails. (Source: 10 CFR 50.7; NRC RIS 2005-18)",
+    'fatigue|tired|end of shift|error precursor': "INPO's top human performance error precursors include: fatigue, time pressure, distraction/interruption, overconfidence/complacency, first time doing a task, and changed or unusual conditions. Fatigue specifically: increases error rate, decreases attention to procedure steps, encourages shortcuts. Correct response: recognize fatigue explicitly in your pre-job brief, apply stricter human performance tools (not looser), require active peer checking, and if safety is genuinely at risk — stop work and discuss with your supervisor. (Source: INPO 06-003; INPO SOER 11-2)",
+    'default': "I can answer questions about nuclear quality assurance and human performance. Try asking about: NQA-1 and Appendix B, STAR and self-checking, peer checking, 3-way communication, the phonetic alphabet, procedure use and place-keeping, pre-job briefs, the Corrective Action Program (CAP), Condition Reports, Root Cause Analysis, questioning attitude, Safety Conscious Work Environment, 10 CFR 50.7 employee protection, or fatigue as an error precursor."
+  };
+
+  function askTutor(){
+    const q = document.getElementById('tutor-question').value.toLowerCase();
+    const r = document.getElementById('tutor-response');
+    if(!q.trim()){ r.textContent='Please enter a question.'; r.classList.add('show'); return; }
+    let answer = tutorKB['default'];
+    for(const [pattern,text] of Object.entries(tutorKB)){
+      if(pattern==='default') continue;
+      if(pattern.split('|').some(kw => q.includes(kw.replace(/\./g,' ')) || q.includes(kw.replace(/\./g,'-')) || q.includes(kw))){
+        answer = text; break;
+      }
+    }
+    r.textContent = answer;
+    r.classList.add('show');
+  }
+  document.getElementById('tutor-question').addEventListener('keypress', function(e){
+    if(e.key==='Enter') askTutor();
+  });
+  </script>
+</body>
+</html>

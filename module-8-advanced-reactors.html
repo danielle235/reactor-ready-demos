@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 8: Advanced Reactors &amp; SMRs &#8212; Reactor Ready</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --blue: #1a3a5c;
+      --teal: #00b4d8;
+      --teal-light: #90e0ef;
+      --gold: #f4a261;
+      --white: #f8fafc;
+      --gray: #94a3b8;
+      --dark-card: #111f35;
+      --success: #22c55e;
+      --error: #ef4444;
+      --border: rgba(0,180,216,0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; background: var(--dark-card);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.1rem; color: var(--teal); }
+    .nav-logo .atom { font-size: 1.5rem; }
+    .nav-badge { font-size: 0.7rem; background: var(--teal); color: var(--navy); padding: 0.2rem 0.5rem; border-radius: 999px; font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--gray); }
+    .container { display: flex; height: calc(100vh - 65px); }
+
+    .sidebar {
+      width: 280px; background: var(--dark-card); border-right: 1px solid var(--border);
+      overflow-y: auto; padding: 1.5rem 1rem;
+    }
+    .sidebar h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); margin-bottom: 1rem; }
+    .module-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem;
+      margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s; border: 1px solid transparent; text-decoration: none; color: inherit;
+    }
+    .module-item.active { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .module-item.complete { opacity: 0.7; }
+    .module-item.locked { opacity: 0.5; cursor: not-allowed; }
+    .module-item:not(.locked):hover { background: rgba(0,180,216,0.05); }
+    .module-number {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%; background: var(--blue);
+      font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .module-item.active .module-number { background: var(--teal); color: var(--navy); }
+    .module-item.complete .module-number { background: var(--success); color: var(--navy); }
+    .module-info { flex: 1; }
+    .module-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .module-meta { font-size: 0.75rem; color: var(--gray); }
+    .module-lock { font-size: 1.2rem; color: var(--gray); }
+
+    .main { flex: 1; overflow-y: auto; padding: 2rem 3rem; max-width: 900px; margin: 0 auto; }
+    .breadcrumb { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.5rem; }
+    .breadcrumb a { color: var(--teal); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .progress-section { margin-bottom: 2rem; }
+    .progress-label { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem; }
+    .progress-bar { height: 8px; background: var(--blue); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+    .module-header { margin-bottom: 2.5rem; }
+    .module-title-main { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--teal); }
+    .module-subtitle { font-size: 1.3rem; color: var(--gray); margin-bottom: 1rem; }
+    .module-meta-main { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--gray); }
+
+    .objectives {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .objectives h3 { font-size: 1.1rem; color: var(--teal); margin-bottom: 1rem; }
+    .objectives ol { margin-left: 1.5rem; }
+    .objectives li { margin-bottom: 0.75rem; line-height: 1.6; }
+
+    .content-card {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .card-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1rem; }
+    .card-text { line-height: 1.7; margin-bottom: 1rem; }
+    .callout {
+      background: rgba(0,180,216,0.1); border-left: 3px solid var(--teal);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .callout strong { color: var(--teal); }
+    .analogy-box {
+      background: rgba(244,162,97,0.1); border-left: 3px solid var(--gold);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .analogy-box strong { color: var(--gold); }
+    .warning-box {
+      background: rgba(239,68,68,0.1); border-left: 3px solid var(--error);
+      padding: 1rem; margin: 1.5rem 0; border-radius: 4px;
+    }
+    .warning-box strong { color: var(--error); }
+
+    /* REACTOR CARDS GRID */
+    .reactor-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 1.5rem 0;
+    }
+    .reactor-card {
+      background: rgba(0,180,216,0.04); border: 2px solid var(--border);
+      border-radius: 10px; padding: 1rem; cursor: pointer;
+      transition: all 0.2s; text-align: center;
+    }
+    .reactor-card:hover { border-color: var(--teal); background: rgba(0,180,216,0.08); }
+    .reactor-card.selected-a { border-color: var(--teal); background: rgba(0,180,216,0.15); }
+    .reactor-card.selected-b { border-color: var(--gold); background: rgba(244,162,97,0.1); }
+    .reactor-card.baseline { border-color: var(--gray); }
+    .reactor-card-icon { font-size: 2rem; margin-bottom: 0.4rem; }
+    .reactor-card-name { font-size: 0.85rem; font-weight: 700; color: var(--teal); }
+    .reactor-card.selected-b .reactor-card-name { color: var(--gold); }
+    .reactor-card.baseline .reactor-card-name { color: var(--gray); }
+    .reactor-card-type { font-size: 0.75rem; color: var(--gray); margin-top: 0.2rem; }
+    .reactor-card-mw { font-size: 0.8rem; font-weight: 600; margin-top: 0.4rem; }
+    .reactor-card-select-hint { font-size: 0.7rem; color: var(--gray); margin-top: 0.4rem; }
+    .reactor-card.selected-a .reactor-card-select-hint { color: var(--teal); }
+    .reactor-card.selected-b .reactor-card-select-hint { color: var(--gold); }
+
+    /* COMPARISON TABLE */
+    .compare-wrap {
+      background: rgba(0,180,216,0.04); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden; margin-top: 1.5rem;
+    }
+    .compare-table { width: 100%; border-collapse: collapse; }
+    .compare-table th {
+      padding: 0.75rem 1rem; font-size: 0.8rem; text-transform: uppercase;
+      letter-spacing: 0.05em; font-weight: 700;
+    }
+    .compare-table th:first-child { color: var(--gray); text-align: left; background: rgba(0,0,0,0.2); }
+    .compare-table th.col-a { color: var(--teal); background: rgba(0,180,216,0.1); text-align: center; }
+    .compare-table th.col-b { color: var(--gold); background: rgba(244,162,97,0.1); text-align: center; }
+    .compare-table td { padding: 0.7rem 1rem; border-top: 1px solid var(--border); font-size: 0.85rem; line-height: 1.5; }
+    .compare-table td:first-child { color: var(--gray); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(0,0,0,0.1); }
+    .compare-table td.col-a { text-align: center; }
+    .compare-table td.col-b { text-align: center; }
+    .compare-hint {
+      text-align: center; padding: 2rem; color: var(--gray); font-size: 0.9rem;
+    }
+    .select-legend {
+      display: flex; gap: 1.5rem; justify-content: center; margin-bottom: 0.75rem; font-size: 0.8rem;
+    }
+    .select-legend span { display: flex; align-items: center; gap: 0.4rem; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+    /* REACTOR DESIGN CARDS in content */
+    .design-card {
+      background: rgba(0,180,216,0.04); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1.1rem; margin-bottom: 1rem;
+    }
+    .design-card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+    .design-badge {
+      font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px;
+      text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+    }
+    .design-card-title { font-size: 1rem; font-weight: 700; }
+    .design-card-text { font-size: 0.9rem; line-height: 1.7; color: var(--gray); }
+    .design-card-text strong { color: var(--white); }
+    .trades-pill {
+      display: inline-block; font-size: 0.75rem; background: rgba(0,180,216,0.1);
+      border: 1px solid var(--border); border-radius: 999px; padding: 0.15rem 0.6rem;
+      margin: 0.2rem 0.2rem 0 0; color: var(--teal);
+    }
+
+    /* SKILL TAGS for career card */
+    .skill-tag {
+      display: inline-block; font-size: 0.8rem; background: rgba(244,162,97,0.1);
+      border: 1px solid rgba(244,162,97,0.3); border-radius: 6px;
+      padding: 0.3rem 0.7rem; margin: 0.25rem; color: var(--gold);
+    }
+    .skill-tag.core { background: rgba(0,180,216,0.1); border-color: rgba(0,180,216,0.3); color: var(--teal); }
+
+    /* INTERACTIVE SHARED */
+    .int-container {
+      background: rgba(0,180,216,0.04); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem;
+    }
+    .int-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+    .int-badge {
+      background: var(--gold); color: var(--navy); font-size: 0.7rem; font-weight: 700;
+      padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .int-label { font-size: 0.95rem; font-weight: 600; color: var(--teal); }
+    .int-controls {
+      display: flex; gap: 0.75rem; justify-content: center; align-items: center;
+      flex-wrap: wrap; margin-bottom: 0.5rem;
+    }
+    .int-btn {
+      padding: 0.5rem 1.2rem; border: none; border-radius: 6px; font-weight: 600;
+      cursor: pointer; font-family: inherit; font-size: 0.8rem; transition: all 0.15s;
+    }
+    .int-btn.primary { background: var(--teal); color: var(--navy); }
+    .int-btn.primary:hover { filter: brightness(1.1); }
+    .int-btn.secondary { background: var(--blue); color: var(--white); border: 1px solid var(--border); }
+    .int-btn.secondary:hover { border-color: var(--teal); }
+    .int-btn.gold { background: var(--gold); color: var(--navy); }
+    .int-btn.gold:hover { filter: brightness(1.1); }
+    .int-status { text-align: center; font-size: 0.8rem; color: var(--gray); min-height: 1.2rem; margin-top: 0.25rem; }
+    .int-insight {
+      margin-top: 0.75rem; padding: 0.75rem 1rem;
+      background: rgba(244,162,97,0.1); border: 1px solid rgba(244,162,97,0.3);
+      border-radius: 8px; font-size: 0.85rem; line-height: 1.6; text-align: center;
+    }
+
+    /* QUIZ */
+    .quiz-container {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .quiz-title { font-size: 1.3rem; font-weight: 600; color: var(--teal); margin-bottom: 1.5rem; }
+    .quiz-question { margin-bottom: 2rem; }
+    .question-text { font-weight: 600; margin-bottom: 1rem; line-height: 1.6; }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .quiz-option {
+      background: rgba(0,180,216,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem;
+    }
+    .quiz-option:hover { background: rgba(0,180,216,0.1); border-color: var(--teal); }
+    .quiz-option.correct { background: rgba(34,197,94,0.1); border-color: var(--success); }
+    .quiz-option.incorrect { background: rgba(239,68,68,0.1); border-color: var(--error); }
+    .option-letter {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%; background: var(--blue);
+      font-weight: 600; font-size: 0.9rem; flex-shrink: 0;
+    }
+    .quiz-option.correct .option-letter { background: var(--success); }
+    .quiz-option.incorrect .option-letter { background: var(--error); }
+    .quiz-feedback {
+      display: none; margin-top: 1rem; padding: 0.75rem; border-radius: 8px;
+      font-size: 0.9rem; line-height: 1.6;
+    }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid var(--success); }
+    .quiz-feedback.incorrect { background: rgba(239,68,68,0.1); color: var(--error); border: 1px solid var(--error); }
+
+    /* AI TUTOR */
+    .tutor-container {
+      background: var(--dark-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .tutor-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .tutor-icon { font-size: 1.5rem; }
+    .tutor-title { font-size: 1.1rem; font-weight: 600; color: var(--teal); }
+    .tutor-input { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    #tutor-question {
+      flex: 1; background: var(--blue); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem; color: var(--white);
+      font-size: 0.95rem; font-family: inherit;
+    }
+    #tutor-question::placeholder { color: var(--gray); }
+    #ask-tutor {
+      background: var(--teal); color: var(--navy); border: none;
+      border-radius: 8px; padding: 0.75rem 1.5rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    #tutor-response {
+      background: rgba(0,180,216,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1rem; line-height: 1.7; display: none;
+    }
+    #tutor-response.show { display: block; }
+
+    .nav-buttons {
+      display: flex; justify-content: space-between; gap: 1rem;
+      margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .nav-btn {
+      background: var(--teal); color: var(--navy); border: none; border-radius: 8px;
+      padding: 0.75rem 1.5rem; font-weight: 600; cursor: pointer;
+      font-size: 1rem; font-family: inherit; text-decoration: none;
+    }
+    .nav-btn:hover { opacity: 0.9; }
+    .nav-btn.secondary { background: var(--blue); color: var(--white); }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { padding: 1.5rem; }
+      .reactor-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo"><span class="atom">&#9883;</span><span>Reactor Ready</span></div>
+    <div class="nav-right">
+      <span>by Naked Nuclear</span>
+      <span style="color:var(--border);">|</span>
+      <span>Nuclear Wrapper Course</span>
+      <span style="color:var(--border);">|</span>
+      <span class="nav-badge">DEMO BUILD</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar">
+      <h3>Course Modules</h3>
+      <a href="module-1-welcome.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Welcome to Nuclear</div><div class="module-meta">30 min</div></div>
+      </a>
+      <a href="module-2-reactors.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">How Reactors Work</div><div class="module-meta">35 min</div></div>
+      </a>
+      <a href="module-3-radiation-safety.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Radiation Safety</div><div class="module-meta">40 min</div></div>
+      </a>
+      <a href="module-4-inside-reactor.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Inside the Reactor</div><div class="module-meta">45 min</div></div>
+      </a>
+      <a href="module-5-career-path.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Your Career Path</div><div class="module-meta">30 min</div></div>
+      </a>
+      <a href="module-6-regulatory.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">Regulatory Framework</div><div class="module-meta">35 min</div></div>
+      </a>
+      <a href="module-7-qa-human-performance.html" class="module-item complete">
+        <div class="module-number">&#10003;</div>
+        <div class="module-info"><div class="module-title">QA &amp; Human Performance</div><div class="module-meta">35 min</div></div>
+      </a>
+      <div class="module-item active">
+        <div class="module-number">&#9679;</div>
+        <div class="module-info"><div class="module-title">Advanced Reactors</div><div class="module-meta">30 min</div></div>
+      </div>
+      <div class="module-item locked">
+        <div class="module-number">9</div>
+        <div class="module-info"><div class="module-title">Citations &amp; Sources</div><div class="module-meta">Reference</div></div>
+        <div class="module-lock">&#128274;</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="breadcrumb"><a href="module-1-welcome.html">Reactor Ready</a> &rarr; Module 8</div>
+
+      <div class="progress-section">
+        <div class="progress-label">Course Progress: Module 8 of 9</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:89%"></div></div>
+      </div>
+
+      <div class="module-header">
+        <h1 class="module-title-main">The Next Generation</h1>
+        <p class="module-subtitle">Small Modular Reactors, Advanced Designs, and What They Mean for Your Career</p>
+        <div class="module-meta-main">
+          <div>&#9201; 30 min</div>
+          <div>&#128196; Reading + Interactive</div>
+          <div>&#10003; 1 Knowledge Check</div>
+          <div>&#127918; 1 Interactive Widget</div>
+        </div>
+      </div>
+
+      <div class="objectives">
+        <h3>Learning Objectives</h3>
+        <p style="color:var(--gray);margin-bottom:1rem;font-size:0.9rem;">By the end of this module, you will be able to:</p>
+        <ol>
+          <li>Understand what makes a reactor "advanced" versus the current operating fleet</li>
+          <li>Identify the major SMR designs and their key differences (BWRX-300, NuScale VOYGR, Kairos FHR, X-energy Xe-100, TerraPower Natrium)</li>
+          <li>Explain how passive safety systems work and why they represent a fundamental shift in reactor design</li>
+          <li>Describe how SMR construction differs from traditional large reactor construction</li>
+          <li>Understand what advanced reactors mean for trades workers &mdash; which skills transfer, which are new, and where the jobs are</li>
+        </ol>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- CARD 1: THE CASE FOR ADVANCED NUCLEAR        -->
+      <!-- ============================================ -->
+      <div class="content-card">
+        <h2 class="card-title">Why New Reactors? &#8212; The Case for Advanced Nuclear</h2>
+        <p class="card-text">
+          The US fleet of ~94 operating reactors is one of the most impressive engineering achievements in history. It also has a problem: <strong>every single one of those plants was designed in the 1960s and 1970s.</strong> They're Generation II designs, and most are running decades past their original 40-year license terms.
+        </p>
+        <p class="card-text">
+          We've learned a lot since then. Fukushima in 2011 showed what happens when active safety systems lose power. Vogtle Units 3 &amp; 4 in Georgia showed what happens when you try to build a Gen III+ plant with the old construction model &#8212; 10 years and <strong>$35 billion</strong> for two reactors. That's not scalable.
+        </p>
+        <p class="card-text">
+          The nuclear industry responded with two parallel tracks: <strong>Small Modular Reactors (SMRs)</strong> and <strong>advanced reactor designs</strong>. These aren't just smaller reactors. They represent a fundamental rethinking of how nuclear power is designed, built, and operated.
+        </p>
+
+        <div class="analogy-box">
+          <strong>The LEGO analogy:</strong> Traditional large reactors are like custom-built mansions &#8212; every component designed and built on site, years of construction, enormous cost overruns. SMRs are like modular homes: standardized modules built in a controlled factory environment, shipped to the site, and assembled in a fraction of the time. Same quality. Radically different economics.
+        </div>
+
+        <ul style="line-height:1.9;margin-left:1.5rem;margin-bottom:1rem;">
+          <li><strong>Current US fleet:</strong> ~94 reactors, all Generation II/III designs, average age over 40 years</li>
+          <li><strong>The cost problem:</strong> Vogtle 3&amp;4 took 10+ years and cost $35 billion &#8212; the old model doesn't scale</li>
+          <li><strong>SMR promise:</strong> Factory-built modules, predictable construction timelines, lower up-front capital</li>
+          <li><strong>Advanced reactor promise:</strong> New fuels, new coolants, passive safety (no operator action needed in emergencies)</li>
+          <li><strong>DOE investment:</strong> $3.2 billion+ committed to advanced reactor demonstrations as of 2024</li>
+        </ul>
+
+        <div class="callout">
+          <strong>Key stat:</strong> The NRC approved the first-ever SMR design certification (NuScale) in 2022 &#8212; the first new reactor type certified in over 20 years. The regulatory pathway now exists. The industry is moving. <span style="color:var(--gray);font-size:0.85rem;">(Source: NRC Design Certification Docket No. 52-048)</span>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- CARD 2: FIELD GUIDE TO NEW REACTORS          -->
+      <!-- ============================================ -->
+      <div class="content-card">
+        <h2 class="card-title">Meet the New Reactors &#8212; A Field Guide</h2>
+        <p class="card-text">
+          Five designs are leading the advanced reactor buildout in North America. Here's what you need to know about each one &#8212; what's different about it, where it's being built, and what trades it needs.
+        </p>
+
+        <!-- BWRX-300 -->
+        <div class="design-card">
+          <div class="design-card-header">
+            <span class="design-badge" style="background:rgba(0,180,216,0.15);color:var(--teal);border:1px solid var(--teal);">BWR &#8226; 300 MWe</span>
+            <div class="design-card-title">GE Hitachi BWRX-300</div>
+          </div>
+          <div class="design-card-text">
+            <strong>What's different:</strong> A radically simplified boiling water reactor &#8212; 10x fewer pumps, valves, and active safety systems compared to a traditional BWR. GE calls it "simplification by elimination." The core sits in a below-grade water pool; passive gravity-driven cooling kicks in automatically if anything goes wrong.<br><br>
+            <strong>Where it's going:</strong> Ontario Power Generation is building one at the Darlington site in Canada &#8212; the first SMR in the G7. TVA is evaluating Clinch River, TN as a potential US site.<br><br>
+            <strong>Status:</strong> Pre-licensing engagement with NRC underway; OPG construction begins mid-2020s.<br><br>
+            <strong>Trades angle:</strong> The system design is familiar &#8212; it's still a BWR. Electricians, pipefitters, welders, I&amp;C technicians all apply the same core skills. Fewer systems means faster outages and simpler maintenance.
+          </div>
+          <div style="margin-top:0.75rem;">
+            <span class="trades-pill">Electricians</span>
+            <span class="trades-pill">Pipefitters</span>
+            <span class="trades-pill">Welders</span>
+            <span class="trades-pill">I&amp;C Technicians</span>
+            <span class="trades-pill">Millwrights</span>
+          </div>
+        </div>
+
+        <!-- NuScale VOYGR -->
+        <div class="design-card">
+          <div class="design-card-header">
+            <span class="design-badge" style="background:rgba(96,165,250,0.15);color:#60a5fa;border:1px solid #60a5fa;">LWR &#8226; 77 MWe/module</span>
+            <div class="design-card-title">NuScale VOYGR</div>
+          </div>
+          <div class="design-card-text">
+            <strong>What's different:</strong> Up to 12 small reactor modules, each 77 MWe, all submerged inside a single water pool. Passive cooling by convection &#8212; no pumps, no diesel generators, no operator action required for cooling in an emergency. The entire module is factory-fabricated and shipped by truck or rail.<br><br>
+            <strong>Status:</strong> NRC Design Certification granted 2022 &#8212; the first SMR ever certified. The original Idaho project was paused due to rising costs, but the certified design is available globally. International customers are actively evaluating.<br><br>
+            <strong>Trades angle:</strong> Factory module assembly creates a new class of nuclear construction work &#8212; less on-site construction, more factory-floor QA. Site work focuses on module installation and integration. New paradigm for construction trades.
+          </div>
+          <div style="margin-top:0.75rem;">
+            <span class="trades-pill">Module Assemblers</span>
+            <span class="trades-pill">Rigging &amp; Crane Ops</span>
+            <span class="trades-pill">Structural Welders</span>
+            <span class="trades-pill">NDE Inspectors</span>
+            <span class="trades-pill">I&amp;C Technicians</span>
+          </div>
+        </div>
+
+        <!-- Kairos FHR -->
+        <div class="design-card">
+          <div class="design-card-header">
+            <span class="design-badge" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid #a78bfa;">FHR &#8226; 35 MWt test</span>
+            <div class="design-card-title">Kairos Power Fluoride Salt&#8209;Cooled (Hermes)</div>
+          </div>
+          <div class="design-card-text">
+            <strong>What's different:</strong> Completely different from water-cooled reactors. Uses molten fluoride salt as the coolant and TRISO pebble fuel &#8212; tiny ceramic spheres the size of billiard balls, each containing thousands of microscopic fuel particles with built-in containment layers. The salt stays liquid at atmospheric pressure (no pressurization needed).<br><br>
+            <strong>Where it's going:</strong> Building the Hermes test reactor in Oak Ridge, TN. NRC issued construction permit in 2023 &#8212; the first advanced non-light-water reactor permitted in the US in 50 years.<br><br>
+            <strong>Trades angle:</strong> This is new territory. Molten salt requires specialized piping (high-temp, corrosion-resistant alloys), new instrumentation, and training in salt chemistry. Trades workers who cross-train on these systems early will be in high demand.
+          </div>
+          <div style="margin-top:0.75rem;">
+            <span class="trades-pill">High-Temp Pipefitters</span>
+            <span class="trades-pill">Alloy Welders</span>
+            <span class="trades-pill">I&amp;C Technicians</span>
+            <span class="trades-pill">Chemical Operators</span>
+            <span class="trades-pill">Insulation Workers</span>
+          </div>
+        </div>
+
+        <!-- Xe-100 -->
+        <div class="design-card">
+          <div class="design-card-header">
+            <span class="design-badge" style="background:rgba(244,162,97,0.15);color:var(--gold);border:1px solid var(--gold);">HTGR &#8226; 80 MWe/module</span>
+            <div class="design-card-title">X-energy Xe-100</div>
+          </div>
+          <div class="design-card-text">
+            <strong>What's different:</strong> A high-temperature gas-cooled reactor using helium as the coolant and TRISO fuel. Operates at much higher temperatures than water-cooled reactors &#8212; which means it can produce both electricity AND industrial process heat. This unlocks entirely new markets: chemical plants, hydrogen production, steel manufacturing.<br><br>
+            <strong>Where it's going:</strong> Dow Chemical is partnering to deploy at a Texas industrial site &#8212; the first advanced reactor designed specifically for industrial energy users, not just the grid.<br><br>
+            <strong>Trades angle:</strong> Helium systems are closer to HVAC and gas systems than traditional nuclear. Gas system specialists, HVAC technicians, and instrument techs with gas experience are in demand. Industrial site deployment means new geographic markets.
+          </div>
+          <div style="margin-top:0.75rem;">
+            <span class="trades-pill">Gas System Techs</span>
+            <span class="trades-pill">HVAC Specialists</span>
+            <span class="trades-pill">I&amp;C Technicians</span>
+            <span class="trades-pill">High-Temp Welders</span>
+            <span class="trades-pill">Turbine Mechanics</span>
+          </div>
+        </div>
+
+        <!-- Natrium -->
+        <div class="design-card">
+          <div class="design-card-header">
+            <span class="design-badge" style="background:rgba(239,68,68,0.15);color:#f87171;border:1px solid #f87171;">SFR &#8226; 345 MWe</span>
+            <div class="design-card-title">TerraPower Natrium</div>
+          </div>
+          <div class="design-card-text">
+            <strong>What's different:</strong> A sodium-cooled fast reactor with an integrated molten salt energy storage system. Sodium coolant allows the reactor to run hotter than water and avoids pressurization. The energy storage "tank" can absorb excess power during low-demand periods and release it during peak demand &#8212; making nuclear power dispatchable like a peaker plant.<br><br>
+            <strong>Where it's going:</strong> Building in Kemmerer, Wyoming &#8212; specifically at a retiring coal plant site. Backed by Bill Gates and designed to provide jobs for coal communities transitioning to clean energy.<br><br>
+            <strong>Trades angle:</strong> Sodium handling is specialized &#8212; it burns on contact with water and air, requiring sealed systems and unique safety protocols. Workers trained in sodium systems will command premium wages. The Wyoming project is actively hiring across all construction trades.
+          </div>
+          <div style="margin-top:0.75rem;">
+            <span class="trades-pill">Sodium System Techs</span>
+            <span class="trades-pill">Pipefitters (specialty)</span>
+            <span class="trades-pill">I&amp;C Technicians</span>
+            <span class="trades-pill">Electricians</span>
+            <span class="trades-pill">Civil &amp; Structural</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- CARD 3: PASSIVE SAFETY                       -->
+      <!-- ============================================ -->
+      <div class="content-card">
+        <h2 class="card-title">Passive Safety &#8212; The Game Changer</h2>
+        <p class="card-text">
+          The biggest difference between the current fleet and advanced reactors isn't size or fuel &#8212; it's how they stay safe when things go wrong. Understanding this difference is essential for anyone entering the nuclear workforce.
+        </p>
+
+        <p class="card-text">
+          <strong>Traditional (active) safety:</strong> Relies on pumps, diesel generators, valves, and operator actions to maintain cooling. If power is lost, you have minutes to restore it before the fuel begins to overheat. Systems must activate on command. Operators must respond correctly and quickly.
+        </p>
+
+        <p class="card-text">
+          <strong>Passive safety:</strong> Uses gravity, natural convection, stored energy, and physics &#8212; not pumps or operator action &#8212; as the primary safety mechanism. Emergency cooling water sits above the reactor and drains by gravity. Natural circulation moves coolant without pumps. Even if every operator leaves the control room, the reactor safely cools itself.
+        </p>
+
+        <div class="warning-box">
+          <strong>Why this matters &#8212; Fukushima:</strong> The Fukushima Daiichi accident was caused by loss of AC power followed by loss of DC backup power. Active cooling systems failed. The fuel overheated and melted. Every advanced reactor design treats passive safety as a <em>primary</em> safety feature, not a backup &#8212; specifically to prevent a Fukushima-type scenario.
+          <span style="color:var(--gray);font-size:0.85rem;"> (Source: NRC SECY-11-0093)</span>
+        </div>
+
+        <div class="callout">
+          <strong>Passive safety doesn't mean "no operators needed."</strong> It means operators have <strong>hours or days</strong> to respond instead of minutes. Advanced reactors are inherently safer AND they make the operator's job less demanding in emergencies. Both things are true. <span style="color:var(--gray);font-size:0.85rem;">(Source: IAEA SSR-2/1)</span>
+        </div>
+
+        <ul style="line-height:1.9;margin-left:1.5rem;margin-bottom:1rem;">
+          <li><strong>BWRX-300:</strong> Below-grade pool provides weeks of passive cooling with no operator action</li>
+          <li><strong>NuScale VOYGR:</strong> Reactor submerged in water; natural convection cooling requires zero power</li>
+          <li><strong>Kairos FHR:</strong> TRISO fuel contains fission products even at very high temperatures; salt chemistry is inherently stable</li>
+          <li><strong>Xe-100:</strong> TRISO fuel cannot melt under any operating scenario; helium is chemically inert</li>
+          <li><strong>Natrium:</strong> Sodium coolant at atmospheric pressure; large thermal mass slows any transient significantly</li>
+        </ul>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- CARD 4: YOUR CAREER IN ADVANCED NUCLEAR      -->
+      <!-- ============================================ -->
+      <div class="content-card">
+        <h2 class="card-title">Your Career in Advanced Nuclear &#8212; What's Different</h2>
+        <p class="card-text">
+          The advanced reactor buildout is not a future prediction. It's happening right now. TVA, Ontario Power Generation, Dow Chemical, and the state of Wyoming are all actively constructing or permitting advanced nuclear projects. The bottleneck isn't money or technology &#8212; it's <strong>qualified workforce.</strong>
+        </p>
+
+        <div class="callout">
+          <strong>Core skills still matter:</strong> Welding, electrical, pipefitting, instrumentation &amp; control &#8212; the fundamentals don't change. Every advanced reactor still needs these skills. The difference is where those skills are applied and what additional cross-training adds value.
+        </div>
+
+        <p class="card-text" style="margin-top:1rem;"><strong>Skills that transfer directly (no new training required):</strong></p>
+        <div style="margin-bottom:1.25rem;">
+          <span class="skill-tag core">Welding (ASME Code)</span>
+          <span class="skill-tag core">Electrical (NEC)</span>
+          <span class="skill-tag core">Pipefitting</span>
+          <span class="skill-tag core">I&amp;C Installation</span>
+          <span class="skill-tag core">Civil &amp; Structural</span>
+          <span class="skill-tag core">HVAC</span>
+          <span class="skill-tag core">Rigging &amp; Crane Ops</span>
+          <span class="skill-tag core">QA/QC Inspection</span>
+        </div>
+
+        <p class="card-text"><strong>New skills in demand (cross-training opportunity with premium pay):</strong></p>
+        <div style="margin-bottom:1.25rem;">
+          <span class="skill-tag">Modular Construction &amp; Assembly</span>
+          <span class="skill-tag">Factory-to-Site Logistics</span>
+          <span class="skill-tag">Sodium System Operations</span>
+          <span class="skill-tag">Molten Salt Systems</span>
+          <span class="skill-tag">TRISO Fuel Handling</span>
+          <span class="skill-tag">Digital I&amp;C (vs. analog)</span>
+          <span class="skill-tag">NDE &#8212; Ultrasonic &amp; Radiographic</span>
+          <span class="skill-tag">High-Temp Alloy Welding</span>
+          <span class="skill-tag">Helium/Gas System Maintenance</span>
+        </div>
+
+        <p class="card-text"><strong>Geographic opportunities &#8212; where the jobs are:</strong></p>
+        <ul style="line-height:1.9;margin-left:1.5rem;margin-bottom:1rem;">
+          <li><strong>Kemmerer, Wyoming</strong> &#8212; TerraPower Natrium (former coal plant site; coal trades welcome)</li>
+          <li><strong>Oak Ridge, Tennessee</strong> &#8212; Kairos Hermes test reactor (under construction now)</li>
+          <li><strong>Darlington, Ontario</strong> &#8212; BWRX-300 (US trades workers eligible for cross-border projects)</li>
+          <li><strong>Texas Gulf Coast</strong> &#8212; X-energy Xe-100 at Dow Chemical</li>
+          <li><strong>Clinch River, Tennessee</strong> &#8212; TVA evaluating BWRX-300</li>
+        </ul>
+
+        <div class="warning-box">
+          <strong>Don't wait for "someday."</strong> The nuclear renaissance is not a future prediction &#8212; it's happening NOW. Kemmerer is breaking ground. Oak Ridge is under NRC construction permit. Ontario has started site prep. The workforce pipeline is the bottleneck. Trades workers who get nuclear-qualified NOW will have the most options as these projects ramp up.
+        </div>
+
+        <!-- INTERACTIVE: Reactor Match -->
+        <div class="int-container">
+          <div class="int-header">
+            <span class="int-badge">Interactive</span>
+            <span class="int-label">Reactor Match &#8212; Design Comparison Tool</span>
+          </div>
+          <p style="font-size:0.9rem;color:var(--gray);margin-bottom:1rem;">
+            Select any two reactors to compare them side-by-side. Click a reactor to mark it as Reactor A (blue), then click another for Reactor B (gold).
+          </p>
+          <div class="select-legend">
+            <span><span class="legend-dot" style="background:var(--teal);"></span> Reactor A</span>
+            <span><span class="legend-dot" style="background:var(--gold);"></span> Reactor B</span>
+          </div>
+
+          <div class="reactor-grid" id="reactor-grid">
+            <!-- Filled by JS -->
+          </div>
+
+          <div id="compare-output">
+            <div class="compare-hint">Select two reactors above to see a side-by-side comparison.</div>
+          </div>
+
+          <div class="int-controls" style="margin-top:1rem;">
+            <button class="int-btn secondary" onclick="clearSelection()">Clear Selection</button>
+          </div>
+
+          <div class="int-insight">
+            <strong style="color:var(--gold);">Key takeaway:</strong> Every advanced reactor shares one thing: passive safety. Beyond that, coolant type, fuel, and size vary dramatically. There's no single "SMR" &#8212; it's a diverse ecosystem of designs, each optimized for different markets, locations, and use cases.
+            <br><span style="font-size:0.8rem;color:var(--gray);">Sources: NRC Design Certification Docket 52-048; DOE Office of Nuclear Energy Advanced Reactor Demonstration Program (ARDP)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- KNOWLEDGE CHECK                              -->
+      <!-- ============================================ -->
+      <div class="quiz-container">
+        <h2 class="quiz-title">Knowledge Check</h2>
+
+        <div class="quiz-question" id="q1">
+          <p class="question-text">1. What is the primary advantage of factory-modular construction (the SMR approach) over traditional large reactor construction?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(1,'A',false)"><div class="option-letter">A</div><div>SMRs produce more electricity per unit</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'B',true)"><div class="option-letter">B</div><div>Standardized factory-built modules reduce cost overruns and construction time</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'C',false)"><div class="option-letter">C</div><div>SMRs don't require NRC licensing</div></div>
+            <div class="quiz-option" onclick="selectOption(1,'D',false)"><div class="option-letter">D</div><div>Factory construction eliminates the need for trained trades workers on site</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-1"></div>
+        </div>
+
+        <div class="quiz-question" id="q2">
+          <p class="question-text">2. What does "passive safety" mean in the context of advanced reactor design?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(2,'A',false)"><div class="option-letter">A</div><div>The reactor turns off automatically when operators leave the control room</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'B',false)"><div class="option-letter">B</div><div>Safety relies entirely on backup diesel generators</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'C',true)"><div class="option-letter">C</div><div>Safety is maintained by gravity, natural circulation, and physics &mdash; without active systems or operator action</div></div>
+            <div class="quiz-option" onclick="selectOption(2,'D',false)"><div class="option-letter">D</div><div>The reactor has no moving parts whatsoever</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-2"></div>
+        </div>
+
+        <div class="quiz-question" id="q3">
+          <p class="question-text">3. The Kairos Power Hermes reactor uses which unique combination of fuel and coolant?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(3,'A',false)"><div class="option-letter">A</div><div>Uranium oxide pellets and light water</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'B',false)"><div class="option-letter">B</div><div>MOX fuel and sodium</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'C',true)"><div class="option-letter">C</div><div>TRISO pebble fuel and fluoride molten salt</div></div>
+            <div class="quiz-option" onclick="selectOption(3,'D',false)"><div class="option-letter">D</div><div>Uranium metal and helium gas</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-3"></div>
+        </div>
+
+        <div class="quiz-question" id="q4">
+          <p class="question-text">4. Which advanced reactor project is being built at a former coal plant site specifically to provide clean energy jobs for that community?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(4,'A',false)"><div class="option-letter">A</div><div>NuScale VOYGR in Idaho</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'B',false)"><div class="option-letter">B</div><div>Kairos Hermes in Oak Ridge, TN</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'C',false)"><div class="option-letter">C</div><div>BWRX-300 in Darlington, Ontario</div></div>
+            <div class="quiz-option" onclick="selectOption(4,'D',true)"><div class="option-letter">D</div><div>TerraPower Natrium in Kemmerer, Wyoming</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-4"></div>
+        </div>
+
+        <div class="quiz-question" id="q5">
+          <p class="question-text">5. Which of the following is NOT a new skill category created by advanced reactors?</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(5,'A',false)"><div class="option-letter">A</div><div>Sodium and molten salt system handling</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'B',false)"><div class="option-letter">B</div><div>Modular construction and factory-to-site assembly logistics</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'C',true)"><div class="option-letter">C</div><div>Basic electrical wiring and conduit installation</div></div>
+            <div class="quiz-option" onclick="selectOption(5,'D',false)"><div class="option-letter">D</div><div>Digital I&amp;C systems (replacing analog controls)</div></div>
+          </div>
+          <div class="quiz-feedback" id="feedback-5"></div>
+        </div>
+      </div>
+
+      <!-- AI TUTOR -->
+      <div class="tutor-container">
+        <div class="tutor-header">
+          <div class="tutor-icon">&#129302;</div>
+          <div>
+            <div class="tutor-title">ARIA AI Tutor</div>
+            <div style="font-size:0.85rem;color:var(--gray);">Ask me about advanced reactors and SMRs</div>
+          </div>
+        </div>
+        <div class="tutor-input">
+          <input type="text" id="tutor-question" placeholder="Ask a question about SMRs, advanced reactor designs, or the nuclear job market..." />
+          <button id="ask-tutor" onclick="askTutor()">Ask</button>
+        </div>
+        <div id="tutor-response"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="module-7-qa-human-performance.html" class="nav-btn secondary">&larr; Back to Module 7</a>
+        <a href="module-9-citations.html" class="nav-btn">Continue to Citations &rarr;</a>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  // ─────────────────────────────────────────────────────
+  // REACTOR DATA
+  // ─────────────────────────────────────────────────────
+  const reactors = [
+    {
+      id: 'lwr',
+      name: 'Traditional LWR',
+      type: 'Baseline — Gen II/III',
+      icon: '&#9883;',
+      mw: '1,000–1,600 MWe',
+      coolant: 'Light water (pressurized or boiling)',
+      fuel: 'UO&#8322; pellets in zircaloy cladding',
+      safety: 'Active: pumps, diesels, operator action required within minutes',
+      construction: 'Custom, on-site build. 10–15 years typical.',
+      location: 'Existing US fleet (~94 plants)',
+      trades: 'All traditional trades; decades of workforce experience'
+    },
+    {
+      id: 'bwrx',
+      name: 'BWRX-300',
+      type: 'GE Hitachi &#8212; BWR SMR',
+      icon: '&#128161;',
+      mw: '300 MWe',
+      coolant: 'Light water (boiling)',
+      fuel: 'Standard BWR UO&#8322; fuel',
+      safety: 'Passive: below-grade pool, gravity-fed cooling, weeks of passive operation',
+      construction: 'Simplified; 10x fewer active systems. Factory-fabricated components.',
+      location: 'Darlington, Ontario (OPG); Clinch River, TN (TVA evaluating)',
+      trades: 'Electricians, pipefitters, welders, I&amp;C &#8212; familiar BWR skill set'
+    },
+    {
+      id: 'nuscale',
+      name: 'NuScale VOYGR',
+      type: 'NuScale &#8212; iPWR',
+      icon: '&#128300;',
+      mw: '77 MWe/module (up to 12)',
+      coolant: 'Light water; entire module submerged in pool',
+      fuel: 'Standard PWR UO&#8322; fuel, higher enrichment',
+      safety: 'Fully passive: natural convection cooling, no pumps required',
+      construction: 'Factory-fabricated module, shipped whole by truck/rail, installed by crane',
+      location: 'NRC certified; international customers; US site TBD',
+      trades: 'NDE inspectors, rigging/crane ops, module assemblers, I&amp;C technicians'
+    },
+    {
+      id: 'kairos',
+      name: 'Kairos FHR',
+      type: 'Kairos Power &#8212; Fluoride Salt',
+      icon: '&#128165;',
+      mw: '35 MWt (Hermes test)',
+      coolant: 'Fluoride salt (FLiBe) &#8212; molten, not pressurized',
+      fuel: 'TRISO pebbles (ceramic-coated microspheres)',
+      safety: 'Passive: salt chemistry stable; TRISO retains fission products at high temp',
+      construction: 'Site construction with specialized materials; NRC permit issued 2023',
+      location: 'Oak Ridge, TN (Hermes); commercial sites TBD',
+      trades: 'High-temp alloy welders, molten salt system techs, I&amp;C, chemical operators'
+    },
+    {
+      id: 'xe100',
+      name: 'X-energy Xe-100',
+      type: 'X-energy &#8212; HTGR',
+      icon: '&#128168;',
+      mw: '80 MWe/module',
+      coolant: 'Helium gas (high-temp, inert)',
+      fuel: 'TRISO pebbles',
+      safety: 'Passive: TRISO cannot melt; helium is chemically inert',
+      construction: 'Modular; designed for industrial sites as well as grid',
+      location: 'Dow Chemical, Texas (industrial deployment)',
+      trades: 'Gas system techs, HVAC specialists, turbine mechanics, I&amp;C technicians'
+    },
+    {
+      id: 'natrium',
+      name: 'TerraPower Natrium',
+      type: 'TerraPower &#8212; Sodium Fast',
+      icon: '&#128293;',
+      mw: '345 MWe + storage',
+      coolant: 'Liquid sodium (fast spectrum)',
+      fuel: 'Metallic uranium fuel',
+      safety: 'Passive: sodium at atmospheric pressure; large thermal mass slows transients',
+      construction: 'On-site with factory-fabricated components; integrated molten salt storage',
+      location: 'Kemmerer, Wyoming (former coal plant)',
+      trades: 'Sodium system specialists, pipefitters, electricians, civil/structural'
+    }
+  ];
+
+  // ─────────────────────────────────────────────────────
+  // REACTOR MATCH INTERACTIVE
+  // ─────────────────────────────────────────────────────
+  let selectedA = null;
+  let selectedB = null;
+
+  function renderGrid() {
+    const grid = document.getElementById('reactor-grid');
+    grid.innerHTML = '';
+    reactors.forEach((r, i) => {
+      const card = document.createElement('div');
+      card.className = 'reactor-card' + (i === 0 ? ' baseline' : '');
+      if (selectedA === i) card.className += ' selected-a';
+      if (selectedB === i) card.className += ' selected-b';
+      let hint = 'Click to compare';
+      if (selectedA === i) hint = 'Reactor A selected';
+      if (selectedB === i) hint = 'Reactor B selected';
+      card.innerHTML = `
+        <div class="reactor-card-icon">${r.icon}</div>
+        <div class="reactor-card-name">${r.name}</div>
+        <div class="reactor-card-type">${r.type}</div>
+        <div class="reactor-card-mw">${r.mw}</div>
+        <div class="reactor-card-select-hint">${hint}</div>
+      `;
+      card.onclick = () => selectReactor(i);
+      grid.appendChild(card);
+    });
+  }
+
+  function selectReactor(idx) {
+    if (selectedA === idx) {
+      selectedA = null;
+    } else if (selectedB === idx) {
+      selectedB = null;
+    } else if (selectedA === null) {
+      selectedA = idx;
+    } else if (selectedB === null) {
+      selectedB = idx;
+    } else {
+      // Both slots full — replace A with B, set new B
+      selectedA = selectedB;
+      selectedB = idx;
+    }
+    renderGrid();
+    renderComparison();
+  }
+
+  function clearSelection() {
+    selectedA = null;
+    selectedB = null;
+    renderGrid();
+    renderComparison();
+  }
+
+  function renderComparison() {
+    const out = document.getElementById('compare-output');
+    if (selectedA === null || selectedB === null) {
+      out.innerHTML = '<div class="compare-hint">Select two reactors above to see a side-by-side comparison.</div>';
+      return;
+    }
+    const a = reactors[selectedA];
+    const b = reactors[selectedB];
+    const rows = [
+      ['Power Output', a.mw, b.mw],
+      ['Coolant', a.coolant, b.coolant],
+      ['Fuel Type', a.fuel, b.fuel],
+      ['Safety Approach', a.safety, b.safety],
+      ['Construction Method', a.construction, b.construction],
+      ['Where It\'s Being Built', a.location, b.location],
+      ['Trades Needed', a.trades, b.trades]
+    ];
+    out.innerHTML = `
+      <div class="compare-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="col-a">${a.icon} ${a.name}</th>
+              <th class="col-b">${b.icon} ${b.name}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(([label, va, vb]) => `
+              <tr>
+                <td>${label}</td>
+                <td class="col-a">${va}</td>
+                <td class="col-b">${vb}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  renderGrid();
+  renderComparison();
+
+  // ─────────────────────────────────────────────────────
+  // QUIZ
+  // ─────────────────────────────────────────────────────
+  const feedbackData = {
+    1: {
+      correct: "Correct. The core advantage of modular construction is cost and schedule predictability. Factory-built components under controlled QA conditions reduce the rework and cost overruns that plagued Vogtle 3&4. The 'LEGO brick' analogy: standardized modules, repeated builds, learning curve improvements. (Source: DOE ARDP Program documentation)",
+      incorrect: "The primary advantage is economic: factory-built standardized modules reduce cost overruns and construction time. SMRs typically produce LESS power than traditional reactors, but at lower cost and with faster build times. The 'LEGO analogy' captures it: build the same module again and again, get better and cheaper each time."
+    },
+    2: {
+      correct: "Correct. Passive safety uses gravity, natural circulation, stored energy, and basic physics to maintain cooling without pumps, diesels, or operator intervention. In a passive-safe reactor, even a complete loss of power for weeks doesn't result in fuel damage. This is the fundamental lesson from Fukushima applied to design. (Source: IAEA SSR-2/1)",
+      incorrect: "Passive safety means the reactor can cool itself using only gravity, natural convection, and physics \u2014 no pumps, no operator action required. This gives operators hours or days to respond instead of minutes. It's the most important innovation in advanced reactor design, directly addressing the Fukushima failure mode."
+    },
+    3: {
+      correct: "Correct. Kairos Power's Hermes uses TRISO pebble fuel \u2014 tiny ceramic-coated fuel spheres \u2014 cooled by FLiBe (fluoride-lithium-beryllium) molten salt. The TRISO coating acts as the primary containment at the fuel particle level. The salt provides high-temperature, atmospheric-pressure cooling. (Source: Kairos Power NRC Construction Permit Application)",
+      incorrect: "Kairos Power uses TRISO pebble fuel cooled by fluoride molten salt (FLiBe). TRISO stands for TRi-structural ISOtropic \u2014 each fuel pebble contains thousands of coated microspheres that act as their own containment. The salt stays liquid at atmospheric pressure, unlike water-cooled reactors which require high pressure."
+    },
+    4: {
+      correct: "Correct. TerraPower Natrium is being built in Kemmerer, Wyoming \u2014 a coal mining community facing job losses from the coal industry's decline. The project specifically targeted a retiring coal plant site to provide clean energy jobs for workers with industrial trades skills. Bill Gates-backed TerraPower designed the workforce transition as part of the project mission. (Source: DOE ARDP Award documentation; TerraPower public filings)",
+      incorrect: "TerraPower Natrium in Kemmerer, Wyoming is the correct answer. This project specifically chose a retiring coal plant site in a coal mining community \u2014 the workforce transition from coal to nuclear is a core project goal. Wyoming's existing trades workforce is well-suited for Natrium construction."
+    },
+    5: {
+      correct: "Correct. Basic electrical wiring and conduit installation is a fundamental core skill that transfers directly from traditional construction and nuclear work \u2014 it's NOT new. What IS new: sodium/molten salt handling, modular assembly logistics, and digital I&C systems (advanced reactors use digital control systems, replacing the analog instrumentation of the current fleet). (Source: DOE Office of Nuclear Energy Workforce Programs)",
+      incorrect: "Basic electrical wiring is a core transferable skill \u2014 it's the same in advanced reactors as in any construction project. The NEW skills created by advanced reactors are: sodium and molten salt systems (specialized hazardous materials), modular construction logistics (factory-to-site assembly), and digital I&C (the current fleet uses analog; advanced reactors use digital control systems requiring new training)."
+    }
+  };
+
+  function selectOption(qNum, letter, isCorrect) {
+    const q = document.getElementById('q' + qNum);
+    q.querySelectorAll('.quiz-option').forEach(o => o.style.pointerEvents = 'none');
+    event.currentTarget.classList.add(isCorrect ? 'correct' : 'incorrect');
+    const fb = document.getElementById('feedback-' + qNum);
+    fb.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+    fb.textContent = (isCorrect ? '\u2713 ' : '\u2717 ') + feedbackData[qNum][isCorrect ? 'correct' : 'incorrect'];
+  }
+
+  // ─────────────────────────────────────────────────────
+  // AI TUTOR
+  // ─────────────────────────────────────────────────────
+  const tutorKB = {
+    'smr|small modular|modular reactor': "Small Modular Reactors (SMRs) are generally defined as reactors under 300 MWe that use factory-built standardized modules. The key advantages: predictable construction (factory QA vs. field construction), lower up-front capital, scalability (add modules as needed), and site flexibility (smaller footprint). First NRC-certified SMR: NuScale VOYGR (2022). DOE has invested $3.2B+ in SMR and advanced reactor demonstrations. (Source: DOE ARDP; NRC Docket 52-048)",
+    'passive safety|passive|gravity|convection|fukushima': "Passive safety uses gravity, natural convection, and stored energy \u2014 NOT pumps or operator action \u2014 as the primary safety mechanism. Fukushima (2011) showed what happens when active systems lose power: the fuel overheated. Every advanced reactor design uses passive safety as the primary (not backup) system. Example: BWRX-300 has a water pool above the reactor that drains by gravity; NuScale is submerged in a pool that cools by natural convection. Operators have hours/days to respond instead of minutes. (Source: NRC SECY-11-0093; IAEA SSR-2/1)",
+    'bwrx|bwrx-300|ge hitachi|boiling water': "The BWRX-300 is GE Hitachi's 300 MWe simplified BWR. Key features: 10x fewer active safety systems than a traditional BWR, below-grade pool for passive cooling, familiar light water technology. Being built by Ontario Power Generation at Darlington, Ontario \u2014 the first SMR in the G7. TVA is evaluating Clinch River, TN. Traditional BWR trades skills transfer directly \u2014 electricians, pipefitters, welders, I&C techs. (Source: GE Hitachi Nuclear; OPG SMR Program)",
+    'nuscale|voygr|ipwr': "NuScale VOYGR is a 77 MWe per module light water SMR, scalable up to 12 modules. The entire reactor module is submerged in a water pool \u2014 passive cooling requires zero external power. NRC Design Certification granted 2022, the first SMR ever certified in the US. The original Idaho project was paused due to cost increases, but the certified design is available for new projects. New construction paradigm: factory-built modules, crane-installed on site. (Source: NRC Design Certification Docket 52-048)",
+    'kairos|fhr|fluoride|triso|molten salt|hermes': "Kairos Power's Hermes reactor uses TRISO pebble fuel (tiny ceramic-coated fuel spheres) cooled by FLiBe fluoride molten salt. TRISO fuel contains fission products at the particle level \u2014 it's the fuel that acts as containment. The salt operates at atmospheric pressure (no pressurization). NRC issued the construction permit for Hermes in Oak Ridge, TN in 2023 \u2014 first advanced non-LWR permitted in 50 years. Trades needed: high-temp alloy welders, molten salt system techs, I&C technicians, chemical operators. (Source: Kairos Power NRC CP Docket 70-21042)",
+    'xe-100|xe100|x-energy|htgr|helium|high temperature': "X-energy Xe-100 is an 80 MWe high-temperature gas reactor (HTGR) using helium coolant and TRISO pebble fuel. Helium operates at 750\u00b0C+ \u2014 far hotter than water-cooled reactors \u2014 enabling industrial process heat (chemical plants, hydrogen production). TRISO fuel cannot melt under any operating scenario. Partnering with Dow Chemical for deployment at a Texas industrial site. Trades: gas system techs, HVAC specialists, turbine mechanics, I&C technicians. (Source: DOE ARDP Award; X-energy public filings)",
+    'natrium|terrapower|sodium|wyoming|kemmerer|coal': "TerraPower Natrium is a 345 MWe sodium-cooled fast reactor with integrated molten salt energy storage. Sodium coolant operates at atmospheric pressure (unlike water), and the large thermal mass slows any transient dramatically. Built in Kemmerer, Wyoming at a retiring coal plant site \u2014 specifically designed to provide clean energy jobs for coal communities. Backed by Bill Gates. Sodium is specialized: it reacts with air and water, requiring sealed systems and special protocols. Premium wages for sodium-trained workers. (Source: DOE ARDP Award documentation; TerraPower public filings)",
+    'job|career|trades|work|hire|opportunity|workforce|salary|pay|wage': "Advanced nuclear is creating significant trades workforce demand: (1) TRADITIONAL SKILLS transfer directly \u2014 welding, electrical, pipefitting, I&C, civil/structural, HVAC, rigging. (2) NEW PREMIUM SKILLS \u2014 sodium/molten salt systems, TRISO fuel handling, modular assembly, digital I&C, NDE (ultrasonic + radiographic testing). WHERE the jobs are: Kemmerer WY (Natrium), Oak Ridge TN (Kairos), Darlington Ontario (BWRX-300), Texas Gulf Coast (Xe-100), Clinch River TN (TVA/BWRX-300 evaluation). The bottleneck is workforce \u2014 NOT technology or money. (Source: DOE Office of Nuclear Energy Workforce Programs; NRC NRNM report)",
+    'default': "I can answer questions about advanced reactors and SMRs. Try asking about: small modular reactors (what are they and why), passive safety systems, specific reactor designs (BWRX-300, NuScale, Kairos, Xe-100, Natrium), TRISO fuel, molten salt, the nuclear job market, or what trades skills are needed for advanced reactor construction."
+  };
+
+  function askTutor() {
+    const q = document.getElementById('tutor-question').value.toLowerCase();
+    const r = document.getElementById('tutor-response');
+    if (!q.trim()) { r.textContent = 'Please enter a question.'; r.classList.add('show'); return; }
+    let answer = tutorKB['default'];
+    for (const [pattern, text] of Object.entries(tutorKB)) {
+      if (pattern === 'default') continue;
+      if (pattern.split('|').some(kw => q.includes(kw))) { answer = text; break; }
+    }
+    r.textContent = answer;
+    r.classList.add('show');
+  }
+  document.getElementById('tutor-question').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') askTutor();
+  });
+  </script>
+</body>
+</html>
