@@ -1657,7 +1657,7 @@
     opts.forEach(o => o.style.pointerEvents='none');
     event.currentTarget.classList.add(isCorrect?'correct':'incorrect');
     fb.classList.add('show', isCorrect?'correct':'incorrect');
-    fb.textContent = (isCorrect?'\u2713 ':'\\u2717 ') + feedbackData[qNum][isCorrect?'correct':'incorrect'];
+    fb.textContent = (isCorrect?'\u2713 ':'\u2717 ') + feedbackData[qNum][isCorrect?'correct':'incorrect'];
   }
 
   // ───────────────────────────────────────────
