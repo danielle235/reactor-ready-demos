@@ -1059,6 +1059,7 @@
     }
   };
 
+  var rrAnswered = {};
   function selectOption(qNum, letter, isCorrect) {
     const q = document.getElementById('q'+qNum);
     q.querySelectorAll('.quiz-option').forEach(o => o.style.pointerEvents='none');
@@ -1066,6 +1067,8 @@
     const fb = document.getElementById('feedback-'+qNum);
     fb.classList.add('show', isCorrect?'correct':'incorrect');
     fb.textContent = (isCorrect?'\u2713 ':'\u2717 ') + feedbackData[qNum][isCorrect?'correct':'incorrect'];
+    rrAnswered[qNum] = true;
+    if (Object.keys(rrAnswered).length >= 6 && window.rrMarkComplete) window.rrMarkComplete();
   }
 
   // ───────────────────────────────────────────
@@ -1098,5 +1101,24 @@
     if(e.key==='Enter') askTutor();
   });
   </script>
+
+<!-- Reactor Ready Progress Tracking -->
+<script>
+(function(){
+  var moduleNum = 3;
+  // Mark in-progress on load
+  try {
+    var ip = JSON.parse(localStorage.getItem("rr-in-progress") || "[]");
+    if (ip.indexOf(moduleNum) === -1) { ip.push(moduleNum); localStorage.setItem("rr-in-progress", JSON.stringify(ip)); }
+  } catch(e){}
+  // Expose markComplete for quiz completion
+  window.rrMarkComplete = function() {
+    try {
+      var c = JSON.parse(localStorage.getItem("rr-completed") || "[]");
+      if (c.indexOf(moduleNum) === -1) { c.push(moduleNum); localStorage.setItem("rr-completed", JSON.stringify(c)); }
+    } catch(e){}
+  };
+})();
+</script>
 </body>
 </html>

@@ -1006,6 +1006,7 @@ function itnFinish() {
   const summary = document.getElementById('itn-summary');
   summary.style.display = 'block';
   document.getElementById('itn-final-score').textContent = itnCorrect + '/' + itnItems.length;
+  if (window.rrMarkComplete) window.rrMarkComplete();
   const pct = Math.round(itnCorrect / itnItems.length * 100);
   let msg = pct >= 80
     ? 'Impressive! You already have a good sense of how nuclear technology shows up in everyday life.'
@@ -1206,6 +1207,25 @@ function askTutor() {
 document.getElementById('tutor-question').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') askTutor();
 });
+</script>
+
+<!-- Reactor Ready Progress Tracking -->
+<script>
+(function(){
+  var moduleNum = 1;
+  // Mark in-progress on load
+  try {
+    var ip = JSON.parse(localStorage.getItem("rr-in-progress") || "[]");
+    if (ip.indexOf(moduleNum) === -1) { ip.push(moduleNum); localStorage.setItem("rr-in-progress", JSON.stringify(ip)); }
+  } catch(e){}
+  // Expose markComplete for quiz completion
+  window.rrMarkComplete = function() {
+    try {
+      var c = JSON.parse(localStorage.getItem("rr-completed") || "[]");
+      if (c.indexOf(moduleNum) === -1) { c.push(moduleNum); localStorage.setItem("rr-completed", JSON.stringify(c)); }
+    } catch(e){}
+  };
+})();
 </script>
 </body>
 </html>

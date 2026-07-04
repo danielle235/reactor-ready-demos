@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reactor Ready — Nuclear Workforce Training Platform</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --blue: #1a3a5c;
+      --teal: #00b4d8;
+      --teal-light: #90e0ef;
+      --gold: #f4a261;
+      --white: #f8fafc;
+      --gray: #94a3b8;
+      --dark-card: #111f35;
+      --success: #22c55e;
+      --border: rgba(0,180,216,0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: var(--dark-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--teal);
+    }
+    .nav-logo .atom { font-size: 1.5rem; }
+    .nav-badge {
+      font-size: 0.7rem;
+      background: var(--teal);
+      color: var(--navy);
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem 3rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .hero-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .hero h1 .highlight { color: var(--teal); }
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--gray);
+      line-height: 1.7;
+      max-width: 650px;
+      margin: 0 auto 2rem;
+    }
+
+    /* STATS BAR */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--teal);
+      display: block;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* PROGRESS OVERVIEW */
+    .progress-section {
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      padding: 0 2rem;
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .progress-header span {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+    .progress-header strong {
+      color: var(--teal);
+    }
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--dark-card);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--teal-light));
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+
+    /* MODULE GRID */
+    .modules-section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+    .modules-section h2 {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      color: var(--white);
+    }
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .module-card {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .module-card:hover {
+      border-color: var(--teal);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,180,216,0.15);
+    }
+    .module-card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .module-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .module-num.not-started {
+      background: rgba(0,180,216,0.1);
+      color: var(--teal);
+      border: 1px solid var(--border);
+    }
+    .module-num.in-progress {
+      background: rgba(244,162,97,0.15);
+      color: var(--gold);
+      border: 1px solid rgba(244,162,97,0.3);
+    }
+    .module-num.completed {
+      background: rgba(34,197,94,0.15);
+      color: var(--success);
+      border: 1px solid rgba(34,197,94,0.3);
+    }
+    .module-card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .module-card-desc {
+      font-size: 0.85rem;
+      color: var(--gray);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .module-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--gray);
+    }
+    .meta-tag {
+      background: rgba(0,180,216,0.1);
+      color: var(--teal);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .module-card-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: auto;
+    }
+    .status-not-started { color: var(--gray); }
+    .status-in-progress { color: var(--gold); }
+    .status-completed { color: var(--success); }
+
+    /* FEATURES SECTION */
+    .features {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 2rem 4rem;
+      border-top: 1px solid var(--border);
+    }
+    .features h2 {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      text-align: center;
+      padding: 1.5rem;
+    }
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .feature-card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      color: var(--teal-light);
+    }
+    .feature-card p {
+      font-size: 0.8rem;
+      color: var(--gray);
+      line-height: 1.5;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+    footer a {
+      color: var(--teal);
+      text-decoration: none;
+    }
+
+    /* CTA */
+    .cta-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--teal), #0096c7);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.85rem 2.5rem;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,180,216,0.4);
+    }
+    .cta-secondary {
+      display: inline-block;
+      color: var(--teal);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      margin-left: 1rem;
+      transition: all 0.2s;
+    }
+    .cta-secondary:hover {
+      border-color: var(--teal);
+      background: rgba(0,180,216,0.05);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 1.8rem; }
+      .hero p { font-size: 1rem; }
+      .stats-bar { gap: 1.5rem; }
+      .stat-number { font-size: 1.5rem; }
+      .module-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      nav { padding: 1rem; }
+      .nav-right { display: none; }
+      .cta-secondary { margin-left: 0; margin-top: 0.75rem; display: block; }
+    }
+    @media (max-width: 480px) {
+      .hero { padding: 2.5rem 1.5rem 2rem; }
+      .features-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">
+      <span class="atom">&#9883;</span>
+      Reactor Ready
+      <span class="nav-badge">DEMO</span>
+    </div>
+    <div class="nav-right">
+      <span id="progress-text">0 of 8 modules complete</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-icon">&#9883;</span>
+    <h1>Nuclear Workforce Training,<br><span class="highlight">Ready When You Are</span></h1>
+    <p>Interactive, AI-ready training modules built for the next generation of nuclear professionals. From reactor fundamentals to advanced concepts — learn at your pace, on any device.</p>
+    <a href="module-1-welcome.html" class="cta-btn">Start Learning</a>
+    <a href="#modules" class="cta-secondary">Browse Modules</a>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-number">8</span>
+      <span class="stat-label">Training Modules</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">40+</span>
+      <span class="stat-label">Quiz Questions</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number" id="completion-pct">0%</span>
+      <span class="stat-label">Your Progress</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">&#8734;</span>
+      <span class="stat-label">Device Access</span>
+    </div>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-section">
+    <div class="progress-header">
+      <span>Course Progress</span>
+      <strong id="progress-detail">0 / 8 complete</strong>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- MODULE GRID -->
+  <div class="modules-section" id="modules">
+    <h2>Course Modules</h2>
+    <div class="module-grid" id="module-grid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="features">
+    <h2>Built for the Nuclear Workforce</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">&#128218;</span>
+        <h3>Interactive Learning</h3>
+        <p>Drag-and-drop reactor diagrams, dose calculators, and scenario-based activities — not just reading slides.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">&#128736;</span>
+        <h3>Workforce-Focused</h3>
+        <p>Designed for trades workers, career changers, and technicians — not just engineering students.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">&#9989;</span>
+        <h3>Knowledge Checks</h3>
+        <p>Quizzes with instant feedback after every module. Know what you know before you hit the job site.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">&#128241;</span>
+        <h3>Any Device</h3>
+        <p>Works on phones, tablets, and laptops. No special hardware, no lab required, no travel needed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Reactor Ready — Nuclear Workforce Training Platform</p>
+    <p style="margin-top: 0.5rem;">Content adapted from <a href="https://ocw.mit.edu/courses/22-01-introduction-to-nuclear-engineering-and-ionizing-radiation-fall-2016/" target="_blank">MIT OpenCourseWare 22.01</a> under Creative Commons BY-NC-SA 4.0</p>
+    <p style="margin-top: 0.5rem;">&copy; 2026 NaNu Media LLC. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Module data
+    const modules = [
+      {
+        num: 1,
+        title: "Welcome to Nuclear Technology",
+        desc: "Why nuclear matters, how it works at a high level, and what career paths exist in the industry.",
+        file: "module-1-welcome.html",
+        tags: ["Intro", "Careers"],
+        time: "15 min"
+      },
+      {
+        num: 2,
+        title: "How Nuclear Reactors Work",
+        desc: "Fission, chain reactions, reactor types (BWR vs PWR), and the systems that keep everything running safely.",
+        file: "module-2-reactors.html",
+        tags: ["Core Concepts", "Interactive"],
+        time: "20 min"
+      },
+      {
+        num: 3,
+        title: "Radiation Safety Fundamentals",
+        desc: "Types of radiation, dose measurement, ALARA principles, and the biological effects you need to understand.",
+        file: "module-3-radiation-safety.html",
+        tags: ["Safety", "ALARA"],
+        time: "20 min"
+      },
+      {
+        num: 4,
+        title: "Inside a Nuclear Power Plant",
+        desc: "Walk through containment, the reactor vessel, steam generators, turbines, and cooling systems.",
+        file: "module-4-inside-reactor.html",
+        tags: ["Systems", "Interactive"],
+        time: "25 min"
+      },
+      {
+        num: 5,
+        title: "Nuclear Career Pathways",
+        desc: "From trades to operations to engineering — the roles, salaries, training paths, and what employers look for.",
+        file: "module-5-career-path.html",
+        tags: ["Careers", "Workforce"],
+        time: "15 min"
+      },
+      {
+        num: 6,
+        title: "Regulatory Framework",
+        desc: "The NRC, 10 CFR, licensing process, inspection programs, and how regulation shapes every decision on site.",
+        file: "module-6-regulatory.html",
+        tags: ["NRC", "Compliance"],
+        time: "18 min"
+      },
+      {
+        num: 7,
+        title: "QA & Human Performance",
+        desc: "Quality assurance programs, human performance tools, event-free operations, and the safety culture mindset.",
+        file: "module-7-qa-human-performance.html",
+        tags: ["Quality", "Safety Culture"],
+        time: "18 min"
+      },
+      {
+        num: 8,
+        title: "Advanced Reactors & SMRs",
+        desc: "Next-gen designs — SMRs, molten salt, high-temp gas, fusion-fission hybrids, and what they mean for the workforce.",
+        file: "module-8-advanced-reactors.html",
+        tags: ["Advanced", "SMR"],
+        time: "20 min"
+      }
+    ];
+
+    // Track completion via localStorage
+    function getCompleted() {
+      try {
+        return JSON.parse(localStorage.getItem('rr-completed') || '[]');
+      } catch { return []; }
+    }
+
+    function getInProgress() {
+      try {
+        return JSON.parse(localStorage.getItem('rr-in-progress') || '[]');
+      } catch { return []; }
+    }
+
+    function updateProgress() {
+      const completed = getCompleted();
+      const total = modules.length;
+      const count = completed.length;
+      const pct = Math.round((count / total) * 100);
+
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-detail').textContent = count + ' / ' + total + ' complete';
+      document.getElementById('progress-text').textContent = count + ' of ' + total + ' modules complete';
+      document.getElementById('completion-pct').textContent = pct + '%';
+    }
+
+    function renderModules() {
+      const grid = document.getElementById('module-grid');
+      const completed = getCompleted();
+      const inProgress = getInProgress();
+
+      grid.innerHTML = modules.map(m => {
+        let statusClass, statusText, numClass;
+        if (completed.includes(m.num)) {
+          statusClass = 'status-completed';
+          statusText = 'Completed';
+          numClass = 'completed';
+        } else if (inProgress.includes(m.num)) {
+          statusClass = 'status-in-progress';
+          statusText = 'In Progress';
+          numClass = 'in-progress';
+        } else {
+          statusClass = 'status-not-started';
+          statusText = 'Not Started';
+          numClass = 'not-started';
+        }
+
+        const tags = m.tags.map(t => `<span class="meta-tag">${t}</span>`).join('');
+
+        return `
+          <a href="${m.file}" class="module-card" onclick="markInProgress(${m.num})">
+            <div class="module-card-header">
+              <div class="module-num ${numClass}">${m.num}</div>
+              <div class="module-card-title">${m.title}</div>
+            </div>
+            <div class="module-card-desc">${m.desc}</div>
+            <div class="module-card-meta">
+              ${tags}
+              <span>${m.time}</span>
+              <span class="module-card-status ${statusClass}">${statusText}</span>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+
+    function markInProgress(num) {
+      const inProgress = getInProgress();
+      if (!inProgress.includes(num)) {
+        inProgress.push(num);
+        localStorage.setItem('rr-in-progress', JSON.stringify(inProgress));
+      }
+    }
+
+    // Init
+    renderModules();
+    updateProgress();
+  </script>
+
+</body>
+</html>

@@ -939,6 +939,7 @@
       }
       fb.style.display = 'block';
     }
+    if (window.rrMarkComplete) window.rrMarkComplete();
     const result = document.getElementById('quiz-result');
     result.style.display = 'block';
     if (score === 6) {
@@ -1017,5 +1018,24 @@
     checkProgress();
   })();
   </script>
+
+<!-- Reactor Ready Progress Tracking -->
+<script>
+(function(){
+  var moduleNum = 5;
+  // Mark in-progress on load
+  try {
+    var ip = JSON.parse(localStorage.getItem("rr-in-progress") || "[]");
+    if (ip.indexOf(moduleNum) === -1) { ip.push(moduleNum); localStorage.setItem("rr-in-progress", JSON.stringify(ip)); }
+  } catch(e){}
+  // Expose markComplete for quiz completion
+  window.rrMarkComplete = function() {
+    try {
+      var c = JSON.parse(localStorage.getItem("rr-completed") || "[]");
+      if (c.indexOf(moduleNum) === -1) { c.push(moduleNum); localStorage.setItem("rr-completed", JSON.stringify(c)); }
+    } catch(e){}
+  };
+})();
+</script>
 </body>
 </html>

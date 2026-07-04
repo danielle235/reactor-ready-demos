@@ -854,6 +854,7 @@
     };
 
     window.showFinalScore = function() {
+      if (window.rrMarkComplete) window.rrMarkComplete();
       var pct = Math.round((score / totalSteps()) * 100);
       var color = pct >= 80 ? 'var(--success)' : pct >= 60 ? 'var(--gold)' : 'var(--error)';
       var message = pct >= 80
@@ -951,5 +952,24 @@
     if(e.key==='Enter') askTutor();
   });
   </script>
+
+<!-- Reactor Ready Progress Tracking -->
+<script>
+(function(){
+  var moduleNum = 6;
+  // Mark in-progress on load
+  try {
+    var ip = JSON.parse(localStorage.getItem("rr-in-progress") || "[]");
+    if (ip.indexOf(moduleNum) === -1) { ip.push(moduleNum); localStorage.setItem("rr-in-progress", JSON.stringify(ip)); }
+  } catch(e){}
+  // Expose markComplete for quiz completion
+  window.rrMarkComplete = function() {
+    try {
+      var c = JSON.parse(localStorage.getItem("rr-completed") || "[]");
+      if (c.indexOf(moduleNum) === -1) { c.push(moduleNum); localStorage.setItem("rr-completed", JSON.stringify(c)); }
+    } catch(e){}
+  };
+})();
+</script>
 </body>
 </html>
