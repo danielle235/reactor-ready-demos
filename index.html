@@ -18,6 +18,17 @@
       --border: rgba(0,180,216,0.2);
     }
 
+    /* UToledo theme override */
+    :root.utoledo {
+      --navy: #001a3a;
+      --blue: #002657;
+      --teal: #FFCE00;
+      --teal-light: #FFE066;
+      --gold: #FFCE00;
+      --dark-card: #001230;
+      --border: rgba(255,206,0,0.2);
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -371,7 +382,7 @@
     <span class="hero-icon">&#9883;</span>
     <h1>Nuclear Workforce Training,<br><span class="highlight">Ready When You Are</span></h1>
     <p>Interactive, AI-ready training modules built for the next generation of nuclear professionals. From reactor fundamentals to advanced concepts — learn at your pace, on any device.</p>
-    <a href="module-1-welcome.html" class="cta-btn">Start Learning</a>
+    <a href="module-1-welcome.html" class="cta-btn" id="cta-start">Start Learning</a>
     <a href="#modules" class="cta-secondary">Browse Modules</a>
   </div>
 
@@ -449,6 +460,17 @@
   </footer>
 
   <script>
+    // Theme detection + pass-through
+    var themeParam = '';
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('theme') === 'utoledo') {
+        document.documentElement.classList.add('utoledo');
+        document.title = 'Reactor Ready — University of Toledo Nuclear Training';
+        themeParam = '?theme=utoledo';
+      }
+    })();
+
     // Module data
     const modules = [
       {
@@ -566,7 +588,7 @@
         const tags = m.tags.map(t => `<span class="meta-tag">${t}</span>`).join('');
 
         return `
-          <a href="${m.file}" class="module-card" onclick="markInProgress(${m.num})">
+          <a href="${m.file}${themeParam}" class="module-card" onclick="markInProgress(${m.num})">
             <div class="module-card-header">
               <div class="module-num ${numClass}">${m.num}</div>
               <div class="module-card-title">${m.title}</div>
@@ -593,6 +615,7 @@
     // Init
     renderModules();
     updateProgress();
+    if (themeParam) document.getElementById('cta-start').href = 'module-1-welcome.html' + themeParam;
   </script>
 
 </body>
