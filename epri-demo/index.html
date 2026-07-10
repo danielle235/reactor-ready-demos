@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EPRI Demo — FissionPoint Nuclear Training</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --blue: #1a3a5c;
+      --teal: #00b4d8;
+      --teal-light: #90e0ef;
+      --gold: #f4a261;
+      --white: #f8fafc;
+      --gray: #94a3b8;
+      --dark-card: #111f35;
+      --border: rgba(0,180,216,0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .badge {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold);
+      background: rgba(244,162,97,0.1);
+      border: 1px solid rgba(244,162,97,0.3);
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    h1 span { color: var(--teal); }
+    p.sub {
+      color: var(--gray);
+      font-size: 1.05rem;
+      max-width: 550px;
+      text-align: center;
+      margin-bottom: 3rem;
+      line-height: 1.6;
+    }
+    .card {
+      background: var(--dark-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      transition: all 0.3s;
+    }
+    .card:hover {
+      border-color: var(--teal);
+      box-shadow: 0 4px 20px rgba(0,180,216,0.15);
+      transform: translateY(-2px);
+    }
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.4rem;
+    }
+    .card .source {
+      font-size: 0.75rem;
+      color: var(--gold);
+      margin-bottom: 0.8rem;
+    }
+    .card p {
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .card a {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--teal), #0077b6);
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+    .card a:hover {
+      box-shadow: 0 0 20px rgba(0,180,216,0.3);
+    }
+    .back-link {
+      margin-top: 2rem;
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .back-link:hover { color: var(--teal); }
+    .features {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .feature {
+      font-size: 0.75rem;
+      color: var(--teal);
+      background: rgba(0,180,216,0.08);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid rgba(0,180,216,0.15);
+    }
+  </style>
+</head>
+<body>
+  <div class="badge">EPRI Demo</div>
+  <h1>Nuclear Training <span>Proof of Concept</span></h1>
+  <p class="sub">Interactive AI-powered training module built from EPRI technical report content. This demonstrates how existing research documents can be transformed into engaging, trackable learning experiences.</p>
+
+  <div class="card">
+    <h3>Seismic Probabilistic Risk Assessment</h3>
+    <div class="source">Source: EPRI Report 3002032031</div>
+    <p>Full interactive lesson covering seismic PRA methodology, hazard analysis, fragility assessment, and risk quantification. Includes knowledge checks, expandable deep-dives, and progress tracking.</p>
+    <div class="features">
+      <span class="feature">Interactive Segments</span>
+      <span class="feature">Knowledge Checks</span>
+      <span class="feature">Progress Tracking</span>
+      <span class="feature">AI Tutor Ready</span>
+    </div>
+    <a href="epri-seismic-lesson.html">Launch Lesson &rarr;</a>
+  </div>
+
+  <a href="../index.html" class="back-link">&larr; Back to All Demos</a>
+</body>
+</html>

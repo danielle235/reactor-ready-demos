@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuclear Lecture Engine — EPRI Seismic Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <style>
+    :root{--nn-orange:#E8751A;--nn-og:rgba(232,117,26,.15);--nn-dark:#06070d;--nn-darker:#0a0c16;--nn-card:#111827;--nn-ch:#1a2035;--nn-text:#eef2fb;--nn-muted:#8892a8;--nn-green:#4ade80;--nn-blue:#4fb6df;--nn-bg:rgba(79,182,223,.12);--nn-border:#1e2940;--nn-red:#ef4444}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--nn-dark);color:var(--nn-text);min-height:100vh;letter-spacing:-.011em}
+    header{background:rgba(10,12,22,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--nn-border);padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .logo{font-size:1.1rem;font-weight:700;letter-spacing:-.02em}.logo .brand{color:var(--nn-orange)}.logo .sep{color:var(--nn-border);margin:0 .5rem}.logo .sub{color:var(--nn-muted);font-weight:500}
+    .header-right{display:flex;align-items:center;gap:1rem}
+    .course-badge{font-size:.7rem;color:var(--nn-blue);background:var(--nn-bg);padding:.3rem .8rem;border-radius:20px;border:1px solid rgba(79,182,223,.2);font-weight:500}
+    .demo-badge{font-size:.65rem;color:var(--nn-orange);background:var(--nn-og);padding:.25rem .6rem;border-radius:20px;border:1px solid rgba(232,117,26,.3);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+    .layout{display:grid;grid-template-columns:280px 1fr 360px;min-height:calc(100vh - 52px)}
+    .sidebar{background:var(--nn-darker);border-right:1px solid var(--nn-border);overflow-y:auto}
+    .progress-section{padding:1.2rem 1rem;border-bottom:1px solid var(--nn-border)}
+    .progress-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+    .progress-label span{font-size:.7rem;color:var(--nn-muted);font-weight:500}.progress-label .pct{color:var(--nn-orange);font-weight:700}
+    .progress-bar{height:3px;background:var(--nn-card);border-radius:2px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--nn-orange),#f59e0b);border-radius:2px;transition:width .4s ease}
+    .sidebar-label{padding:1rem 1rem .5rem;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--nn-muted);font-weight:600}
+    .seg-item{padding:.7rem 1rem;cursor:pointer;border-left:2px solid transparent;transition:all .15s;display:flex;align-items:flex-start;gap:.7rem}
+    .seg-item:hover{background:var(--nn-card)}.seg-item.active{background:var(--nn-card);border-left-color:var(--nn-orange)}
+    .seg-num{width:22px;height:22px;border-radius:50%;background:var(--nn-card);border:1px solid var(--nn-border);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;color:var(--nn-muted);transition:all .15s}
+    .seg-item.active .seg-num{background:var(--nn-orange);border-color:var(--nn-orange);color:white}
+    .seg-item.completed .seg-num{background:var(--nn-green);border-color:var(--nn-green);color:var(--nn-dark)}
+    .seg-info h4{font-size:.78rem;line-height:1.3;font-weight:500}.seg-info .seg-time{font-size:.65rem;color:var(--nn-muted);margin-top:.15rem}
+    .main{padding:2rem 3rem;overflow-y:auto;max-height:calc(100vh - 52px)}
+    .welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center}
+    .welcome-eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--nn-orange);font-weight:600;margin-bottom:.8rem}
+    .welcome h1{font-size:2.2rem;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:.6rem;max-width:600px}
+    .welcome .instructor{font-size:1rem;color:var(--nn-muted);margin-bottom:2rem}
+    .stats-row{display:flex;gap:3rem;margin-bottom:2.5rem}
+    .stat-num{font-size:2.4rem;font-weight:800;color:var(--nn-orange);letter-spacing:-.03em}
+    .stat-label{font-size:.75rem;color:var(--nn-muted);font-weight:500}
+    .btn{padding:.7rem 1.8rem;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:'Inter',sans-serif;letter-spacing:-.01em}
+    .btn-primary{background:var(--nn-orange);color:white;box-shadow:0 0 20px rgba(232,117,26,.3)}.btn-primary:hover{filter:brightness(1.15);transform:translateY(-1px)}
+    .btn-secondary{background:var(--nn-card);color:var(--nn-text);border:1px solid var(--nn-border)}.btn-secondary:hover{background:var(--nn-ch)}
+    .btn-green{background:var(--nn-green);color:var(--nn-dark)}.btn-green:hover{filter:brightness(1.1)}
+    #lessonView{display:none}
+    .lesson-eyebrow{font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--nn-orange);font-weight:600;margin-bottom:.5rem}
+    .lesson-header h1{font-size:1.5rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.4rem;line-height:1.25}
+    .lesson-meta{display:flex;gap:1.2rem;color:var(--nn-muted);font-size:.8rem;margin-bottom:1.5rem}
+    .concepts-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.5rem}
+    .concept-tag{background:var(--nn-og);color:var(--nn-orange);padding:.25rem .6rem;border-radius:6px;font-size:.72rem;border:1px solid rgba(232,117,26,.25);font-weight:500}
+    .lesson-content{background:var(--nn-card);border:1px solid var(--nn-border);border-radius:12px;padding:1.8rem 2rem;margin-bottom:1.5rem;line-height:1.85;font-size:.95rem;color:rgba(238,242,251,.9)}
+    .equations-section{background:var(--nn-card);border:1px solid var(--nn-border);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem}
+    .eq-header{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--nn-blue);font-weight:600;margin-bottom:.8rem}
+    .eq-item{padding:.8rem 0;border-bottom:1px solid var(--nn-border)}.eq-item:last-child{border-bottom:none}
+    .eq-formula{font-size:1.1rem;color:var(--nn-blue);margin-bottom:.3rem;padding:.3rem 0}
+    .eq-desc{font-size:.8rem;color:var(--nn-muted)}.eq-desc strong{color:var(--nn-text);font-weight:500}
+    .nav-buttons{display:flex;gap:.8rem;margin-top:2rem;flex-wrap:wrap}
+    .right-panel{background:var(--nn-darker);border-left:1px solid var(--nn-border);display:flex;flex-direction:column;max-height:calc(100vh - 52px)}
+    .panel-tabs{display:flex;border-bottom:1px solid var(--nn-border);flex-shrink:0}
+    .panel-tab{flex:1;padding:.7rem .5rem;text-align:center;font-size:.75rem;font-weight:600;cursor:pointer;color:var(--nn-muted);border-bottom:2px solid transparent;transition:all .15s}
+    .panel-tab:hover{color:var(--nn-text)}.panel-tab.active{color:var(--nn-orange);border-bottom-color:var(--nn-orange)}
+    .panel-content{flex:1;padding:1rem;overflow-y:auto}
+    .panel-footer{padding:.8rem 1rem;border-top:1px solid var(--nn-border);flex-shrink:0}
+    .btn-download{width:100%;padding:.55rem;background:var(--nn-card);color:var(--nn-text);border:1px solid var(--nn-border);border-radius:8px;cursor:pointer;font-size:.75rem;font-weight:600;font-family:'Inter',sans-serif;transition:all .15s}
+    .btn-download:hover{border-color:var(--nn-orange);color:var(--nn-orange)}
+    .quiz-card{background:var(--nn-card);border:1px solid var(--nn-border);border-radius:10px;padding:1.1rem;margin-bottom:.8rem}
+    .quiz-q{font-size:.88rem;margin-bottom:.8rem;line-height:1.5;font-weight:500}
+    .quiz-option{display:block;width:100%;padding:.55rem .7rem;margin-bottom:.4rem;background:var(--nn-darker);border:1px solid var(--nn-border);border-radius:8px;color:var(--nn-text);font-size:.8rem;cursor:pointer;text-align:left;transition:all .15s;font-family:'Inter',sans-serif}
+    .quiz-option:hover:not(:disabled){border-color:var(--nn-orange)}
+    .quiz-option.correct{border-color:var(--nn-green);background:rgba(74,222,128,.08);color:var(--nn-green)}
+    .quiz-option.incorrect{border-color:var(--nn-red);background:rgba(239,68,68,.08);color:var(--nn-red)}
+    .quiz-explanation{margin-top:.6rem;padding:.7rem;background:var(--nn-bg);border:1px solid rgba(79,182,223,.2);border-radius:8px;font-size:.8rem;line-height:1.5;color:var(--nn-blue);display:none}
+    .quiz-explanation.show{display:block}
+    .tutor-wrap{display:flex;flex-direction:column;height:100%}.tutor-messages{flex:1;overflow-y:auto;margin-bottom:.8rem}
+    .tutor-msg{margin-bottom:.7rem;padding:.7rem;border-radius:10px;font-size:.8rem;line-height:1.5}
+    .tutor-msg.system{background:var(--nn-card);border:1px solid var(--nn-border)}
+    .tutor-msg.user{background:var(--nn-og);border:1px solid rgba(232,117,26,.25);margin-left:.8rem}
+    .tutor-input-row{display:flex;gap:.4rem}
+    .tutor-input{flex:1;padding:.55rem .7rem;border-radius:8px;border:1px solid var(--nn-border);background:var(--nn-card);color:var(--nn-text);font-size:.8rem;font-family:'Inter',sans-serif}
+    .tutor-input:focus{outline:none;border-color:var(--nn-orange)}
+    .cheat-section{margin-bottom:1.2rem}.cheat-label{font-size:.65rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--nn-orange);font-weight:600;margin-bottom:.6rem}
+    .cheat-eq{background:var(--nn-card);border:1px solid var(--nn-border);border-radius:8px;padding:.7rem;margin-bottom:.4rem}
+    .cheat-eq .formula{color:var(--nn-blue);font-size:.95rem;padding:.2rem 0}
+    .cheat-eq .desc{font-size:.7rem;color:var(--nn-muted);margin-top:.15rem}
+    .cheat-tip{background:var(--nn-card);border-left:2px solid var(--nn-green);padding:.5rem .7rem;margin-bottom:.4rem;font-size:.78rem;border-radius:0 8px 8px 0;line-height:1.4}
+    @media(max-width:1200px){.layout{grid-template-columns:260px 1fr}.right-panel{display:none}}
+    @media(max-width:768px){.layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:1.5rem}header{padding:.6rem 1rem}}
+    .katex{font-size:1.1em}.katex-display{margin:.5em 0}
+    .eq-formula .katex{color:var(--nn-blue)}
+    .cheat-eq .katex{color:var(--nn-blue)}
+    .sim-container{background:var(--nn-card);border:1px solid var(--nn-border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;overflow:hidden}
+    .sim-header{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem}
+    .sim-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;background:var(--nn-og);color:var(--nn-orange)}
+    .sim-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.2px;font-weight:600;color:var(--nn-orange)}
+    .sim-title{font-size:.95rem;font-weight:600;color:var(--nn-text)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><span class="brand">NAKED NUCLEAR</span><span class="sep">|</span><span class="sub">Lecture Engine</span></div>
+    <div class="header-right">
+      <span class="course-badge">EPRI 3002032031 — Seismic Design for Advanced Reactors</span>
+      <span class="demo-badge">Demo</span>
+    </div>
+  </header>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="progress-section">
+        <div class="progress-label"><span>Progress</span><span class="pct" id="progressPct">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+      <div class="sidebar-label">Micro-Lessons</div>
+      <div id="segmentList"></div>
+    </div>
+    <div class="main" id="mainContent">
+      <div class="welcome" id="welcomeScreen">
+        <div class="welcome-eyebrow">EPRI White Paper — October 2025</div>
+        <h1>Risk-Informed Seismic Design for Advanced Reactors</h1>
+        <p class="instructor">EPRI 3002032031 — John Richards, Senior Technical Executive</p>
+        <div class="stats-row">
+          <div class="stat"><div class="stat-num">6</div><div class="stat-label">Micro-Lessons</div></div>
+          <div class="stat"><div class="stat-num">18</div><div class="stat-label">Pages</div></div>
+          <div class="stat"><div class="stat-num">10</div><div class="stat-label">Quiz Questions</div></div>
+        </div>
+        <button class="btn btn-primary" onclick="selectSegment('seg-01')">Start Learning</button>
+      </div>
+      <div id="lessonView"></div>
+    </div>
+    <div class="right-panel">
+      <div class="panel-tabs">
+        <div class="panel-tab active" data-tab="quiz" onclick="switchTab('quiz')">Quiz</div>
+        <div class="panel-tab" data-tab="tutor" onclick="switchTab('tutor')">AI Tutor</div>
+        <div class="panel-tab" data-tab="cheatsheet" onclick="switchTab('cheatsheet')">Cheat Sheet</div>
+      </div>
+      <div class="panel-content" id="panelContent">
+        <div class="tutor-msg system">Select a micro-lesson to begin. Quiz questions appear here.</div>
+      </div>
+      <div class="panel-footer">
+        <button class="btn-download" onclick="downloadCheatSheet()">Download Cheat Sheet</button>
+      </div>
+    </div>
+  </div>
+<script>
+// === Seismic Fragility Curve Explorer Simulation ===
+function createFragilitySim(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 700;
+  canvas.height = 420;
+  canvas.style.width = '100%';
+  canvas.style.maxWidth = '700px';
+  canvas.style.borderRadius = '10px';
+  canvas.style.background = '#0a0c16';
+  canvas.style.display = 'block';
+  canvas.style.margin = '0 auto';
+  canvas.style.cursor = 'crosshair';
+  container.appendChild(canvas);
+
+  const controls = document.createElement('div');
+  controls.style.cssText = 'display:flex;gap:1rem;justify-content:center;align-items:center;margin-top:.8rem;flex-wrap:wrap;';
+  controls.innerHTML = `
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <label style="font-size:.75rem;color:#8892a8;font-weight:500;">HCLPF (×GMRS):</label>
+      <input type="range" id="fg-hclpf" min="1.0" max="5.0" step="0.1" value="1.67" style="width:100px;accent-color:#E8751A;">
+      <span id="fg-hclpf-val" style="font-size:.8rem;font-weight:700;color:#E8751A;min-width:40px;">1.67</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <label style="font-size:.75rem;color:#8892a8;font-weight:500;">$\\beta_c$:</label>
+      <input type="range" id="fg-beta" min="0.2" max="0.8" step="0.05" value="0.4" style="width:100px;accent-color:#4fb6df;">
+      <span id="fg-beta-val" style="font-size:.8rem;font-weight:700;color:#4fb6df;min-width:35px;">0.40</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <label style="font-size:.75rem;color:#8892a8;font-weight:500;">$A_R$:</label>
+      <input type="range" id="fg-ar" min="2.0" max="4.0" step="0.1" value="2.5" style="width:80px;accent-color:#4ade80;">
+      <span id="fg-ar-val" style="font-size:.8rem;font-weight:700;color:#4ade80;min-width:30px;">2.5</span>
+    </div>
+  `;
+  container.appendChild(controls);
+
+  const info = document.createElement('div');
+  info.id = 'fg-info';
+  info.style.cssText = 'text-align:center;margin-top:.5rem;font-size:.78rem;color:#8892a8;min-height:1.5rem;';
+  info.textContent = 'Adjust sliders to see how HCLPF capacity, uncertainty (βc), and hazard slope (AR) affect failure frequency.';
+  container.appendChild(info);
+
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const pad = { top: 40, right: 30, bottom: 55, left: 70 };
+  const plotW = W - pad.left - pad.right;
+  const plotH = H - pad.top - pad.bottom;
+
+  // Lognormal CDF for fragility
+  function normcdf(x) {
+    const a1=0.254829592, a2=-0.284496736, a3=1.421413741, a4=-1.453152027, a5=1.061405429, p=0.3275911;
+    const sign = x < 0 ? -1 : 1;
+    x = Math.abs(x) / Math.SQRT2;
+    const t = 1.0 / (1.0 + p * x);
+    const y = 1.0 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t * Math.exp(-x*x);
+    return 0.5 * (1.0 + sign * y);
+  }
+
+  function fragility(pga, hclpf, beta) {
+    // HCLPF = 1% failure point => median = HCLPF * exp(2.326 * beta)
+    const median = hclpf * Math.exp(2.326 * beta);
+    return normcdf(Math.log(pga / median) / beta);
+  }
+
+  // Hazard curve: power law H(a) = k0 * a^(-1/log10(AR)*log10(e))
+  function hazardAFE(pga, gmrs, ar) {
+    // At GMRS, AFE ≈ 4e-4 (between 1e-4 and 1e-3)
+    const k_h = -Math.log(10) / Math.log(ar); // slope in ln space
+    return 4e-4 * Math.pow(pga / gmrs, k_h);
+  }
+
+  const hclpfSlider = document.getElementById('fg-hclpf');
+  const betaSlider = document.getElementById('fg-beta');
+  const arSlider = document.getElementById('fg-ar');
+
+  function draw() {
+    const hclpfMult = parseFloat(hclpfSlider.value);
+    const beta = parseFloat(betaSlider.value);
+    const ar = parseFloat(arSlider.value);
+    const gmrs = 0.3; // reference GMRS in g
+    const hclpf = hclpfMult * gmrs;
+
+    document.getElementById('fg-hclpf-val').textContent = hclpfMult.toFixed(2);
+    document.getElementById('fg-beta-val').textContent = beta.toFixed(2);
+    document.getElementById('fg-ar-val').textContent = ar.toFixed(1);
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0a0c16';
+    ctx.fillRect(0, 0, W, H);
+
+    // Plot ranges
+    const pgaMin = 0.05, pgaMax = 3.0;
+
+    function toX(pga) { return pad.left + (Math.log(pga/pgaMin) / Math.log(pgaMax/pgaMin)) * plotW; }
+    function toYfrag(pf) { return pad.top + plotH - pf * plotH; }
+
+    // Grid
+    ctx.strokeStyle = 'rgba(30, 41, 64, 0.5)';
+    ctx.lineWidth = 0.5;
+    for (let pf = 0; pf <= 1; pf += 0.2) {
+      const y = toYfrag(pf);
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    }
+    const pgaTicks = [0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 3.0];
+    for (const p of pgaTicks) {
+      const x = toX(p);
+      if (x >= pad.left && x <= W - pad.right) {
+        ctx.beginPath(); ctx.moveTo(x, pad.top); ctx.lineTo(x, H - pad.bottom); ctx.stroke();
+      }
+    }
+
+    // Axes
+    ctx.strokeStyle = '#33334a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top);
+    ctx.lineTo(pad.left, H - pad.bottom);
+    ctx.lineTo(W - pad.right, H - pad.bottom);
+    ctx.stroke();
+
+    // Axis labels
+    ctx.fillStyle = '#8892a8';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Peak Ground Acceleration (g)', W / 2, H - 8);
+
+    ctx.save();
+    ctx.translate(15, H / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Probability of Failure', 0, 0);
+    ctx.restore();
+
+    // Tick labels
+    ctx.font = '10px Inter';
+    ctx.textAlign = 'center';
+    for (const p of pgaTicks) {
+      const x = toX(p);
+      if (x >= pad.left && x <= W - pad.right) {
+        ctx.fillText(p.toFixed(p < 0.1 ? 2 : 1), x, H - pad.bottom + 15);
+      }
+    }
+    ctx.textAlign = 'right';
+    for (let pf = 0; pf <= 1; pf += 0.2) {
+      ctx.fillText(pf.toFixed(1), pad.left - 8, toYfrag(pf) + 4);
+    }
+
+    // GMRS vertical line
+    const gmrsX = toX(gmrs);
+    ctx.setLineDash([4, 3]);
+    ctx.strokeStyle = 'rgba(74, 222, 128, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(gmrsX, pad.top); ctx.lineTo(gmrsX, H - pad.bottom); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#4ade80';
+    ctx.font = '10px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('GMRS', gmrsX, pad.top - 5);
+
+    // HCLPF vertical line
+    const hclpfX = toX(hclpf);
+    ctx.setLineDash([4, 3]);
+    ctx.strokeStyle = 'rgba(232, 117, 26, 0.4)';
+    ctx.beginPath(); ctx.moveTo(hclpfX, pad.top); ctx.lineTo(hclpfX, H - pad.bottom); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#E8751A';
+    ctx.fillText('HCLPF=' + hclpfMult.toFixed(2) + '×GMRS', hclpfX, pad.top - 5);
+
+    // 1.67×GMRS reference line (current NRC requirement)
+    if (Math.abs(hclpfMult - 1.67) > 0.05) {
+      const refX = toX(1.67 * gmrs);
+      ctx.setLineDash([2, 4]);
+      ctx.strokeStyle = 'rgba(136, 146, 168, 0.3)';
+      ctx.beginPath(); ctx.moveTo(refX, pad.top + 20); ctx.lineTo(refX, H - pad.bottom); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#555';
+      ctx.font = '9px Inter';
+      ctx.fillText('NRC 1.67×', refX, pad.top + 15);
+    }
+
+    // Draw fragility curve
+    ctx.beginPath();
+    let first = true;
+    for (let px = pad.left; px <= W - pad.right; px += 2) {
+      const logPga = Math.log(pgaMin) + (px - pad.left) / plotW * Math.log(pgaMax / pgaMin);
+      const pga = Math.exp(logPga);
+      const pf = fragility(pga, hclpf, beta);
+      const y = toYfrag(pf);
+      if (first) { ctx.moveTo(px, y); first = false; }
+      else ctx.lineTo(px, y);
+    }
+    ctx.strokeStyle = '#E8751A';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Draw commercial building fragility (βc=0.6, collapse at MCER ≈ 0.5g)
+    ctx.beginPath();
+    first = true;
+    const commHCLPF = 0.15; // much lower capacity
+    for (let px = pad.left; px <= W - pad.right; px += 2) {
+      const logPga = Math.log(pgaMin) + (px - pad.left) / plotW * Math.log(pgaMax / pgaMin);
+      const pga = Math.exp(logPga);
+      const pf = fragility(pga, commHCLPF, 0.6);
+      const y = toYfrag(pf);
+      if (first) { ctx.moveTo(px, y); first = false; }
+      else ctx.lineTo(px, y);
+    }
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Compute annual failure frequency via convolution
+    let totalFreq = 0;
+    const nSteps = 500;
+    for (let i = 0; i < nSteps; i++) {
+      const logPga = Math.log(pgaMin) + (i / nSteps) * Math.log(pgaMax / pgaMin);
+      const pga = Math.exp(logPga);
+      const pga2 = Math.exp(Math.log(pgaMin) + ((i + 1) / nSteps) * Math.log(pgaMax / pgaMin));
+      const h1 = hazardAFE(pga, gmrs, ar);
+      const h2 = hazardAFE(pga2, gmrs, ar);
+      const dH = Math.abs(h1 - h2);
+      const pf = fragility((pga + pga2) / 2, hclpf, beta);
+      totalFreq += pf * dH;
+    }
+
+    // Info display
+    const infoEl = document.getElementById('fg-info');
+    const freqStr = totalFreq.toExponential(1);
+    const ratio = (totalFreq / 5e-7).toFixed(1);
+    const meetsFCTarget = totalFreq <= 5e-7;
+    infoEl.innerHTML = `Annual failure frequency: <strong style="color:${meetsFCTarget ? '#4ade80' : '#ef4444'}">${freqStr}/yr</strong> | ` +
+      `F-C target (5E-7): <strong style="color:${meetsFCTarget ? '#4ade80' : '#ef4444'}">${meetsFCTarget ? 'MEETS' : ratio + '× over'}</strong> | ` +
+      `<span style="color:#E8751A">—</span> Nuclear structure &nbsp; <span style="color:rgba(239,68,68,0.5)">- -</span> Commercial building`;
+
+    // Title
+    ctx.fillStyle = '#eef2fb';
+    ctx.font = 'bold 13px Inter';
+    ctx.textAlign = 'left';
+    ctx.fillText('Seismic Fragility Curve Explorer', pad.left, 20);
+
+    requestAnimationFrame(draw);
+  }
+
+  hclpfSlider.addEventListener('input', draw);
+  betaSlider.addEventListener('input', draw);
+  arSlider.addEventListener('input', draw);
+
+  draw();
+}
+
+// === Hazard Curve Slope Explorer ===
+function createHazardSlopeSim(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 700;
+  canvas.height = 380;
+  canvas.style.width = '100%';
+  canvas.style.maxWidth = '700px';
+  canvas.style.borderRadius = '10px';
+  canvas.style.background = '#0a0c16';
+  canvas.style.display = 'block';
+  canvas.style.margin = '0 auto';
+  canvas.style.cursor = 'crosshair';
+  container.appendChild(canvas);
+
+  const controls = document.createElement('div');
+  controls.style.cssText = 'display:flex;gap:1.5rem;justify-content:center;align-items:center;margin-top:.8rem;flex-wrap:wrap;';
+  controls.innerHTML = `
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <label style="font-size:.75rem;color:#8892a8;font-weight:500;">Hazard Slope $A_R$:</label>
+      <input type="range" id="hs-ar" min="2.0" max="5.0" step="0.1" value="3.0" style="width:140px;accent-color:#4fb6df;">
+      <span id="hs-ar-val" style="font-size:.8rem;font-weight:700;color:#4fb6df;min-width:30px;">3.0</span>
+    </div>
+    <span style="font-size:.72rem;color:#8892a8;">Steep (high $A_R$) = rapid PGA increase per hazard decade</span>
+  `;
+  container.appendChild(controls);
+
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const pad = { top: 35, right: 30, bottom: 50, left: 70 };
+  const plotW = W - pad.left - pad.right;
+  const plotH = H - pad.top - pad.bottom;
+
+  const arSlider = document.getElementById('hs-ar');
+
+  function draw() {
+    const ar = parseFloat(arSlider.value);
+    document.getElementById('hs-ar-val').textContent = ar.toFixed(1);
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0a0c16';
+    ctx.fillRect(0, 0, W, H);
+
+    // Log-log plot: PGA (x) vs AFE (y)
+    const pgaMin = 0.01, pgaMax = 5.0;
+    const afeMin = 1e-7, afeMax = 1e-1;
+
+    function toX(pga) { return pad.left + (Math.log10(pga) - Math.log10(pgaMin)) / (Math.log10(pgaMax) - Math.log10(pgaMin)) * plotW; }
+    function toY(afe) { return pad.top + (Math.log10(afeMax) - Math.log10(afe)) / (Math.log10(afeMax) - Math.log10(afeMin)) * plotH; }
+
+    // Grid
+    ctx.strokeStyle = 'rgba(30, 41, 64, 0.5)';
+    ctx.lineWidth = 0.5;
+    for (let exp = -7; exp <= -1; exp++) {
+      const y = toY(Math.pow(10, exp));
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    }
+    for (const p of [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0]) {
+      const x = toX(p);
+      if (x >= pad.left && x <= W - pad.right) {
+        ctx.beginPath(); ctx.moveTo(x, pad.top); ctx.lineTo(x, H - pad.bottom); ctx.stroke();
+      }
+    }
+
+    // Axes
+    ctx.strokeStyle = '#33334a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, H - pad.bottom); ctx.lineTo(W - pad.right, H - pad.bottom);
+    ctx.stroke();
+
+    ctx.fillStyle = '#8892a8';
+    ctx.font = '11px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('PGA (g)', W / 2, H - 8);
+    ctx.save();
+    ctx.translate(15, H / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Annual Freq. of Exceedance (/yr)', 0, 0);
+    ctx.restore();
+
+    // Tick labels
+    ctx.font = '9px Inter';
+    ctx.textAlign = 'center';
+    for (const p of [0.01, 0.05, 0.1, 0.5, 1.0, 5.0]) {
+      const x = toX(p);
+      if (x >= pad.left && x <= W - pad.right) ctx.fillText(p.toString(), x, H - pad.bottom + 13);
+    }
+    ctx.textAlign = 'right';
+    for (let exp = -7; exp <= -1; exp++) {
+      ctx.fillText('1E' + exp, pad.left - 6, toY(Math.pow(10, exp)) + 4);
+    }
+
+    // Draw hazard curve
+    const pgaAt1e4 = 0.2; // PGA at 1e-4 AFE reference
+    ctx.beginPath();
+    let first = true;
+    for (let px = pad.left; px <= W - pad.right; px += 1) {
+      const logPga = Math.log10(pgaMin) + (px - pad.left) / plotW * (Math.log10(pgaMax) - Math.log10(pgaMin));
+      const pga = Math.pow(10, logPga);
+      const k_h = -Math.log(10) / Math.log(ar);
+      const afe = 1e-4 * Math.pow(pga / pgaAt1e4, k_h);
+      if (afe < afeMin || afe > afeMax) { first = true; continue; }
+      const y = toY(afe);
+      if (first) { ctx.moveTo(px, y); first = false; }
+      else ctx.lineTo(px, y);
+    }
+    ctx.strokeStyle = '#4fb6df';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Mark key AFE levels
+    const keyLevels = [
+      { afe: 1e-4, label: 'UHRS 1E-4', color: '#4ade80' },
+      { afe: 1e-5, label: 'UHRS 1E-5', color: '#f59e0b' },
+      { afe: 5e-7, label: 'F-C Target 5E-7', color: '#ef4444' }
+    ];
+    for (const lv of keyLevels) {
+      const pga = pgaAt1e4 * Math.pow(lv.afe / 1e-4, Math.log(ar) / Math.log(10) * (-1));
+      const pgaCorr = pgaAt1e4 * Math.pow(ar, -(Math.log10(lv.afe) - Math.log10(1e-4)));
+      // Simpler: PGA at afe = pgaAt1e4 * AR^(log10(1e-4/afe))
+      const pgaAtLevel = pgaAt1e4 * Math.pow(ar, Math.log10(1e-4 / lv.afe));
+      const x = toX(pgaAtLevel);
+      const y = toY(lv.afe);
+      if (x >= pad.left && x <= W - pad.right) {
+        ctx.setLineDash([3, 3]);
+        ctx.strokeStyle = lv.color + '60';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(x, y); ctx.lineTo(x, H - pad.bottom); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = lv.color;
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.font = '9px Inter';
+        ctx.textAlign = 'left';
+        ctx.fillText(lv.label + ' → ' + pgaAtLevel.toFixed(2) + 'g', x + 8, y + 3);
+      }
+    }
+
+    ctx.fillStyle = '#eef2fb';
+    ctx.font = 'bold 13px Inter';
+    ctx.textAlign = 'left';
+    ctx.fillText('Seismic Hazard Curve (Power Law Model)', pad.left, 20);
+
+    requestAnimationFrame(draw);
+  }
+
+  arSlider.addEventListener('input', draw);
+  draw();
+}
+</script>
+<script>
+const D={course:"EPRI 3002032031 — Risk-Informed Considerations for Rare Seismic Events in Advanced Reactors",instructor:"EPRI, October 2025",title:"Risk-Informed Seismic Design for Advanced Reactors",duration_minutes:25,segments:[
+{id:"seg-01",start_time:"p.1–3",end_time:"Background",title:"Why Seismic Design for Advanced Reactors Needs a New Approach",content:"The nuclear industry is building a new generation of advanced reactors — small modular reactors (SMRs), molten salt reactors, high-temperature gas reactors, and more. These designs promise passive safety features, damage-tolerant fuels, and modern technology. But there's a problem: the seismic design framework hasn't kept up.\n\nThe Licensing Modernization Project (LMP), outlined in NEI 18-04, provides a risk-informed, performance-based (RIPB) framework for licensing these reactors. It classifies Licensing Basis Events (LBEs) by frequency and consequence using a Frequency-Consequence (F-C) chart. The goal is flexibility and cost efficiency — design safety margins where they matter, and don't over-engineer where they don't.\n\nBut the F-C target of $5 \\times 10^{-7}$/yr for high-consequence Beyond Design Basis Events (BDBEs) creates a challenge when applied to seismic hazards. Why? Because seismic hazard involves massive epistemic uncertainty — far more than internal events. The frequency-consequence framework was designed for internal events PRA, where uncertainties are manageable. Applying it to rare earthquakes with poorly constrained recurrence rates leads to potentially overly conservative structural requirements that could make advanced reactors more expensive than current light water reactors (LWRs) — the exact opposite of the LMP's intent.",key_concepts:["Licensing Modernization Project (LMP)","NEI 18-04","risk-informed performance-based design","frequency-consequence target","Beyond Design Basis Events","seismic hazard uncertainty"],equations:[{name:"F-C Target for BDBEs",formula:"$$f_{\\text{BDBE}} < 5 \\times 10^{-7} \\text{/yr}$$",description:"Maximum acceptable annual frequency for high-consequence Beyond Design Basis Events"}]},
+{id:"seg-02",start_time:"p.3–5",end_time:"LMP Framework",title:"The Frequency-Consequence Framework and Three Licensing Pathways",content:"NEI 18-04 classifies licensing basis events into categories based on their annual frequency and radiological consequence. Events are plotted on a Frequency-Consequence chart where the x-axis is dose at the site boundary and the y-axis is event frequency.\n\nThe framework has both PRA-based and deterministic acceptance criteria. PRA-based criteria require cumulative risk metrics from all LBEs to remain below thresholds for site boundary dose and public health effects. Deterministic criteria require Design Basis Accidents (DBAs) to meet 10 CFR 50.34 dose limits, with adequate Defense in Depth (DiD).\n\nThe NRC is developing Regulatory Guide DG-1410, which offers three licensing pathway options for seismic design:\n\n<strong>Option 1:</strong> Follow current prescriptive rules (10 CFR Parts 50 & 52) — the traditional approach.\n<strong>Option 2:</strong> Full LMP process per NEI 18-04, including a complete Seismic PRA and the F-C chart — the most flexible but also the most demanding.\n<strong>Option 3:</strong> \"Graded SPRA and other risk-informed approaches\" — a middle path being developed by Argonne National Laboratory (ANL).\n\nThe problem is that Option 2 — the full LMP approach — when applied to structures whose failure directly causes core damage, would require seismic performance substantially better than current NRC requirements. Structures designed to current rules (HCLPF capacity of $1.67 \\times \\text{GMRS}$) do NOT meet the $5 \\times 10^{-7}$/yr F-C target.",key_concepts:["F-C chart","PRA-based criteria","deterministic criteria","DG-1410","three licensing pathways","Option 1/2/3","seismic PRA"],equations:[{name:"Current NRC HCLPF margin",formula:"$$\\text{HCLPF} \\geq 1.67 \\times \\text{GMRS}$$",description:"Structures must demonstrate at least 1% failure probability at 1.67× the ground motion response spectrum"},{name:"Performance goal (current)",formula:"$$P_{f,\\text{onset}} \\approx 1 \\times 10^{-5}\\text{/yr}$$",description:"Current target annual frequency for onset of inelastic behavior at the design-basis hazard level"}]},
+{id:"seg-03",start_time:"p.5–8",end_time:"Economic Impact",title:"The Math Problem: Why Current Structures Don't Meet the F-C Target",content:"Here's where the numbers tell the story. EPRI built a family of seismic fragility curves for structures meeting current NRC design requirements (HCLPF = $1.67 \\times \\text{GMRS}$) and convolved them with representative hazard curves.\n\nA seismic fragility curve is described by two parameters: the median capacity and the composite logarithmic standard deviation $\\beta_c$ (typically 0.3–0.6). The High Confidence Low Probability of Failure (HCLPF) capacity is the ground motion at which there is 1% probability of failure — it anchors the fragility curve.\n\nThe seismic hazard curve is idealized as a power law in log-log space, with slope controlled by the parameter $A_R$ — the ratio of PGA across one decade of annual frequency of exceedance. Typical $A_R$ values are 2.0 to 3.5 for the hazard levels relevant to nuclear safety.\n\nWhen you convolve the fragility with the hazard, you get the annual failure frequency. For structures meeting current NRC requirements, this frequency ranges from $1.5 \\times 10^{-6}$/yr to $5 \\times 10^{-6}$/yr — that's 3 to 10 times ABOVE the $5 \\times 10^{-7}$/yr F-C target.\n\nTo actually meet the F-C target, structures would need HCLPF capacities of roughly $3 \\times 1.67 \\times \\text{GMRS} = 5 \\times \\text{GMRS}$. The SSE (Safe Shutdown Earthquake) increase factor on GMRS ranges from 1.3× to 3.6×, depending on $\\beta_c$ and $A_R$. These design forces are far beyond anything in current nuclear engineering practice.",key_concepts:["seismic fragility curve","HCLPF capacity","composite logarithmic standard deviation βc","hazard curve slope AR","convolution","annual failure frequency","SSE increase factor"],equations:[{name:"Power-law hazard model",formula:"$$H(a) = H_0 \\cdot \\left(\\frac{a}{a_0}\\right)^{-K_H}$$",description:"$K_H = \\ln(10)/\\ln(A_R)$, hazard decreases as PGA increases"},{name:"HCLPF definition",formula:"$$P_f(\\text{HCLPF}) = 0.01$$",description:"1% probability of failure at the HCLPF ground motion level"},{name:"Lognormal fragility",formula:"$$P_f(a) = \\Phi\\!\\left(\\frac{\\ln(a/A_m)}{\\beta_c}\\right)$$",description:"$A_m$ = median capacity, $\\beta_c$ = composite log-std deviation, $\\Phi$ = standard normal CDF"},{name:"Current structure failure range",formula:"$$f_{\\text{fail}} \\approx 1.5 \\times 10^{-6} \\text{ to } 5 \\times 10^{-6} \\text{/yr}$$",description:"3–10× above the 5E-7/yr F-C target for structures at HCLPF = 1.67×GMRS"}]},
+{id:"seg-04",start_time:"p.8–12",end_time:"Societal Impact",title:"Putting It in Perspective: NPP Safety vs. Commercial Buildings",content:"The EPRI report makes a powerful societal argument by comparing nuclear structure performance against commercial buildings designed to ASCE/SEI 7-22.\n\nCommercial buildings are designed so that Risk Category I & II structures (ordinary buildings) have an expected annual collapse probability of about $2 \\times 10^{-4}$/yr. Essential facilities (hospitals, fire stations — Risk Category IV) have an annual collapse probability of about $1.4 \\times 10^{-4}$/yr.\n\nCompare that to nuclear structures meeting current NRC requirements: $1.5 \\times 10^{-6}$/yr to $5 \\times 10^{-6}$/yr failure frequency. That's already 30 to 150 times BETTER than commercial buildings.\n\nHere's the dramatic comparison: at the earthquake intensity where nuclear structures have a 1% or less probability of failing their safety function ($1.67 \\times \\text{GMRS}$), between 50% and nearly 100% of modern code-conforming commercial buildings adjacent to the plant are expected to COLLAPSE. For common residential structures, 75% to nearly 100% would collapse.\n\nIf you pushed nuclear structures to meet the $5 \\times 10^{-7}$/yr F-C target, their HCLPF would be about $2.5 \\times \\text{GMRS}$. At that earthquake intensity, nearly ALL adjacent non-essential structures and three quarters of essential structures would have already collapsed. You'd be designing a nuclear plant to survive an earthquake that has destroyed the entire surrounding community.\n\nThe FEMA P-366 data shows the current U.S. building stock has an annual expected loss ratio (a proxy for collapse frequency) of $1 \\times 10^{-4}$/yr to $8.1 \\times 10^{-4}$/yr in the 12 most seismically active jurisdictions.",key_concepts:["ASCE/SEI 7-22","commercial building collapse probability","Risk Categories I-IV","NPP vs commercial safety comparison","FEMA P-366","annual expected loss ratio","societal risk context"],equations:[{name:"Commercial building collapse risk",formula:"$$P_{\\text{collapse}} \\approx 1.4 \\times 10^{-4} \\text{ to } 2.0 \\times 10^{-4} \\text{/yr}$$",description:"Range across ASCE Risk Categories I–IV for modern code-conforming structures"},{name:"NPP vs commercial ratio",formula:"$$\\frac{P_{\\text{commercial}}}{P_{\\text{NPP}}} \\approx 30 \\text{ to } 150$$",description:"Nuclear structures already 30–150× safer than adjacent commercial buildings"},{name:"Conditional collapse at 1.67×GMRS",formula:"$$P_{\\text{collapse,commercial}}(1.67 \\times \\text{GMRS}) \\approx 49\\%\\text{–}92\\%$$",description:"Probability of code-conforming building collapse at current nuclear design earthquake level"}]},
+{id:"seg-05",start_time:"p.13–15",end_time:"Discussion",title:"The Recommended Path: Risk-Informed But Not Over-Conservative",content:"The EPRI report concludes with clear recommendations. The $5 \\times 10^{-7}$/yr F-C target in NEI 18-04, when applied to seismic BDBEs governed by singleton structural failures, leads to design requirements substantially more conservative than:\n\n• Current NRC prescriptive seismic design regulations (which are already very safe)\n• What is justified by the NRC's own reactor safety policy statement\n• What is proportional to societal risk from commercial structures\n\nThe current NRC seismic design framework — design to GMRS, demonstrate margin of $1.67 \\times \\text{GMRS}$ for all severe accident sequences — already provides annual failure frequencies of $1.5 \\times 10^{-6}$/yr to $5 \\times 10^{-6}$/yr. These are 30 to 150 times safer than adjacent commercial buildings.\n\nThe report recommends that the F-C chart region up to about $5 \\times 10^{-6}$/yr should be considered consistent with 'adequate protection' under the Atomic Energy Act. The seismic design should focus on demonstrating that structures meet the current 1.67× margin requirement, not on chasing a frequency target designed for internal events.\n\nArgonne National Lab's Option 3 proposal (conditional probability of all LBEs resulting in dose release $\\leq 0.05$ at the $1 \\times 10^{-5}$/yr hazard level) produces results comparable to and on average slightly lower than the current 1.67× HCLPF requirement — validating the current approach.",key_concepts:["adequate protection","reactor safety policy","Option 3 validation","seismic design recommendations","margin-based vs frequency-based","proportionality principle"],equations:[{name:"Recommended frequency range",formula:"$$f_{\\text{acceptable}} \\lesssim 5 \\times 10^{-6}\\text{/yr}$$",description:"Blue-shaded region on F-C chart consistent with adequate protection for seismic BDBEs"},{name:"ANL Option 3 criterion",formula:"$$P_f(\\text{all LBEs with dose}) \\leq 0.05 \\text{ at } 1 \\times 10^{-5}\\text{/yr hazard level}$$",description:"Conditional failure probability limit at specified hazard level — comparable to 1.67× HCLPF approach"}]},
+{id:"seg-06",start_time:"p.16–18",end_time:"Appendix A",title:"Appendix: Understanding Hazard Curve Slope ($A_R$)",content:"The hazard curve slope parameter $A_R$ is fundamental to seismic risk analysis. It controls how rapidly ground motion increases as you move to rarer earthquakes.\n\n$A_R$ is defined as the ratio of PGA across one decade of annual frequency of exceedance. For example, if the PGA at $10^{-4}$/yr is 0.19g and the PGA at $10^{-5}$/yr is 0.54g, then $A_R = 0.54/0.19 = 2.8$.\n\nSeismic hazard curves are typically curvilinear but can be accurately approximated as piecewise linear in log-log space over each AFE decade. The power law idealization works because most seismic risk comes from ground motion bins spanning a single AFE decade or less.\n\nKey insight: $A_R$ typically decreases along the hazard curve as PGA increases. This means the hazard curve flattens at higher ground motions — which has important implications. At the very high ground motions relevant to the $5 \\times 10^{-7}$/yr target, the curve is quite flat ($A_R \\approx 2.0$–$2.5$), meaning enormous increases in design capacity yield only modest reductions in hazard frequency.\n\nThe practical range of $A_R$ values at hazard levels relevant to nuclear safety (between $10^{-4}$/yr and $10^{-5}$/yr) is about 2.4 to 3.5. Values below 2.4 at the GMRS hazard level are considered rare.",key_concepts:["hazard curve slope AR","power law idealization","PGA ratio per AFE decade","curve flattening at high PGA","piecewise linear approximation","relevant AR range"],equations:[{name:"Hazard slope parameter",formula:"$$A_R = \\frac{\\text{PGA at } 10^{-(n+1)}\\text{/yr}}{\\text{PGA at } 10^{-n}\\text{/yr}}$$",description:"Ratio of PGA values across one decade of annual frequency of exceedance"},{name:"Log-log slope",formula:"$$\\text{slope} = -1 \\cdot \\log_{10}(A_R)$$",description:"Piecewise linear slope of hazard curve in log-log space"},{name:"Example from PEER data",formula:"$$A_R = \\frac{0.54\\text{g}}{0.19\\text{g}} = 2.8 \\quad (10^{-4} \\text{ to } 10^{-5}\\text{/yr decade})$$",description:"Typical value for the hazard level range most relevant to nuclear safety"}]}
+]};
+const Q={
+'seg-01':[{question:"What is the F-C target for high-consequence BDBEs in NEI 18-04?",options:["$1 \\times 10^{-4}$/yr","$1 \\times 10^{-5}$/yr","$5 \\times 10^{-7}$/yr","$1 \\times 10^{-8}$/yr"],correct:2,explanation:"NEI 18-04 sets a frequency-consequence target of $5 \\times 10^{-7}$/yr for high-consequence Beyond Design Basis Events."},{question:"Why does seismic hazard present unique challenges for the LMP framework?",options:["Seismic events are too frequent","Significantly higher epistemic uncertainty than internal events","Building codes already cover seismic design","Seismic design is cheaper than internal event protection"],correct:1,explanation:"The F-C framework was designed for internal events PRA with manageable uncertainties. Seismic hazard involves much higher uncertainty — the difference between 5% and 95% confidence frequencies can be 3–4 orders of magnitude."}],
+'seg-02':[{question:"What is the current NRC minimum HCLPF margin requirement?",options:["$1.0 \\times \\text{GMRS}$","$1.5 \\times \\text{GMRS}$","$1.67 \\times \\text{GMRS}$","$3.0 \\times \\text{GMRS}$"],correct:2,explanation:"Per SECY 93-087 and DC/COL-ISG-020, all event sequences leading to core damage or containment failure must demonstrate a seismic margin of at least 1.67× the GMRS (1% failure probability at that level)."},{question:"How many licensing pathway options does DG-1410 provide?",options:["One — prescriptive only","Two — prescriptive and risk-informed","Three — prescriptive, full LMP, and graded SPRA","Four — including site-specific exemptions"],correct:2,explanation:"DG-1410 offers Option 1 (prescriptive), Option 2 (full LMP with complete SPRA), and Option 3 (graded SPRA — a middle path being developed by ANL)."}],
+'seg-03':[{question:"Structures meeting current NRC requirements have annual failure frequencies of approximately:",options:["$5 \\times 10^{-7}$/yr — exactly at the F-C target","$1.5 \\times 10^{-6}$ to $5 \\times 10^{-6}$/yr — 3–10× above F-C target","$1 \\times 10^{-4}$/yr — same as commercial buildings","$1 \\times 10^{-8}$/yr — far below F-C target"],correct:1,explanation:"Convolution of fragility curves (HCLPF = 1.67×GMRS) with representative hazard curves yields $1.5 \\times 10^{-6}$ to $5 \\times 10^{-6}$/yr — 3 to 10 times ABOVE the NEI 18-04 F-C target of $5 \\times 10^{-7}$/yr."},{question:"What does $\\beta_c$ represent in a seismic fragility curve?",options:["The median capacity","The composite logarithmic standard deviation (uncertainty)","The peak ground acceleration","The annual frequency of exceedance"],correct:1,explanation:"$\\beta_c$ is the composite logarithmic standard deviation — it captures both randomness and epistemic uncertainty in the structure's seismic capacity. Typical range: 0.3–0.6."}],
+'seg-04':[{question:"How much safer are current nuclear structures compared to adjacent commercial buildings?",options:["About 2–5×","About 10–20×","About 30–150×","About 1,000–10,000×"],correct:2,explanation:"Nuclear structures: $1.5 \\times 10^{-6}$ to $5 \\times 10^{-6}$/yr. Commercial buildings: $1.4 \\times 10^{-4}$ to $2.0 \\times 10^{-4}$/yr. Ratio: approximately 30–150× safer."},{question:"At 1.67×GMRS earthquake intensity, what percentage of adjacent residential buildings are expected to collapse?",options:["About 10–20%","About 25–50%","About 75–100%","Less than 5%"],correct:2,explanation:"Per Table 4, at 1.67×GMRS, commercial Risk Category I & II structures (including residential) have conditional collapse probabilities of 49%–92%. For common residential buildings specifically, 75% to nearly 100% would collapse."}],
+'seg-05':[{question:"What does the EPRI report recommend for seismic BDBE acceptance criteria?",options:["Strictly enforce the $5 \\times 10^{-7}$/yr target","Eliminate all seismic requirements","Accept frequencies up to ~$5 \\times 10^{-6}$/yr as consistent with adequate protection","Use only deterministic methods, no PRA"],correct:2,explanation:"The report recommends that frequencies up to about $5 \\times 10^{-6}$/yr (the blue-shaded region) should be considered aligned with the NRC reactor safety policy's qualitative and quantitative safety goals for adequate protection."}],
+'seg-06':[{question:"What does $A_R$ represent?",options:["The building risk category","The ratio of PGA across one hazard decade","The annual failure frequency","The seismic margin factor"],correct:1,explanation:"$A_R$ is the ratio of PGA values across one decade of annual frequency of exceedance. For example, $A_R = 2.8$ means PGA increases by a factor of 2.8 between the $10^{-4}$/yr and $10^{-5}$/yr hazard levels."}]
+};
+const tips=["Understand the F-C chart: frequency on y-axis, dose consequence on x-axis. The $5 \\times 10^{-7}$/yr line drives seismic design requirements.","Remember: HCLPF = 1% probability of failure. It anchors the entire fragility curve. Current NRC requirement: $1.67 \\times \\text{GMRS}$.","Key comparison: nuclear structures are already 30–150× safer than commercial buildings. The F-C target would push this to 250–400×.","$\\beta_c$ (0.3–0.6) captures total uncertainty. Lower $\\beta_c$ = steeper fragility curve = more sensitive to the F-C target.","$A_R$ controls hazard slope. Flatter curves ($A_R \\approx 2.0$) make the F-C target even harder to meet because extreme PGAs are relatively more likely.","The three options: (1) prescriptive, (2) full LMP/SPRA, (3) graded SPRA. Option 3 validates current 1.67× approach."];
+let cur=null,tab='quiz';const done=new Set();
+function renderMath(el){if(typeof renderMathInElement==='function'){renderMathInElement(el||document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})}}
+function renderSidebar(){const l=document.getElementById('segmentList');l.innerHTML=D.segments.map((s,i)=>`<div class="seg-item ${cur===s.id?'active':''} ${done.has(s.id)?'completed':''}" onclick="selectSegment('${s.id}')"><div class="seg-num">${done.has(s.id)?'✓':i+1}</div><div class="seg-info"><h4>${s.title}</h4><div class="seg-time">${s.start_time} — ${s.end_time}</div></div></div>`).join('');const p=Math.round(done.size/D.segments.length*100);document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressPct').textContent=p+'%'}
+const SIMS={'seg-03':{id:'sim-fragility',label:'Interactive Simulation',title:'Seismic Fragility Curve Explorer',init:createFragilitySim},'seg-06':{id:'sim-hazardslope',label:'Interactive Visualization',title:'Seismic Hazard Curve & Slope (A_R)',init:createHazardSlopeSim}};
+function selectSegment(id){cur=id;document.getElementById('welcomeScreen').style.display='none';const lv=document.getElementById('lessonView');lv.style.display='block';const s=D.segments.find(x=>x.id===id),i=D.segments.indexOf(s);const eq=s.equations.length?`<div class="equations-section"><div class="eq-header">Key Equations</div>${s.equations.map(e=>`<div class="eq-item"><div class="eq-formula">${e.formula}</div><div class="eq-desc"><strong>${e.name}</strong> — ${e.description}</div></div>`).join('')}</div>`:'';const sim=SIMS[id]?`<div class="sim-container"><div class="sim-header"><div class="sim-icon">&#9654;</div><div><div class="sim-label">${SIMS[id].label}</div><div class="sim-title">${SIMS[id].title}</div></div></div><div id="${SIMS[id].id}"></div></div>`:'';lv.innerHTML=`<div class="lesson-header"><div class="lesson-eyebrow">Micro-Lesson ${i+1} of ${D.segments.length}</div><h1>${s.title}</h1><div class="lesson-meta"><span>${s.start_time} — ${s.end_time}</span><span>${D.instructor}</span></div></div><div class="concepts-row">${s.key_concepts.map(c=>`<span class="concept-tag">${c}</span>`).join('')}</div><div class="lesson-content">${s.content}</div>${sim}${eq}<div class="nav-buttons">${i>0?`<button class="btn btn-secondary" onclick="selectSegment('${D.segments[i-1].id}')">← Previous</button>`:''}<button class="btn btn-green" onclick="markComplete('${s.id}')">&#10003; Mark Complete</button>${i<D.segments.length-1?`<button class="btn btn-primary" onclick="selectSegment('${D.segments[i+1].id}')">Next &rarr;</button>`:''}</div>`;renderSidebar();if(tab==='quiz')loadQuiz(id);setTimeout(()=>{renderMath(lv);if(SIMS[id])SIMS[id].init(SIMS[id].id)},150)}
+function markComplete(id){done.add(id);renderSidebar();const i=D.segments.findIndex(s=>s.id===id);if(i<D.segments.length-1)selectSegment(D.segments[i+1].id)}
+function switchTab(t){tab=t;document.querySelectorAll('.panel-tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));if(t==='quiz')loadQuiz(cur);else if(t==='tutor')loadTutor();else loadCheatSheet()}
+function loadQuiz(id){const p=document.getElementById('panelContent');if(!id||!Q[id]){p.innerHTML='<div class="tutor-msg system">Select a micro-lesson to see quiz questions.</div>';return}p.innerHTML=Q[id].map((q,i)=>`<div class="quiz-card" id="q${i}"><div class="quiz-q">${q.question}</div>${q.options.map((o,j)=>`<button class="quiz-option" onclick="check(${i},${j},${q.correct})">${o}</button>`).join('')}<div class="quiz-explanation" id="e${i}">${q.explanation}</div></div>`).join('');setTimeout(()=>renderMath(p),50)}
+function check(qi,sel,cor){const c=document.getElementById('q'+qi);c.querySelectorAll('.quiz-option').forEach((b,i)=>{b.disabled=true;b.style.cursor='default';if(i===cor)b.classList.add('correct');if(i===sel&&i!==cor)b.classList.add('incorrect')});document.getElementById('e'+qi).classList.add('show');setTimeout(()=>renderMath(document.getElementById('e'+qi)),50)}
+function loadTutor(){document.getElementById('panelContent').innerHTML=`<div class="tutor-wrap"><div class="tutor-messages" id="tm"><div class="tutor-msg system">I'm your AI tutor for this EPRI seismic report. Ask anything about risk-informed seismic design, fragility curves, hazard slopes, or the LMP framework.<br><br>I answer using only the EPRI 3002032031 report content.<br><br><em>Try: "Why can't current nuclear structures meet the 5E-7 F-C target?"</em></div></div><div class="tutor-input-row"><input class="tutor-input" id="ti" placeholder="Ask a question..." onkeydown="if(event.key==='Enter')ask()"><button class="btn btn-primary" onclick="ask()" style="padding:.5rem .8rem;font-size:.8rem">Ask</button></div></div>`}
+function ask(){const i=document.getElementById('ti'),q=i.value.trim();if(!q)return;i.value='';const m=document.getElementById('tm');m.innerHTML+=`<div class="tutor-msg user">${esc(q)}</div>`;const s=cur?D.segments.find(x=>x.id===cur):null;const thinkMsg=document.createElement('div');thinkMsg.className='tutor-msg system';thinkMsg.innerHTML='<em>Searching EPRI report & textbooks...</em>';m.appendChild(thinkMsg);m.scrollTop=m.scrollHeight;fetch('http://localhost:3849/api/tutor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,lesson_id:cur||'',lesson_title:s?s.title:'',lesson_concepts:s?s.key_concepts:[]})}).then(r=>r.json()).then(d=>{thinkMsg.innerHTML=d.answer.replace(/\n/g,'<br>');if(d.mode==='demo')thinkMsg.innerHTML='<strong>[Demo]</strong> '+thinkMsg.innerHTML;setTimeout(()=>renderMath(thinkMsg),50);m.scrollTop=m.scrollHeight}).catch(()=>{thinkMsg.innerHTML='<strong>[Offline]</strong> Tutor server not running. Start it with:<br><code>ANTHROPIC_API_KEY=your-key python3 tutor-server.py</code><br><br>The tutor uses EPRI reports + Lamarsh & Baratta for zero-hallucination answers.';m.scrollTop=m.scrollHeight})}
+function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
+function loadCheatSheet(){const p=document.getElementById('panelContent');const eq=[];D.segments.forEach(s=>s.equations.forEach(e=>eq.push({...e,from:s.title})));p.innerHTML=`<div class="cheat-section"><div class="cheat-label">Key Equations (${eq.length})</div>${eq.map(e=>`<div class="cheat-eq"><div class="formula">${e.formula}</div><div class="desc"><strong>${e.name}</strong> — ${e.description}</div></div>`).join('')}</div><div class="cheat-section"><div class="cheat-label">Study Tips</div>${tips.map(t=>`<div class="cheat-tip">${t}</div>`).join('')}</div>`;setTimeout(()=>renderMath(p),50)}
+function downloadCheatSheet(){const eq=[];D.segments.forEach(s=>s.equations.forEach(e=>eq.push({...e,from:s.title})));let t=`CHEAT SHEET: ${D.title}\n${D.instructor} — ${D.course}\n${'='.repeat(60)}\n\nKEY EQUATIONS\n${'-'.repeat(40)}\n\n`;eq.forEach(e=>{const f=e.formula.replace(/\$\$/g,'').replace(/\$/g,'').replace(/\\text\{([^}]*)\}/g,'$1').replace(/\\cdot/g,'·').replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g,'($1)/($2)').replace(/\\approx/g,'≈').replace(/\\rightarrow/g,'→').replace(/\\sim/g,'~').replace(/\\;/g,' ').replace(/\\bigl/g,'').replace(/\\bigr/g,'').replace(/\\/g,'');t+=`${e.name}: ${f.trim()}\n  → ${e.description.replace(/\$[^$]*\$/g,m=>m.replace(/\$/g,'').replace(/\\/g,''))}\n  (from: ${e.from})\n\n`});t+=`\nSTUDY TIPS\n${'-'.repeat(40)}\n\n`;tips.forEach((x,i)=>{const clean=x.replace(/\$[^$]*\$/g,m=>m.replace(/\$/g,'').replace(/\\/g,'').replace(/\{/g,'').replace(/\}/g,''));t+=`${i+1}. ${clean}\n\n`});t+=`\nKEY CONCEPTS BY SECTION\n${'-'.repeat(40)}\n\n`;D.segments.forEach(s=>{t+=`[${s.title}]\n`;s.key_concepts.forEach(c=>t+=`  • ${c}\n`);t+='\n'});const b=new Blob([t],{type:'text/plain'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='EPRI-3002032031-Seismic-CheatSheet.txt';a.click()}
+renderSidebar();
+document.addEventListener('DOMContentLoaded',()=>{if(typeof renderMathInElement==='function'){renderMath()}});
+window.addEventListener('load',()=>{setTimeout(renderMath,200)});
+</script>
+</body>
+</html>

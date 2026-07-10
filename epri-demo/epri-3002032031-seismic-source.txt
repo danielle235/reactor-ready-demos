@@ -1,0 +1,1332 @@
+2025 White Paper
+Risk-Informed Considerations for Rare 
+Seismic Events in Advanced Reactors 
+0
+2   |  EPRI White Paper 	
+October 2025
+TABLE OF CONTENTS
+Abstract......................................................................... 2
+Background................................................................... 2
+Objectives...................................................................... 3
+NEI 18-04 Risk-Informed Classification  
+of Licensing Basis Events............................................... 3
+Implications for RIPB Seismic Design..........................4
+Assessment of LMP Seismic Design Impacts  
+for Structural Design...................................................... 5
+Economic Feasibility Basis............................................. 6
+Annual Performance of Structures  
+Meeting Current USNRC Criteria vs.  
+NEI 18-04 F-C Target................................................... 6
+Design Ground Motions and Forces for  
+Structures per Current NRC Criteria vs.  
+NEI 18-04 F-C Target................................................... 7
+Societal Impact Basis..................................................... 8
+Societal Impact Relative to Current U.S.  
+Code-Conforming Buildings........................................ 9
+Societal Impact Relative to Current U.S.  
+Building Stock.......................................................... 11
+Discussion.................................................................... 13
+Conclusions................................................................. 15
+References................................................................... 15
+Appendix A – Hazard Curve Slope................................ 16
+ABSTRACT
+This report evaluates the challenges of applying the Licens­
+ing Modernization Project (LMP) risk-informed framework 
+to seismic design for advanced reactors. While LMP aims to 
+provide flexibility and cost efficiency through performance-
+based criteria, its frequency-consequence (F-C) target of 
+5E-7/yr for high-consequence Beyond Design Basis Events 
+(BDBEs) can lead to overly conservative seismic require­
+ments for structural design. Analyses show that meeting 
+this target would require increasing design-basis ground 
+motions by up to three times current U.S. Nuclear Regula­
+tory Commission (USNRC) criteria, significantly raising costs 
+without proportional safety benefits.
+Comparative studies indicate that the incremental reduction 
+in seismic risk achieved by these higher design demands is 
+negligible compared to societal risks from widespread build­
+ing collapses during earthquakes. Current USNRC seismic 
+criteria already provide adequate protection under the 
+Atomic Energy Act and align with safety policy goals. The 
+report recommends a balanced approach that maintains 
+safety objectives while avoiding unnecessary escalation of 
+design demands, supporting practical implementation of 
+risk-informed principles for advanced reactor deployment.
+BACKGROUND
+The Licensing Modernization Project (LMP) framework, 
+described in Nuclear Energy Institute (NEI) Technical Report 
+18-04 [1], outlines a process for Technology-Inclusive (TI) 
+Risk-Informed Performance-Based (RIPB) design of non-light 
+water reactors (NLWRs). The U.S. Nuclear Regulatory Com­
+mission (USNRC) endorsed NEI 18-04 in Regulatory Guide 
+(RG) 1.233 [2] with clarifications. The hallmark of RIPB is to 
+allow developing design criteria for structures, systems, and 
+components (SSCs) commensurate with their significance 
+to ensuring that the overall plant design satisfies regulatory 
+safety objectives, rather than specifying prescriptive design 
+rules. The design flexibility, anticipated cost optimization 
+benefits, and TI nature of RIPB design concepts in NEI 18-04 
+elicited significant interest among the advanced reactor 
+industry stakeholders. 
+Following that, NEI 21-07 [3] provided guidance for develop­
+ing standardized sections of the Safety Analysis Report (SAR) 
+tailored for advanced reactor applicants who adopt NEI 18-04, 
+with the aim of facilitating the preparation of the SAR by the 
+0
+3   |  EPRI White Paper 	
+October 2025
+applicants and its review by the USNRC. The USNRC endorsed 
+NEI 21-07 in RG 1.253 [4] with clarifications and additions.
+The TI RIPB guidance in NEI 18-04 [1] is based on three 
+mainstays:
+•	
+Satisfying regulatory acceptance criteria.
+•	
+Risk significance-based safety classification.
+•	
+Confirming Defense in Depth (DiD) adequacy. 
+NEI 18-04 [1] guidance for risk significance-based safety clas­
+sification is based on the consequences and annual frequen­
+cy – from a probabilistic risk assessment (PRA) model – of 
+event sequence families, which are referred to as licensing-
+basis events (LBEs). This guidance was developed with a 
+focus on internal events PRA models and their typical out­
+comes. It presents unanticipated challenges when applied 
+to external events, especially seismic hazard that involves 
+significantly higher uncertainty in its state of knowledge. 
+EPRI 3002029295 [5] identified several of these challenges. 
+OBJECTIVES
+The objectives of this report are to investigate the applica­
+bility Beyond Design Basis Events (BDBEs) to RIPB seismic 
+design of the 5E-7/yr frequency target in NEI 18-04 for high-
+consequence BDBEs, assess its implications on the design 
+criteria, and present a recommended path for establishing 
+seismic design basis ground motions and acceptance criteria.
+NEI 18-04 RISK-INFORMED 
+CLASSIFICATION OF LICENSING 
+BASIS EVENTS
+NEI 18-04 presents two sets of acceptance criteria: PRA-
+based and deterministic.
+PRA-based Acceptance Criteria
+•	
+The cumulative risk metrics from all the LBEs should be 
+less than the specified thresholds for site boundary dose, 
+average individual early fatality, and average individual 
+latent cancer fatalities. These cumulative metrics are 
+meant to be from all hazards and plant operating states.
+Deterministic Acceptance Criteria
+•	
+LBEs identified as design basis accidents (DBAs) must 
+meet the Title 10 of the Code of Federal Regulations 
+(10CFR) 50.34 dose limit [6].
+•	
+DiD adequacy must be demonstrated.
+Risk significance-based classification of LBEs and functions of 
+SSCs is performed using a tool called the frequency-conse­
+quence (F-C) chart. Figure 1 shows the F-C chart, as derived 
+from NEI 18-04 [1], which shows the F-C target line and fre­
+quency ranges for classifying LBEs as Anticipated Operational 
+Occurrences (AOOs), Design Basis Events (DBEs), or BDBEs. 
+An LBE is considered within the F-C target when a point 
+defined by the upper 95th percentile uncertainty on both the 
+LBE frequency and dose consequence is below the F-C target. 
+ 
+Figure 1. Example F-C chart derived from NEI 18-04
+EPRI 3002029295 [5] describes an implementation example 
+of the NEI 18-04 guidance for seismic hazard. using a styl­
+ized advanced reactor plant design. Figure 2 shows three 
+example LBE event sequences overlaid on the F-C chart, 
+with the median estimates shown as boxes and the 5th and 
+95th percentile frequency and dose ranges shown as verti­
+cal and horizontal whiskers.
+ 
+Figure 2. Example F-C chart outcome from EPRI 3002029295
+0
+4   |  EPRI White Paper 	
+October 2025
+types of failures only apply to external hazards since loss of 
+structural integrity is not a realistic failure mode in inter­
+nal events PRA. It is reasonable to expect that advanced 
+reactor passive safety features, damage-tolerant fuel, and 
+other modern technology features and equipment should 
+perform better than their conventional light water reac­
+tor (LWR) counterparts—an expectation that is reflected 
+in the NEI 18-04 design goals. However, structures of both 
+advanced reactors and conventional LWRs are designed and 
+constructed using similar methods, materials, and seismic 
+design criteria, such that their seismic performance should 
+not be expected to be significantly different. 
+The USNRC is in the process of developing a regulatory 
+guide for TI RIPB seismic design of commercial nuclear 
+plants intended for use with advanced reactors. The current 
+draft guide (DG)-1410 [7] identifies three licensing pathway 
+options, as shown in Figure 3. 
+•	
+Option 1 follows the current prescriptive design rules in 
+10CFR Parts 50 [6] and 52 [8]. 
+•	
+Option 2 follows the LMP process as laid out in NEI 
+18-04 and RG 1.233, including the explicit reliance on 
+a full seismic PRA (SPRA) and the F-C chart. 
+•	
+Option 3 uses a “graded SPRA and other risk-informed 
+approaches” and is only described at a high level. 
+A proposed methodology to follow Option 3 is being 
+developed by Argonne National Laboratory (ANL) in ANL/
+NSE-24/42. This document is under preparation; the lat­
+est draft was presented to USNRC staff and the public in 
+ML25237A182 [9]. The draft methodology recommends, 
+among other things, establishing a high-consequence seis­
+mic BDBE acceptance criterion using a limited SPRA. The 
+proposed acceptance criterion corresponds to a specified 
+minimum margin or maximum conditional probability of 
+dose release at a sufficiently high hazard level above the 
+ground motion response spectrum (GMRS) as defined in 
+RG 1.208 [10]. The seismic margin may be defined by the 
+high confidence low probability of failure (HCLPF) ground 
+motion capability or by some other parameter, such as the 
+ground motion at a conditional failure probability of 0.05.
+LBEs that register within 1% of the F-C target are consid­
+ered risk-significant. The F-C chart is not an acceptance 
+criterion, as stated in NEI 18-04 [1] and RG 1.233 [2]. It is a 
+means to assess a range of events to determine their risk 
+significance, support SSC classification, determine special 
+treatment requirements, identify appropriate programmatic 
+controls, and confirm the adequacy of DiD strategies. It can 
+serve as a guide for improving the design and as a tool for 
+understanding the risk consequences of design changes. 
+NEI 18-04 refers to “keeping all LBEs within the F-C target” 
+as a “design objective.” Meanwhile, EPRI 3002029295 [5] 
+demonstrates that the regulatory acceptance criteria for 
+cumulative risk and DBA dose can be achieved with several 
+LBEs exceeding the F-C target. However, many advanced 
+reactor developers interpret the NEI 18-04 statement as a 
+goal for their designs to achieve, thus setting it effectively 
+as an acceptance criterion. Moreover, despite not strictly 
+being an acceptance criterion, exceeding the F-C target for 
+high-consequence BDBEs1 has implications in LMP that can 
+be costly to the design, such as classifying SSCs.
+Implications for RIPB Seismic Design
+Since the F-C chart compares the PRA risk insights on an 
+LBE basis, high-consequence LBEs have much lower target 
+frequencies. For LBEs with dose consequences of 750 rem 
+or higher at the exclusion area boundary (EAB), the F-C 
+target is 5E-7/yr (Figure 1).
+Seismic-induced LBEs of such high consequence can be 
+dominated by integrity failures of major reactor structures, 
+such as the reactor pressure vessel, reactor building, and/
+or containment if required in the design. These LBEs for 
+external hazards, in which a major structure loses structural 
+integrity with no redundancy and only partially feasible 
+release mitigation features, often consist of a singleton or 
+near-singleton event sequence, which is not common in 
+internal events PRA. Consequently, meeting the 5E-7/yr F-C 
+target often translates to seismic design where the annual 
+frequency of losing sufficient structural integrity resulting in 
+a high-consequence dose release is less than 5E-7/yr with 
+95% confidence for all such major structures. These 
+1	
+NEI 18-04 defines high-consequence BDBEs as LBEs with doses higher 
+than the 10CFR50.34 limits [6].
+0
+5   |  EPRI White Paper 	
+October 2025
+Some of the LBE risk-significance assessments in NEI 18-04 
+are performed using the 5% to 95% range of frequency 
+and dose consequences, and some are performed using 
+the best-estimate outcome. Achieving a 5E-7/yr structural 
+integrity performance goal using either the best estimate 
+or 95% confidence frequency for each major structure, 
+whether evaluated explicitly or through the proxy of 
+seismic margins, would require seismic design criteria well 
+above current prescriptive nuclear regulations for these 
+structures. For context, the current seismic design-basis 
+hazard level (DBHL) for safety-related SSCs in nuclear power 
+reactors, which is determined according to RG 1.208 [10], is 
+based on a target performance goal of 1E-5/yr for reach­
+ing the strength limit and the subsequent onset of inelastic 
+behavior. Such unintended impact on the seismic design 
+Figure 3. Licensing pathway options in DG-1410 
+basis for major structures would undermine the perceived 
+benefits of RIPB for advanced reactor designs, rendering 
+the use of LMP for these designs less feasible compared to 
+current LWRs. 
+ASSESSMENT OF LMP SEISMIC 
+DESIGN IMPACTS FOR STRUC­
+TURAL DESIGN
+The LMP 5E-7/yr event sequence frequency for high-conse­
+quence BDBEs is assessed against the current USNRC safety 
+goals to determine if it leads to disproportionately restric­
+tive structure seismic design criteria that undermine the 
+objectives of LMP by focusing resources and costs where 
+there is no commensurate public safety enhancement.
+0
+6   |  EPRI White Paper 	
+October 2025
+•	
+A PRA-based seismic margin assessment (SMA) of the 
+design demonstrates a margin of at least 1.67 times
+the GMRS for all event sequences that lead to core 
+damage or containment failures (SECY 93-087 [13] and 
+DC/COL-ISG-020 [11]).
+Structure integrity failures of major structures, such as the 
+reactor building or the reactor pressure vessel, could lead 
+directly to core damage and/or substantial dose releases. 
+As such, per current USNRC regulations, all such failures 
+would be required to demonstrate a seismic margin of 1.67 
+times the GMRS. These structures are also required by 
+NUREG 0800 [12] to be designed to remain linearly elastic 
+at the GMRS. The 1.67 increase factor in ground motion 
+capability reflects the difference between the seismic in­
+tensity that results in yielding and the seismic intensity that 
+results in subsequent sufficient damage to the structure to 
+interfere with its RSF. 
+An important inference from these two requirements is 
+that major structures designed per 10CFR Parts 50 [6] and 
+52 [8] are expected to be able to perform their RSFs with a 
+to-be-confirmed seismic margin of at least 1.67 times their 
+SSE. Based on this inference, a range of expected annual 
+frequencies of a severe accident resulting from failure of 
+a major structure that meets these design criteria can be 
+estimated as follows:
+•	
+Construct a family of representative mean seismic 
+fragility curves for the structure’s RSF by identifying a 
+HCLPF capacity and using a range of composite loga­
+rithmic standard deviations, βc, as follows: 
+	–
+Set the 1% probability of failure point to the HCLPF 
+ground motion capability of 1.67 times the GMRS.
+	–
+Investigate sensitivity to logarithmic standard 
+deviation, βc, within a typical range of 0.3 to 0.6.
+•	
+Construct a family of representative mean seismic 
+hazard curves using a power law, which produces a 
+straight-line relationship in log-log space whose slope 
+is controlled by the site hazard curve slope parameter, 
+AR,3 as follows:
+	–
+Set the peak ground acceleration (PGA) at 1E-4/y 
+mean annual frequency of exceedance (MAFE) to 
+a common nominal value of 0.3g. This value is an 
+arbitrary constant to anchor the straight line and 
+does not affect the outcome.
+3	
+ Appendix A discusses this parameter.
+The assessment is performed using tabletop feasibility 
+studies classified into two categories: 
+•	
+Economic feasibility cost-benefit basis
+•	
+Societal impact cost-benefit basis 
+The economic feasibility studies compare the expected per­
+formance, seismic design criteria, and corresponding design 
+forces that apply to prototype safety-related structures 
+where a required safety function (RSF)2 failure would lead 
+directly to a high-consequence BDBE using both the 1.67 
+times the GMRS requirement from ISG 20 [11] and the F-C 
+target design goal at prototype sites. 
+The societal impact studies compare the expected societal 
+risk of collapse or severe damage in U.S. building inventory 
+due to an earthquake to that of the F-C target for an LBE 
+controlled by a singleton structure failure. This comparison 
+is performed considering both (a) buildings designed to cur­
+rent seismic design codes, which represent future construc­
+tion and (b) existing U.S. building inventory.
+The next two sections summarize these studies, the follow­
+ing section discusses their combined implications, and the 
+final section develops recommendations for RIPB seismic 
+design of SSCs within LMP. 
+ECONOMIC FEASIBILITY BASIS
+Annual Performance of Structures 
+Meeting Current USNRC Criteria vs. 
+NEI 18-04 F-C Target
+Current USNRC prescriptive design regulations require the 
+following:
+•	
+Safety-related structures should be designed to remain 
+linear-elastic following NUREG 0800 [12] at the safe 
+shutdown earthquake (SSE) defined according to 
+RG 1.208 [10]. In RG 1.208, this SSE earthquake is 
+interpolated between the mean 1E-4/yr and 1E-5/yr 
+uniform hazard response spectra (UHRS) and is 
+commonly referred to as the GMRS.
+2	
+SSCs may have one or several RSFs. Normally, RSFs are required to 
+achieve either reactivity control, decay heat removal, and/or contain­
+ment of radionuclide. In this report, the focus is on the RSF or (set 
+of RSFs) performed by a major structure that prevent radionuclide 
+release, and mentions of “RSF” are so-intended unless indicated 
+otherwise.
+0
+7   |  EPRI White Paper 	
+October 2025
+Table 1 lists the computed mean annual frequencies for 
+the ranges of βc and AR listed above. The highest com­
+puted annual frequency corresponds to the combination 
+of the lowest βc and the highest AR, which represent the 
+steepest fragility curve and the flattest hazard curve, and 
+vice-versa. As discussed above, at GMRS ground motions, 
+which are between the mean 1E-4/yr and 1E-5/yr UHRS, 
+AR values lower than about 2.4 are considered rare; thus, 
+the frequencies corresponding to AR = 2.0 are grayed out in 
+Table 1. These frequencies are all in the range of 1.5E-6/yr 
+to 5E-6/yr; that is, they range from three to ten times the 
+5E-7/yr F-C target. All the scenarios laid out in Table 1 are 
+compliant with USNRC requirements, which implies that the 
+F-C target of 5E-7/yr is one order of magnitude lower than 
+currently acceptable.
+The comparison above assumes the F-C target in NEI 18-04 
+will be compared to the mean LBE annual frequencies. 
+Imposing a requirement of comparing the F-C target to the 
+95% confidence LBE frequencies, which are higher than 
+the mean values, would result in even higher ratios than 
+three to ten times the achieved performance. Therefore, 
+setting the F-C target in NEI 18-04 as a design goal would 
+lead to safety-significant major structures being required 
+to perform substantially better than current seismic design 
+requirements (Option 1 of DG-1410 [7]).
+Table 1. Mean annual performance frequency for structures 
+designed to USNRC prescriptive seismic design requirements
+Failure Frequency (/yr)
+AR
+βc = 0.3
+βc = 0.4
+βc = 0.5
+βc = 0.6
+2.0
+2.6E-06
+1.7E-06
+1.3E-06
+1.1E-06
+2.5
+3.6E-06
+2.5E-06
+1.9E-06
+1.5E-06
+3.0
+4.5E-06
+3.2E-06
+2.4E-06
+1.9E-06
+3.5
+5.1E-06
+3.8E-06
+2.8E-06
+2.2E-06
+Design Ground Motions and Forces for 
+Structures per Current NRC Criteria vs. 
+NEI 18-04 F-C Target
+The F-C target in NEI 18-04 has an annual frequency of 
+5E-7/yr for high-consequence BDBEs. For those BDBEs 
+that correspond to a singleton or near-singleton failure 
+of a major structure, achieving this target means that the 
+structure performance corresponds to an annual RSF failure 
+	–
+Investigate sensitivity to AR within a typical range 
+based on statistical analysis of 121 mean PGA haz­
+ard curves from U.S. sites, including reference sites 
+in EPRI 3002000717 [14] and Pacific Earthquake 
+Engineering Research center (PEER) 2018/08 [15], 
+nuclear power plant (NPP) sites in the Near-Term 
+Task Force responses [16], and NPP sites con­
+sidered in EPRI 3002018216 [17]. This statistical 
+analysis indicated that the 10% to 90% confidence 
+intervals for AR are between about 2.4 to 3.5 for 
+the 1E-4/yr to 1E-5/yr hazard decade and between 
+about 2.1 to 2.9 for the 1E-5/yr to 1E-6/yr hazard 
+decade (Figures 4 and 5). These two MAFE ranges 
+are shown because the first one is used to com­
+pute the GMRS and the second one is the decade 
+above, which addresses rarer ground motions that 
+dominate LBE frequencies around 5E-7/yr.
+•	
+Convolve the mean fragility and hazard curves using 
+the analytical solution provided in Kennedy and Short 
+(1994) [18] to compute the estimated mean annual 
+frequency of the structure RSF failure. The outcome of 
+these comparisons are dictated only by βc and AR.
+ 
+Figure 4. Histogram of slope parameter AR between the 
+mean 1E-4/yr and 1E-5/yr PGAs at U.S. sites
+ 
+Figure 5. Histogram of slope parameter AR between the 
+mean 1E-5/yr and 1E-6/yr PGAs at U.S. sites
+0
+8   |  EPRI White Paper 	
+October 2025
+shaking are much higher than experienced in current prac­
+tice, such that the PRA insights are significantly less reliable. 
+The difference between the 5% and 95% confidence annual 
+frequencies are often three to four orders of magnitude in 
+these rare frequency of exceedance ranges. With such high 
+uncertainty and very low target annual frequencies, the F-C 
+target may not be the right tool to drive such economically 
+consequential design decisions. 
+Table 2. Mean annual performance frequency for structures 
+designed with HCLPF = 3 × 1.67 × GMRS
+Failure Frequency (/yr)
+AR
+βc = 0.3
+βc = 0.4
+βc = 0.5
+βc = 0.6
+2.0
+6.7E-08
+4.5E-08
+3.4E-08
+2.9E-08
+2.5
+2.3E-07
+1.6E-07
+1.2E-07
+9.2E-08
+3.0
+4.5E-07
+3.2E-07
+2.4E-07
+1.9E-07
+3.5
+6.8E-07
+5.0E-07
+3.8E-07
+3.0E-07
+Table 3. Expected SSE increase factor on RG 1.208 GMRS to 
+meet 5E-7/yr frequency of structure failure
+GMRS Increase Factor
+AR
+βc = 0.3
+βc = 0.4
+βc = 0.5
+βc = 0.6
+2.0
+1.7
+1.5
+1.4
+1.3
+2.5
+2.2
+1.9
+1.7
+1.6
+3.0
+2.9
+2.5
+2.2
+1.9
+3.5
+3.6
+3.0
+2.6
+2.3
+SOCIETAL IMPACT BASIS
+The USNRC current reactor safety goal policy statement in 
+SECY-01-0009 [19] identifies the following qualitative safety 
+goals: 
+•	
+Individual members of the public should be provided 
+a level of protection from the consequences of NPP 
+operation such that individuals bear no significant 
+additional risk to life and health. 
+•	
+Societal risks to life and health from NPP operation 
+should be comparable to or less than the risks of gener­
+ating electricity by viable competing technologies and 
+should not be a significant addition to other societal 
+risks.
+frequency of about 5E-7/yr or lower. The process followed 
+to compute the mean annual frequencies listed in Table 1 
+is repeated with iteratively selected HCLPF ground motion 
+capability margin relative to the GMRS until the target of 
+5E-7/yr is achieved for most practical design and site 
+combinations, as shown in Table 2. As discussed above, at 
+these high ground motion magnitudes, which exceed the 
+mean 1E-5 UHRS, AR values higher than about 2.9 are con­
+sidered outliers; thus, the frequencies corresponding to 
+AR = 3.5 are grayed out.
+To meet the 5E-7/yr target for all combinations of βc and 
+AR, the required HCLPF is found to be about five times the 
+GMRS. In other words, if the HCLPF is required to be at 
+least 1.67 times the SSE earthquake under current criteria, 
+to meet the 5E-7/yr frequency target for all combinations of 
+βc and AR, the SSE earthquake spectrum and corresponding 
+seismic forces would have to be about three times current 
+criteria (1.67 × 3 = 5). Table 3 lists the iteratively-deter­
+mined multiple of the SSE above the GMRS, determined as 
+described above, to meet the 5E-7/yr target for each com­
+bination of βc and AR. These factors range from 1.3 to 2.9. 
+Considering that βc is not known a-priori, a common and 
+reasonable decision to determine the design basis would 
+be to estimate it conservatively equal to 0.3. In such cases, 
+meeting the 5E-7/yr target would require designing these 
+structures to SSEs of about 1.7 to 2.9 times the GMRS. 
+Accordingly, the seismic design demands would be on the 
+order of 1.5 to 3 times greater than an equivalent safety-
+related LWR structure, or an advanced reactor structure 
+designed following Option 1 of DG-1410.
+These comparisons assume that the F-C target is met with 
+the mean frequencies rather than the 95% confidence fre­
+quencies. Imposing a requirement of meeting the F-C target 
+with 95% confidence would result in substantially higher 
+SSE seismic design ground motions and corresponding 
+forces, displacements, etc. These disproportionately higher 
+design demands would result in structure designs that are 
+less economically feasible and unreasonably more conser­
+vative than current USNRC design requirements (Option 1 
+of DG-1410 [7]). 
+Moreover, at such strong and exceedingly rare ground mo­
+tions, uncertainty in the knowledge and practice of seismic 
+hazard, fragility analysis, and NPP response to such strong 
+0
+9   |  EPRI White Paper 	
+October 2025
+for structures with high-consequence failures, such as 
+essential facilities (for example, hospitals with emergency 
+services, fire and police stations, and emergency shelters), 
+structures containing hazardous substances, and structures 
+required to maintain functionality of other Risk Category IV 
+structures.
+The MCER is determined in ASCE/SEI 7-22 [21] on a site-
+specific basis such that the expected probability of col­
+lapse for Category I & II structures is 1% in 50 years, which 
+equates to an annual frequency of about 2E-4/yr. This 
+collapse probability is calculated using the seismic hazard 
+at each site from the U.S. Geological Survey (USGS), a mean 
+fragility curve defined by Pf at the MCER, and a logarithmic 
+standard deviation βc of 0.6, which is judged to represent 
+uncertainty in commercial construction. The 50-year col­
+lapse probabilities for Risk Category III and IV structures 
+do not have explicit targets in ASCE/SEI 7-22 [21]. They can 
+be estimated based on the study performed in Luco (2020) 
+[22], which showed structure designs anchored to a Pf 
+equal to 1% at the MCER and βc of 0.6 results in annual fre­
+quencies of collapse 45% lower than those of Risk Category 
+I & II structures based on convolving with seismic hazard 
+at thirty-four site locations, two alternative site profiles, 
+and three spectral frequencies. Using log-log interpolation 
+between Pf of 1% and 10% to the corresponding values for 
+Risk Category III and IV, the expected annual frequencies of 
+collapse of these structures are estimated to be 1.7E-4/yr 
+and 1.4E-4/yr, respectively. Accordingly, the collapse risk of 
+current code-confirming commercial structures ranges from 
+1.4E-4/yr to 2.0E-4/yr for all structure risk categories.
+Compared to the annual frequencies of current convention­
+ally designed NPP major safety-related structures failing to 
+perform their RSFs (Table 1), the expected annual collapse 
+risk of commercial structures is about 30 to 150 times 
+higher, depending on the site, design reliability, and risk 
+category. This relative level of risk from safety-related NPP 
+structures is currently accepted by the USNRC, implying 
+that the seismic performance of current nuclear design 
+criteria provides “adequate protection” under the Atomic 
+Energy Act [23], aligns with USNRC qualitative safety goals, 
+and does not constitute “a significant addition to other 
+societal risk.”
+Infrastructure built to commercial design codes would expe­
+rience widespread damage in strong earthquakes compared 
+to those designed to conventional safety-related nuclear 
+standards. Current infrastructure was predominantly built 
+over several decades, using seismic design codes and con­
+struction practices that do not reflect current knowledge 
+and lessons learned about building vulnerabilities in mod­
+ern commercial codes. This existing building stock would, on 
+average, perform worse than predicted for current code-
+conforming structures. Compared to the relative risk of 
+widespread building collapses in an urban area following an 
+earthquake and its societal impact, revising seismic design 
+criteria for NPP structures to further decrease the risk of 
+severe accidents may be prioritizing the wrong issue. For 
+example, the United Nations concluded that “no adverse 
+health effects among Fukushima residents have been docu­
+mented that are directly attributable to radiation exposure 
+from the [Fukushima Dai-Ichi Nuclear Power Station] acci­
+dent” [20]. Meanwhile, the 2011 Great Tohoku earthquake 
+resulted in the loss of more than ten thousand lives.
+The following two subsections investigate the expected 
+relative societal impact by comparing estimates of the an­
+nual frequencies of a nuclear release due to a major struc­
+ture failure that directly results in a high-consequence dose 
+release compared to that of building collapse or severe 
+damage in the cases of current code-conforming buildings 
+and existing U.S. building stocks, respectively.
+Societal Impact Relative to Current U.S. 
+Code-Conforming Buildings
+ASCE/SEI 7-22 [21] is the current national consensus 
+standard used to determine seismic design forces for com­
+mercial buildings and several other structure types in the 
+United States. The performance-based design provisions in 
+ASCE/SEI 7-22 have a target collapse probability (Pf) when 
+the building is subjected to the risk-targeted Maximum 
+Credible Earthquake (MCER). These conditional failure prob­
+abilities depend on the structure’s risk category and are 
+set to 10%, 5%, and 2.5% for Risk Categories I & II, III, and 
+IV, respectively. Risk Category I & II structures are the most 
+common and include typical residential buildings; Risk Cat­
+egory IV is the most stringent risk category and is reserved 
+0
+10   |  EPRI White Paper 	
+October 2025
+the expected collapse probabilities of modern code-con­
+forming buildings adjacent to the NPP range from about 
+50% to almost 100%, depending on the site hazard slope 
+and the building seismic risk category. For common residen­
+tial structures (Risk Category I & II), this probability ranges 
+from about 75% to almost 100%. Accordingly, a significant 
+majority of code-conforming structures are expected to 
+collapse at earthquake intensities where there is 1% prob­
+ability or less that current conventionally designed safety-
+related structures fail to perform their RSFs. By contrast, 
+an advanced reactor structure with annual failure frequen­
+cy of 5E-7/yr or less would have a HCLPF capacity of about 
+1.5 times or more that of current LWR structures, according 
+to Table 3, so their Pf is equal to or less than 1% at 2.5 times 
+the GMRS. As shown in Figure 4, nearly all adjacent non-es­
+sential structures and three quarters of essential structures 
+are expected to have collapsed. 
+Table 4. Conditional probability of collapse at 1.67 × GMRS 
+for structures designed to ASCE.SEI 7-22 
+Pf per Risk Category (%) (Note 1)
+AR
+I & II
+III
+IV
+2.0
+49%
+35%
+24%
+2.5
+73%
+60%
+47%
+3.0
+86%
+76%
+65%
+3.5
+92%
+86%
+77%
+Table Note 1: The computed fragility curves do not account 
+for the typical increase in AR between hazard levels of 
+4E-4/yr and 1E-4/yr compared to AR between hazard levels 
+of 1E-4/yr and 1E-5/yr because it cannot be generically 
+quantified. This simplification shifts the estimated fragility 
+curves slightly to the right and under-estimates the condi­
+tional Pf, which is conservative in this context.
+If compared instead to the 5E-7/yr F-C target for LBEs 
+governed by a singleton structure, the expected annual col­
+lapse risk of commercial structures would be about 250 to 
+400 times higher if the F-C target in NEI 18-04 is met using 
+mean LBE annual frequencies. Using 95% confidence LBE 
+frequencies would result in ratios substantially higher than 
+250 to 400. 
+An alternative measure for assessing societal impact is to 
+compare the conditional probabilities of collapse, Pf, at a 
+ground motion intensity equal to 1.67 times the GMRS for 
+structures designed to ASCE/SEI 7-22 [21] to the 1% maxi­
+mum probability that a current conventionally designed NPP 
+major safety-related structure fails to perform its RSFs. The 
+probability Pf depends on the building risk category in ASCE/
+SEI 7-22 [21] and the hazard curve slope at the site. For a 
+given hazard curve slope parameter AR and a logarithmic 
+standard deviation of 0.6, the MCER ground motion is com­
+puted as a multiple of the 4E-4/yr ground motion as dem­
+onstrated in Talaat and Coman [24]. Using the hazard curve 
+slope parameter AR, the corresponding 1E-4/yr, 1E-5/yr, and 
+GMRS ground motions are determined. For each structure 
+risk category, using the conditional Pf at the MCER ground 
+motion and the logarithmic standard deviation of 0.6, the 
+conditional Pf at 1.67 times the GMRS is computed. 
+Table 4 lists these conditional probabilities for the differ­
+ent combinations of structure risk category and hazard 
+curve slope. As discussed above, at GMRS ground motions 
+or lower, AR values lower than about 2.4 are considered 
+rare; thus, the row corresponding to AR = 2.0 is grayed out 
+in Table 4. As indicated in the table footnote, these values 
+are estimated using a conservative mathematical simplifica­
+tion, and the actual probabilities should be higher. Figure 6 
+illustrates the corresponding collapse fragility curves 
+with the x axis normalized to the GMRS PGA. Review of 
+Table 4 and Figure 4 suggests that, at 1.67 times the GMRS, 
+0
+11   |  EPRI White Paper 	
+October 2025
+Societal Impact Relative to Current U.S. 
+Building Stock
+Estimating conditional probabilities of structure collapse at 
+1.67 times the GMRS for current U.S. building stock de­
+pends on several factors that are beyond the scope of this 
+report, including the building inventory in each area, the 
+vintage of each structure, its structural system, the build­
+ing code in effect at the time of the design, its conformance 
+to the code, and potential seismic upgrades or structural 
+degradation with aging. While it is not practical to estimate 
+probabilities analogous to those in Table 4, it is reasonable 
+to assert that the corresponding probabilities for an aver­
+age structure in the current U.S. building stock are higher 
+than those for modern code-conforming structures in 
+Table 4. This section describes a reasonable basis to charac­
+terize the societal risk of the current U.S. building stock on 
+an aggregate level.
+Beginning in 2001, the Federal Emergency Management 
+Agency (FEMA) and USGS have periodically published a 
+joint report titled “Hazus Estimated Annualized Earthquake 
+Losses for the United States” (FEMA P-366 [25]). FEMA 
+P-366 revisions were released in 2008, 2017, and 2023 to 
+Figure 6. Collapse fragility curves for structures designed to ASCE/SEI 7-22 normalized by the GMRS
+reflect evolving populations, building inventories, and seis­
+mic hazard data. The objective of FEMA P-366 is to provide 
+estimates of seismic risk that are sufficiently refined to 
+inform public and private sector policies and planning. An 
+emphasis of FEMA P-366 is to provide risk information that 
+is normalized in a manner that allows for comparison of 
+seismic risk across regions.
+The seismic risk estimates developed in FEMA P-366 focus 
+on direct economic losses to building stock, including 
+structural and non-structural component repair or replace­
+ment costs, cost of damaged contents, business inventory 
+losses, business interruption losses, and rental income 
+losses, performed for 85,229 census tracts in the United 
+States. They do not include potential damage to critical 
+facilities, transportation, or utility lifelines. They also do not 
+include indirect losses such as loss of employment or tax 
+revenues, nor do they include losses due to ground-failure 
+effects, such as liquefaction and landslides. The FEMA P-366 
+2023 revision incorporates the 2018 USGS National Seismic 
+Hazard Model, the 2020 census data, and the latest building 
+stock exposure information.
+0
+12   |  EPRI White Paper 	
+October 2025
+structures are governed by other natural phenomena, such 
+as hurricanes along the gulf coast and the northeast and 
+tornado winds in the interior states. 
+ 
+Figure 7. Annual expected loss ratio by U.S. state 
+(Figure 3-2 in FEMA P-366 [25])
+Figure 8. Annual expected loss ratio by U.S. county 
+(Figure 3-4 in FEMA P-366 [25])
+Table 4-5 in FEMA P-366 indicates that capital loss (structure 
+and contents) is on the order of 85% of the direct economic 
+losses in California. A similar percentage is expected in other 
+states. The AELR can therefore be interpreted to represent 
+the annual frequency of building collapse or sufficiently 
+severe damage to render the building a total loss (that is, its 
+repair cost exceeds the replacement cost). Accordingly, the 
+annual frequencies of building collapse or total loss dam­
+age in these twelve jurisdictions that contribute more than 
+90% of the national AEL is between 1E-4/yr and 8.1E-4/yr. 
+Outside of these highly seismic areas, the AELRs are about 
+100 per million or lower.
+The risk computations underpinning FEMA P-366 are 
+performed in FEMA software Hazus Version 6.0. Detailed 
+descriptions of the risk assessment methods, data, as­
+sumptions, and limitations of the Hazus computations are 
+provided in the “Hazus Earthquake Model User Guidance” 
+[26] and the “Hazus Earthquake Model Technical Manual” 
+[27]. Hazus conducts loss computations based on (1) seismic 
+hazard, which can be user- or database-input, for example 
+the USGS hazard maps averaged per census tract; (2) build­
+ing stock data, such as types of construction, footprint, 
+number of floors, use, occupancy, age, and potential retro­
+fits, collected for FEMA P-366 from the U.S. Army Corps of 
+Engineers (USACE)’s National Structure Inventory (NSI) 2022 
+[28] and the Department of Homeland Security (DHS)’s 
+Homeland Infrastructure Foundation-Level Data (HIFLD) 
+[29]; (3) building and component vulnerability and damage 
+functions (similar to fragility functions) from Hazus database 
+for prototypical construction types and vintages; (4) typical 
+building prototype contents per area or floor based on its 
+type, use, and occupancy; and (5) repair and replacement 
+cost values (2022 costs were used for FEMA P 366) aggre­
+gated by Gordian [30]. Hazus can run both deterministic loss 
+estimation analyses (for a single-earthquake scenario) and 
+probabilistic loss estimation analyses (expected annualized 
+values). FEMA P-366 presents the results of a probabilistic 
+seismic risk analysis for the entire United States, broken 
+down at national, regional, state, and county levels. 
+Figures 7 and 8 present maps of the annual expected loss 
+ratios (AELRs) computed in FEMA P-366 per state and 
+county, respectively. The AELR is the AEL as a fraction of 
+the building inventory replacement values and represents 
+loss-to-value ratios. FEMA P-366 found that 78% of the 
+nationwide AEL is in California, Oregon, and Washington. 
+In these three states, the AELRs are 809, 477, and 472 per 
+million buildings, respectively, with the county-level AELRs 
+mostly above 100 per million (Figure 8). Seven other states, 
+Puerto Rico, and the U.S. Virgin Islands have AELRs of 100 
+per million and higher (Figure 7). Based on Table 3-1 in 
+FEMA P-366, more than 90% of the estimated nationwide 
+AEL of $14.7 billion occurs in these twelve jurisdictions. 
+Meanwhile, a large area in the interior, northeast, and 
+southeast of the United States have low AELRs. These are 
+areas of relatively low seismicity where earthquake-induced 
+loss estimates are less informative and the design loads for 
+0
+13   |  EPRI White Paper 	
+October 2025
+frequencies on the F-C chart. The blue-shaded region in 
+Figure 9 shows a maximum release frequency of 5E-6/yr, 
+which corresponds to a singleton safety-related structure 
+with the lowest βc (steepest fragility curve) and the high­
+est AR (flattest site hazard curve) scenario considered in 
+Table 1. Other scenarios of safety-related SSCs meeting 
+the USNRC minimum seismic design and margin criteria 
+will result in lower release frequencies because of re­
+dundancies and/or different seismic fragility and hazard 
+slope parameters. The corresponding consequence on 
+the F-C chart will depend on the corresponding LBE acci­
+dent analysis and may or may not exceed the F-C target.
+•	
+The blue-shaded region in Figure 9 represents frequen­
+cies that should be considered aligned with the USNRC 
+reactor safety policy statement’s quantitative and 
+qualitative safety goals to provide “adequate protec­
+tion” under the Atomic Energy Act. Compared to the 
+annual probability of building collapses in the United 
+States, these frequencies are expected to be on the or­
+der of one-hundredth (between 1/30 and 1/150) of the 
+societal annual risk of a modern commercial structure 
+collapse, and a smaller fraction of the annual risk of 
+collapse of existing building stock.
+•	
+Current USNRC regulations for LWRs in SECY 93-087 
+[13] and DC/COL-ISG-020 [11] require that all event 
+sequences that lead to core damage or containment 
+failure demonstrate 1% or less probability of failure at 
+1.67 times the GMRS. At this earthquake ground mo­
+tion intensity, between about 50% and almost 100% 
+of modern code-conforming buildings adjacent to the 
+NPP are expected to collapse, depending on the site 
+hazard slope and the building seismic risk category, 
+and between about 75% and almost 100% of common 
+residential buildings are expected to collapse. The 
+expected collapse probabilities for existing building 
+stock not designed to modern seismic design codes are 
+even higher. That is, an overwhelming majority of exist­
+ing structures adjacent to the NPP will likely collapse 
+at earthquake shaking levels where there is 1% or less 
+probability of LWR core damage or large release.
+With this interpretation, one can compare these collapse 
+frequencies to the NEI 18-04 5E-7/yr F-C target for high-
+consequence BDBEs, including those dominated by a single 
+major structure’s RSF failure. This comparison indicates that 
+the expected annual collapse risk of existing building stock 
+in seismically active states and territories of the United 
+States is about 20 to 500 times higher per building than 
+that of current conventionally designed NPP major safety-
+related structures failing to perform their RSFs (Table 1) and 
+200 to 1,600 times higher per building than the design goal 
+of NEI 18-04 if the F-C target is compared to the mean LBE 
+annual frequencies. 
+If one were to target areas outside of these seismically ac­
+tive regions for siting new advanced reactors, the annual fre­
+quencies of building collapse or total loss damage in Figure 7 
+can be as high as about 1E-4/yr. This is about 20 to 70 times 
+higher than that of current conventionally designed NPP 
+major safety-related structures failing to perform their RSFs 
+(Table 1) and 200 times higher than the 5E-7/yr design goal 
+of NEI 18-04 if the F-C target is compared to the mean LBE 
+annual frequencies. Comparing the F-C target to the 95% 
+confidence LBE frequencies, or comparing the 5E 7/yr F-C 
+target to the county-level AELRs instead of state-level aver­
+ages would result in significantly higher ratios. As expected, 
+these ratios have a higher range than previously computed 
+for current commercial code-conforming structures. 
+DISCUSSION
+The case study observations developed in the previous two 
+sections provide the following insights.
+•	
+Current USNRC minimum seismic design and margin 
+criteria for conventional LWRs result in annual frequen­
+cies of core damage or large release that are between 
+about 1.5E-6/yr and 5E-6/yr, depending on the seismic 
+design and site parameters, under the bounding as­
+sumption that a singleton safety-related structure meets 
+the design requirements. Actual SSC designs and event 
+sequences will achieve lower annual frequencies. 
+Figure 9 indicates the range of likely achievable BDBE 
+0
+14   |  EPRI White Paper 	
+October 2025
+•	
+While the discussion focused on safety-related struc­
+tures and used the case of a singleton event as a 
+bounding case, these conclusions are applicable to 
+seismic design of other SSCs since (1) all safety-related 
+SSCs are required to be designed to withstand the 
+same SSE, (2) the 1.67 times the GMRS seismic mar­
+gin USNRC requirement applies to all severe accident 
+sequences, and (3) other SSC failures are unlikely to be 
+singleton events and, therefore, accident sequences 
+involving them would have lower frequencies than 
+estimated in Table 1.
+•	
+It is noted that the latest draft development of ANL/
+NSE-24/42, which was presented to the USNRC staff in 
+ML25237A182 [9], proposed a licensing pathway that 
+requires demonstrating that the conditional probability 
+of all LBEs resulting in a dose release is ≤ 0.05 at the 
+1E-5/yr hazard level. A comparison of those results 
+with the corresponding conditional probabilities com­
+puted for an LBE whose HCLPF capacity is 1.67 times 
+the GMRS is presented in Table 5.4 As shown, these 
+computed Pf values are comparable and on average 
+slightly lower than the proposal in ML25237A182 [9].  
+Table 5. Expected conditional Pf at 1E-5/yr hazard level for 
+BDBEs with HCLPF capacity of 1.67 GMRS
+Pf given βc
+AR
+βc = 0.3
+βc = 0.4
+βc = 0.5
+βc = 0.6
+2.0
+0.03
+0.02
+0.02
+0.02
+2.5
+0.04
+0.03
+0.02
+0.02
+3.0
+0.06
+0.04
+0.03
+0.02
+3.5
+0.07
+0.04
+0.03
+0.03
+4	
+The values in this table are calculated by (1) defining a generic PGA 
+at the 1E-4/yr MAFE hazard level, (2) determining the corresponding 
+1E-5/yr and GMRS PGAs for each AR value, (3) anchoring a fragility 
+curve to 1% at 1.67 times the GMRS PGA, and (4) determining the 
+failure probability at the 1E-5/yr MAFE PGA for each βc value. This 
+calculation assumes that the shape of the earthquake response spec­
+trum does not change significantly between the 1E-4/yr MAFE and 
+the 1E-5/yr MAFE hazard levels, such that AR at the PGA is represen­
+tative of AR at other spectral frequencies.
+ 
+Figure 9. Expected range of BDBE annual frequencies for 
+LBEs with seismic design according to current 10CFR50 and 
+10CFR52 requirements
+•	
+Enforcing the 5E-7/yr design goal in NEI 18-04 on the 
+mean annual frequency of each high-consequence LBE 
+may result in raising the seismic design basis for some 
+major structures by a ratio between 1.5 and 3 times 
+the GMRS. The corresponding mean annual risk of RSF 
+failure for these structures would drop to between 
+one-third and one-tenth of those designed to the 
+GMRS demands, and to between 1/250 to 1/400 of the 
+annual risk of modern commercial structure collapses. 
+At the earthquake ground motion intensity correspond­
+ing to 1% or less conditional failure probabilities of 
+these structures, more than about 75% of modern 
+code-conforming buildings adjacent to the NPP are 
+expected to collapse, including more than about 90% of 
+common residential buildings. 
+•	
+Enforcing the 5E-7/yr design goal in NEI 18-04 on 
+the 95% confidence annual frequency of each high-
+consequence LBE would result in even higher increases 
+in the design-basis seismic demands of those major 
+structures. 
+•	
+Given the currently low ratios between the annual 
+seismic risk of accidents from conventionally designed 
+safety-related NPP structures compared to other 
+societal impacts, increasing the design demands by 1.5 
+to 3 times further does not seem to be justified by the 
+USNRC safety policy statement.
+0
+15   |  EPRI White Paper 	
+October 2025
+2.	 United States Nuclear Regulatory Commission, “Guid­
+ance for a Technology-Inclusive, Risk-Informed, and 
+Performance-Based Methodology to Inform the Licens­
+ing Basis and Content of Applications for Licenses, 
+Certifications, and Approvals for Non-Light Water Reac­
+tors,” Regulatory Guide 1.233, 2020.
+3.	 Nuclear Energy Institute, “Technology Inclusive Guid­
+ance for Non-LIght Water Reactors: Safety Analysis 
+Report Content for Applicants Using the NEI 18-04 
+Methodology,” NEI 21-07, Revision 1, February 2022.
+4.	 United States Nuclear Regulatory Commission, “Guid­
+ance for a Technology-Inclusive Content-of-Application 
+Methodology to Inform the Licensing Basis and Content 
+of Applications for Licenses, Certifications, and Approv­
+als for Non-Light-Water Reactors,” Regulatory Guide 
+1.253, Revision 0, March 2024.
+5.	 Implementation of Licensing Modernization Project 
+Risk-Informed Performance-Based Design Frame­
+work for External Hazards: Assessment of Challenges, 
+Gaps, and Research Needs. EPRI, Palo Alto, CA: 2024. 
+3002029295.
+6.	 U.S. Code of Federal Regulations, Domestic Licensing 
+of Production and Utilization Facilities, 10 C.F.R. § 50 
+(2025).
+7.	 United States Nuclear Regulatory Commission, “Tech­
+nology-inclusive, Risk-informed, and Performance-
+based Methodology for Seismic Design of Commercial 
+Nuclear Plants,” DG 1410, 2022.
+8.	 U.S. Code of Federal Regulations, Licenses, Certifica­
+tions, and Approvals for Nuclear Power Plants, 10 C.F.R. 
+§ 52 (2025).
+9.	 United States Nuclear Regulatory Commission, Ad­
+vanced Reactor Stakeholder Public Meeting: Approach 
+for the Assessment of Low Frequency External Hazards, 
+ML25237A182, 28 August 2025.
+10.	 United States Nuclear Regulatory Commission, “A Per­
+formance-Based Approach to Define the Site-Specific 
+Earthquake Ground Motion,” Regulatory Guide 1.208, 
+Revision 0, 2007.
+11.	 United States Nuclear Regulatory Commission, “Interim 
+Staff Guidance on Implementation of a Probabilistic 
+Risk Assessment-Based Seismic Margin Analysis for 
+New Reactors,” DC/COL-ISG-020, 2010.
+CONCLUSIONS
+Based on the observations and discussion above, the fol­
+lowing path is recommend for RIPB seismic design of SSCs 
+in advanced reactors, consistent with LMP:
+•	
+For safety-related SSCs, the DBHL earthquake need not 
+exceed the GMRS defined according to RG 1.208 [10]. 
+•	
+High-consequence seismic BDBEs are allowed to exceed 
+the F-C target provided that:
+	–
+The union of these BDBEs demonstrates a seismic 
+margin (HCLPF capacity) equal to at least 1.67 
+times the GMRS; and
+	–
+The cumulative risk metrics acceptance criteria or 
+USNRC-endorsed surrogates (such as being devel­
+oped in ANL/NSE-24/42 [9]) are met. 
+•	
+The seismic design basis for non-safety related SSCs may 
+follow commercial design codes and standards with spe­
+cial treatment as warranted to risk-significant SSCs.
+These recommendations are consistent with the LMP 
+process outlined in NEI 18-04 while explicitly deprioritizing 
+staying within the F-C target for seismic BDBEs as long as 
+the cumulative risk criteria are met.
+While LMP aims to provide flexibility and cost efficiency 
+through performance-based criteria, its F-C target of 5E 7/yr 
+for high-consequence BDBEs can lead to overly conservative 
+seismic design requirements. The incremental reduction 
+in seismic risk achieved by these higher design demands is 
+negligible compared to societal risks from widespread build­
+ing collapses during earthquakes. Current USNRC seismic 
+criteria already provide adequate protection under the 
+Atomic Energy Act and align with safety policy goals. The 
+recommended approach maintains safety objectives while 
+avoiding unnecessary escalation of design demands, sup­
+porting practical implementation of risk-informed principles 
+for advanced reactor design.
+REFERENCES
+1.	 Nuclear Energy Institute, “Risk-Informed Performance-
+Based Guidance for Non-Light Water Reactor Licensing 
+Basis Development,” NEI 18-04, Revision 1, 2019.
+0
+16   |  EPRI White Paper 	
+October 2025
+25.	 Federal Emergency Management Agency, “Hazus 
+Estimated Annualized Earthquake Losses for the United 
+States,“ FEMA P-366, Washington, DC, USA, 2023.
+26.	 Federal Emergency Management Agency, Hazus Earth­
+quake Model User Guidance for Hazus 6.1, 2024.
+27.	 Federal Emergency Management Agency, Hazus Earth­
+quake Model Technical Manual for Hazus 6.1, 2024
+28.	 U.S. Army Corps of Engineers, National Structure Inven­
+tory, 2022. 
+29.	 Department of Homeland Security, Homeland Infra­
+structure Foundation-Level Data, 2022. HIFLD open 
+data https://hifld-geoplatform.opendata.arcgis.com/ 
+30.	 Gordian Group, Inc., 2022. Square Foot Costs with 
+RSMeans Data 2022, 43rd Annual Edition.
+APPENDIX A – HAZARD CURVE 
+SLOPE
+Seismic hazard curves typically depict the relationship 
+between a ground motion intensity parameter on the x-
+axis and the annual frequency of exceedance (AFE) on the 
+y-axis. The most common ground motion intensity param­
+eter is the peak ground acceleration (PGA), followed by the 
+spectral acceleration response of a single-degree-of-free­
+dom oscillator with a specified frequency. Other parameters 
+include the peak ground velocity (PGV) and cumulative 
+absolute velocity (CAV). Without loss of generality, this 
+discussion uses the PGA. 
+It is common in seismic risk computations to idealize seismic 
+hazard curves using a power law, which produces a straight-
+line relationship in log-log space, and fragilities using lognor­
+mal functions. Even though actual seismic hazard curves are 
+curvilinear, the power law idealization is a valid idealization 
+because: (1) for typical seismic hazard and fragility curves, 
+the risk convolution integral results in the vast majority of 
+seismic risk resulting from ground motion intensity bins that 
+span a single AFE decade or less, and (2) and the typical 
+seismic hazard curvature is mild such that it can accurately 
+be represented as piecewise linear over each AFE decade. 
+For illustration, Figure 10 shows mean and fractile PGA hazard 
+curves for an example rock site in the central United States. 
+This figure is obtained from Pacific Earthquake Engineering 
+Report No. 2018/08 “Central and Eastern North America 
+Ground-Motion Characterization: NGA-East Final Report.” 
+12.	 United States Nuclear Regulatory Commission, “Stan­
+dard Review Plan for the Review of Safety Analysis 
+Reports for Nuclear Power Plants,” NUREG-0800.
+13.	 United States Nuclear Regulatory Commission, “Policy, 
+Technical, and Licensing Issues Pertaining to Evolution­
+ary and Advanced Light Water Reactor (ALWR) Design,” 
+SECY-93-087, 1993.
+14.	 EPRI (2004, 2006) Ground-Motion Model (GMM) Re­
+view Project. EPRI, Palo Alto, CA: 2013. 3002000717.
+15.	 Pacific Earthquake Engineering Research Center, 
+Central and Eastern North American Ground-Motion 
+Characterization: NGA-East Final Report, PEER Report 
+No. 2018/08, Berkeley, CA, Dec. 2018.
+16.	 United States Nuclear Regulatory Commission, 
+Plant-Specific Safety Enhancements After Fukushima, 
+https://www.nrc.gov/reactors/operating/ops-experi­
+ence/fukushima, Last accessed 15 September 2025.
+17.	 Simplified Method for Estimating Mean Seismic Hazard 
+for an Updated Ground Motion or Site Amplification 
+Model: Application to the Central and Eastern United 
+States. EPRI, Palo Alto, CA: 2020. 3002018216.
+18.	 Kennedy, R.P. and S.A. Short, “Basis for Seismic Provi­
+sions of DOE-STD-1020,” UCRL-CR-111478 / BNL-52418, 
+Washington, DC, USA, 1994.
+19.	 United States Nuclear Regulatory Commission, “Modi­
+fied Reactor Safety Goal Statement,” SECY-01-0009, 
+2001.
+20.	 United Nations Scientific Committee on the Effects of 
+Atomic Radiation, Sources, Effects, and Risk of Ionizing 
+Radiation, UNSCEAR 2020/2021 Report, Violume II, 
+Scientific Annex B, New York, NY, USA, 2022.
+21.	 American Society of Civil Engineers /Structural 
+Engineering Institute , “Minimum Design Loads and 
+Associated Criteria for Buildings and Other Structures,” 
+ASCE/SEI 7-22, Reston, VA, USA, 2022.
+22.	 Luco, N., “Insensitivity of Risk-Targeted Seismic De­
+sign Loads for Building Codes to the Requisite Fragility 
+Curve Shape,” APSSRA2020, Tokyo, Japan, 2020.
+23.	 Development and Control of Atomic Energy Act. 42 
+U.S.C. § 2232 (2024).
+24.	 Talaat, M.M., and O. Coman (2025). “Risk-Informed 
+Performance-Based Design Using Seismic Margins,” 
+SMiRT-28, Toronto, ON, Canada.
+0
+17   |  EPRI White Paper 	
+October 2025
+Figure 10. Example mean hazard curve for PGA (Figure I-10 
+in PEER Report No. 2018/08)
+ 
+The mean hazard curve is used to demonstrate the 
+definition and computation of the slope parameter, AR. 
+Conceptually, this hazard curve can be subdivided into 
+piecewise-linear segments with each segment spanning an 
+AFE decade. It is common to do this subdivision at AFEs of 
+1E-3/y, 1E-4/yr, 1E-5/yr, etc. although this is an arbitrary de­
+cision. Each piecewise-linear segment has a different slope. 
+For risk computation, the applicable slope is the one that 
+represents the ground motion range contributing the vast 
+majority of seismic risk. The slope parameter AR, is defined 
+as the increase ratio of PGA over a one-decade AFE. The 
+piecewise linear slope in log-log space for each AFE decade 
+is equal to -1•log10(AR). Table 5 demonstrates the calcula­
+tion of the slope parameter AR for the mean hazard curve 
+in Figure 10. As shown in Table 5, the typical curvature of 
+seismic hazard curves is such that the parameter AR gradu­
+ally decreases along the hazard curve as the PGA increases. 
+Table 5. Computation of slope parameter AR
+AFE1 
+(/yr)
+PGA1 
+(g)
+AFE2 
+(/yr)
+PGA2 
+(g)
+AR 
+(PGA2/ PGA1)
+1E-2
+0.009
+1E-3
+0.06
+6.7
+1E-3
+0.06
+1E-4
+0.19
+3.2
+1E-4
+0.19
+1E-5
+0.54
+2.8
+1E-5
+0.54
+1E-6
+1.45
+2.7
+0
+THE TECHNICAL CONTENTS OF THIS PRODUCT WERE NOT PREPARED 
+IN ACCORDANCE WITH THE EPRI QUALITY PROGRAM MANUAL THAT 
+FULFILLS THE REQUIREMENTS OF 10 CFR 50, APPENDIX B.THIS PROD-
+UCT IS NOT SUBJECT TO THE REQUIREMENTS OF 10CFR PART 21.
+EPRI CONTACT 
+JOHN RICHARDS, Senior Technical Executive
+704.595.2707, jrichards@epri.com
+About EPRI
+Founded in 1972, EPRI is the world’s preeminent independent, non-
+profit energy research and development organization, with offices 
+around the world. EPRI’s trusted experts collaborate with more than 
+450 companies in 45 countries, driving innovation to ensure the public 
+has clean, safe, reliable, and affordable access to electricity across the 
+globe. Together…Shaping the future of energy.®
+DISCLAIMER OF WARRANTIES AND LIMITATION OF LIABILITIES
+THIS DOCUMENT WAS PREPARED BY THE ORGANIZATION(S) NAMED 
+BELOW AS AN ACCOUNT OF WORK SPONSORED OR COSPONSORED BY 
+THE ELECTRIC POWER RESEARCH INSTITUTE, INC. (EPRI). NEITHER EPRI, 
+ANY MEMBER OF EPRI, ANY COSPONSOR, THE ORGANIZATION(S) 
+BELOW, NOR ANY PERSON ACTING ON BEHALF OF ANY OF THEM:
+(A) MAKES ANY WARRANTY OR REPRESENTATION WHATSOEVER,
+EXPRESS OR IMPLIED, (I) WITH RESPECT TO THE USE OF ANY INFORMA-
+TION, APPARATUS, METHOD, PROCESS, OR SIMILAR ITEM DISCLOSED IN
+THIS DOCUMENT, INCLUDING MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE, OR (II) THAT SUCH USE DOES NOT INFRINGE ON
+OR INTERFERE WITH PRIVATELY OWNED RIGHTS, INCLUDING ANY PAR-
+TY’S INTELLECTUAL PROPERTY, OR (III) THAT THIS DOCUMENT IS SUIT-
+ABLE TO ANY PARTICULAR USER’S CIRCUMSTANCE; OR
+(B) ASSUMES RESPONSIBILITY FOR ANY DAMAGES OR OTHER LIABILITY
+WHATSOEVER (INCLUDING ANY CONSEQUENTIAL DAMAGES, EVEN IF
+EPRI OR ANY EPRI REPRESENTATIVE HAS BEEN ADVISED OF THE POSSI-
+BILITY OF SUCH DAMAGES) RESULTING FROM YOUR SELECTION OR USE
+OF THIS DOCUMENT OR ANY INFORMATION, APPARATUS, METHOD,
+PROCESS, OR SIMILAR ITEM DISCLOSED IN THIS DOCUMENT.
+REFERENCE HEREIN TO ANY SPECIFIC COMMERCIAL PRODUCT, PRO-
+CESS, OR SERVICE BY ITS TRADE NAME, TRADEMARK, MANUFACTURER, 
+OR OTHERWISE, DOES NOT NECESSARILY CONSTITUTE OR IMPLY ITS 
+ENDORSEMENT, RECOMMENDATION, OR FAVORING BY EPRI.
+THE FOLLOWING ORGANIZATION, UNDER CONTRACT TO EPRI, PRE-
+PARED THIS REPORT:
+SIMPSON GUMPERTZ & HEGER INC.
+EPRI would like to acknowledge M.M. Talaat, F.F. Grant, and S. Dorvash 
+(Simpson Gumpertz & Heger Inc.).
+EPRI
+3420 Hillview Avenue, Palo Alto, California 94304-1338 USA  •  650.855.2121  •  www.epri.com
+© 2025 Electric Power Research Institute (EPRI), Inc. All rights reserved. Electric Power Research Institute, EPRI, and TOGETHER…SHAPING THE FUTURE OF ENERGY are 
+registered marks of the Electric Power Research Institute, Inc. in the U.S. and worldwide.
+3002032031	
+October 2025
+EPRI Customer Assistance Center
+800.313.3774  •  askepri@epri.com
+For more information, contact:
+0
