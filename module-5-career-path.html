@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Module 5: Your Career Path — Reactor Ready</title>
+  <title>Module 5: Your Career Path — FissionPoint</title>
   <style>
     :root {
       --navy: #0a1628;
@@ -273,7 +273,7 @@
   <nav>
     <div class="nav-logo">
       <span class="atom">&#9883;</span>
-      <span>Reactor Ready</span>
+      <span>FissionPoint</span>
       <span class="nav-badge">MIT OCW 22.01</span>
     </div>
     <div class="nav-right">
@@ -360,7 +360,7 @@
 
     <main class="main">
       <div class="breadcrumb">
-        <a href="module-1-welcome.html">Reactor Ready</a> &rarr; Module 5
+        <a href="module-1-welcome.html">FissionPoint</a> &rarr; Module 5
       </div>
 
       <div class="progress-section">
@@ -623,7 +623,7 @@
             <input type="checkbox" id="cb-0" onchange="updateTimeline()">
             <label class="tl-label" for="cb-0">
               <div class="tl-dot"></div>
-              <h4>&#9312; Complete Reactor Ready (this course)</h4>
+              <h4>&#9312; Complete FissionPoint (this course)</h4>
               <p>Nuclear fundamentals, radiation safety, reactor systems, career orientation.</p>
               <div class="tl-time">&#128336; Now — self-paced</div>
             </label>
@@ -801,7 +801,7 @@
   const paths = {
     electrician: [
       { title: 'Where You Are Now', desc: 'Journeyman Electrician — NEC expertise, panel work, industrial maintenance, motor controls.', salary: '$58,000–$75,000/yr commercial' },
-      { title: 'Nuclear Wrapper Training (Reactor Ready)', desc: 'Nuclear fundamentals, radiation safety, Class 1E systems, EDG maintenance, nuclear work control. 3–6 months part-time.', salary: 'Investment: ~$2,500–$5,000 (often employer-funded)' },
+      { title: 'Nuclear Wrapper Training (FissionPoint)', desc: 'Nuclear fundamentals, radiation safety, Class 1E systems, EDG maintenance, nuclear work control. 3–6 months part-time.', salary: 'Investment: ~$2,500–$5,000 (often employer-funded)' },
       { title: 'Nuclear Electrical Maintenance Tech', desc: 'Maintain safety buses, MCCs, EDGs, cable systems. Work under procedure. Independent verification. LOTO in nuclear context.', salary: '$85,000–$102,000/yr' },
       { title: 'Senior Electrical Tech / Outage Lead', desc: 'Lead refueling outage electrical work. Develop procedures. Mentor junior techs. Critical path work scope.', salary: '$102,000–$130,000/yr' },
       { title: 'Nuclear I&C / Electrical Supervisor', desc: 'Oversee department. Technical specification compliance. Interface with NRC. Drive maintenance program.', salary: '$130,000–$160,000+/yr' }
@@ -1030,20 +1030,20 @@
   })();
   </script>
 
-<!-- Reactor Ready Progress Tracking -->
+<!-- FissionPoint Progress Tracking -->
 <script>
 (function(){
   var moduleNum = 5;
   // Mark in-progress on load
   try {
-    var ip = JSON.parse(localStorage.getItem("rr-in-progress") || "[]");
-    if (ip.indexOf(moduleNum) === -1) { ip.push(moduleNum); localStorage.setItem("rr-in-progress", JSON.stringify(ip)); }
+    var ip = JSON.parse(localStorage.getItem("fp-in-progress") || "[]");
+    if (ip.indexOf(moduleNum) === -1) { ip.push(moduleNum); localStorage.setItem("fp-in-progress", JSON.stringify(ip)); }
   } catch(e){}
   // Expose markComplete for quiz completion
   window.rrMarkComplete = function() {
     try {
-      var c = JSON.parse(localStorage.getItem("rr-completed") || "[]");
-      if (c.indexOf(moduleNum) === -1) { c.push(moduleNum); localStorage.setItem("rr-completed", JSON.stringify(c)); }
+      var c = JSON.parse(localStorage.getItem("fp-completed") || "[]");
+      if (c.indexOf(moduleNum) === -1) { c.push(moduleNum); localStorage.setItem("fp-completed", JSON.stringify(c)); }
     } catch(e){}
   };
 })();

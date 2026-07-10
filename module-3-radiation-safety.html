@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Module 3: Radiation Safety Fundamentals — Reactor Ready</title>
+  <title>Module 3: Radiation Safety Fundamentals — FissionPoint</title>
   <style>
     :root {
       --navy: #0a1628;
@@ -307,7 +307,7 @@
 </head>
 <body>
   <nav>
-    <div class="nav-logo"><span class="atom">&#9883;</span><span>Reactor Ready</span></div>
+    <div class="nav-logo"><span class="atom">&#9883;</span><span>FissionPoint</span></div>
     <div class="nav-right">
       <span>by Naked Nuclear</span>
       <span style="color:var(--border);">|</span>
@@ -394,7 +394,7 @@
     </aside>
 
     <main class="main">
-      <div class="breadcrumb"><a href="module-1-welcome.html">Reactor Ready</a> &rarr; Module 3</div>
+      <div class="breadcrumb"><a href="module-1-welcome.html">FissionPoint</a> &rarr; Module 3</div>
 
       <div class="progress-section">
         <div class="progress-label">Course Progress: Module 3 of 9</div>
@@ -1113,20 +1113,20 @@
   });
   </script>
 
-<!-- Reactor Ready Progress Tracking -->
+<!-- FissionPoint Progress Tracking -->
 <script>
 (function(){
   var moduleNum = 3;
   // Mark in-progress on load
   try {
-    var ip = JSON.parse(localStorage.getItem("rr-in-progress") || "[]");
-    if (ip.indexOf(moduleNum) === -1) { ip.push(moduleNum); localStorage.setItem("rr-in-progress", JSON.stringify(ip)); }
+    var ip = JSON.parse(localStorage.getItem("fp-in-progress") || "[]");
+    if (ip.indexOf(moduleNum) === -1) { ip.push(moduleNum); localStorage.setItem("fp-in-progress", JSON.stringify(ip)); }
   } catch(e){}
   // Expose markComplete for quiz completion
   window.rrMarkComplete = function() {
     try {
-      var c = JSON.parse(localStorage.getItem("rr-completed") || "[]");
-      if (c.indexOf(moduleNum) === -1) { c.push(moduleNum); localStorage.setItem("rr-completed", JSON.stringify(c)); }
+      var c = JSON.parse(localStorage.getItem("fp-completed") || "[]");
+      if (c.indexOf(moduleNum) === -1) { c.push(moduleNum); localStorage.setItem("fp-completed", JSON.stringify(c)); }
     } catch(e){}
   };
 })();

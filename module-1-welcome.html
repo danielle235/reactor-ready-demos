@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Module 1: Welcome to Nuclear Technology — Reactor Ready</title>
+  <title>Module 1: Welcome to Nuclear Technology — FissionPoint</title>
   <style>
     :root {
       --navy: #0a1628;
@@ -613,7 +613,7 @@
   <nav>
     <div class="nav-logo">
       <span class="atom">&#9883;</span>
-      <span>Reactor Ready</span>
+      <span>FissionPoint</span>
     </div>
     <div class="nav-right">
       <span>by Naked Nuclear</span>
@@ -1075,7 +1075,7 @@ const cpeTrades = [
     icon: '&#9889;', name: 'Electrician',
     steps: [
       { role: 'Licensed Journeyman Electrician', salary: '$55K-$75K', desc: 'Your current credentials: state license, OSHA 10, commercial/industrial experience.' },
-      { role: 'Reactor Ready Wrapper Course', salary: '6-8 weeks', desc: 'Add nuclear-specific knowledge: Class 1E systems, IEEE 384, NQA-1, 10 CFR 50.49 environmental qualification.' },
+      { role: 'FissionPoint Wrapper Course', salary: '6-8 weeks', desc: 'Add nuclear-specific knowledge: Class 1E systems, IEEE 384, NQA-1, 10 CFR 50.49 environmental qualification.' },
       { role: 'Nuclear Electrical Maintenance Tech', salary: '$79K-$103K', desc: 'Entry role at operating plants. Maintain MOVs, breakers, EDGs, battery systems, safety buses.' },
       { role: 'Senior Nuclear Electrician / I&C', salary: '$100K-$130K', desc: 'Lead electrical teams during outages. Specialize in I&C, digital controls, or relay protection.' },
       { role: 'Electrical Supervisor / SME', salary: '$120K-$150K+', desc: 'Supervise electrical maintenance. Subject matter expert for regulatory audits and NRC inspections.' }
@@ -1085,7 +1085,7 @@ const cpeTrades = [
     icon: '&#128295;', name: 'Welder',
     steps: [
       { role: 'Certified Welder (AWS/ASME)', salary: '$50K-$70K', desc: 'Your current credentials: AWS certifications, ASME code experience, structural/pipe welding.' },
-      { role: 'Reactor Ready Wrapper Course', salary: '6-8 weeks', desc: 'Add nuclear-specific: ASME Section III/XI, nuclear weld procedures, NDE awareness, NQA-1 documentation.' },
+      { role: 'FissionPoint Wrapper Course', salary: '6-8 weeks', desc: 'Add nuclear-specific: ASME Section III/XI, nuclear weld procedures, NDE awareness, NQA-1 documentation.' },
       { role: 'Nuclear-Qualified Welder', salary: '$73K-$104K', desc: 'Weld on safety-related components. Every weld you make gets radiographic inspection.' },
       { role: 'Nuclear Weld Inspector / NDE Tech', salary: '$80K-$120K', desc: 'ASNT Level II in RT/UT. Inspect the welds others make. Critical quality role.' },
       { role: 'Welding Engineer / QA Lead', salary: '$110K-$145K+', desc: 'Develop weld procedures. Lead QA programs. Oversee compliance for new construction.' }
@@ -1095,7 +1095,7 @@ const cpeTrades = [
     icon: '&#128679;', name: 'Pipefitter',
     steps: [
       { role: 'Licensed Journeyman Pipefitter', salary: '$55K-$75K', desc: 'Your current credentials: UA journeyman card, ASME B31 experience, rigging/fitting.' },
-      { role: 'Reactor Ready Wrapper Course', salary: '6-8 weeks', desc: 'Add nuclear-specific: ASME III piping, nuclear safety class systems, contamination control, NQA-1.' },
+      { role: 'FissionPoint Wrapper Course', salary: '6-8 weeks', desc: 'Add nuclear-specific: ASME III piping, nuclear safety class systems, contamination control, NQA-1.' },
       { role: 'Nuclear Construction Pipefitter', salary: '$75K-$105K', desc: 'Install and maintain safety-related piping. Work on primary coolant, feedwater, steam systems.' },
       { role: 'Senior Pipefitter / Foreman', salary: '$95K-$125K', desc: 'Lead pipe crews during construction or outages. Coordinate with QA and engineering.' },
       { role: 'Piping Superintendent', salary: '$115K-$150K+', desc: 'Oversee all piping work on a project. Interface with NRC, manage schedules and workforce.' }
@@ -1105,7 +1105,7 @@ const cpeTrades = [
     icon: '&#128200;', name: 'I&C Tech',
     steps: [
       { role: 'Industrial I&C Technician', salary: '$55K-$80K', desc: 'Your current credentials: instrumentation and controls experience, PLC programming, calibration.' },
-      { role: 'Reactor Ready Deep Wrapper', salary: '12-16 weeks', desc: 'Add nuclear-specific: reactor protection systems, safety I&C, digital controls, IEEE 603, cybersecurity (10 CFR 73.54).' },
+      { role: 'FissionPoint Deep Wrapper', salary: '12-16 weeks', desc: 'Add nuclear-specific: reactor protection systems, safety I&C, digital controls, IEEE 603, cybersecurity (10 CFR 73.54).' },
       { role: 'Nuclear I&C Technician', salary: '$87K-$110K', desc: 'Maintain reactor protection systems, process instruments, control rod drive mechanisms.' },
       { role: 'Senior I&C / Digital Controls', salary: '$100K-$130K', desc: 'Specialize in digital I&C upgrades, DCS platforms, cybersecurity for nuclear systems.' },
       { role: 'I&C Supervisor / Engineering', salary: '$120K-$155K+', desc: 'Lead I&C department. Own the instrument calibration program and digital modernization projects.' }
@@ -1220,20 +1220,20 @@ document.getElementById('tutor-question').addEventListener('keypress', function(
 });
 </script>
 
-<!-- Reactor Ready Progress Tracking -->
+<!-- FissionPoint Progress Tracking -->
 <script>
 (function(){
   var moduleNum = 1;
   // Mark in-progress on load
   try {
-    var ip = JSON.parse(localStorage.getItem("rr-in-progress") || "[]");
-    if (ip.indexOf(moduleNum) === -1) { ip.push(moduleNum); localStorage.setItem("rr-in-progress", JSON.stringify(ip)); }
+    var ip = JSON.parse(localStorage.getItem("fp-in-progress") || "[]");
+    if (ip.indexOf(moduleNum) === -1) { ip.push(moduleNum); localStorage.setItem("fp-in-progress", JSON.stringify(ip)); }
   } catch(e){}
   // Expose markComplete for quiz completion
   window.rrMarkComplete = function() {
     try {
-      var c = JSON.parse(localStorage.getItem("rr-completed") || "[]");
-      if (c.indexOf(moduleNum) === -1) { c.push(moduleNum); localStorage.setItem("rr-completed", JSON.stringify(c)); }
+      var c = JSON.parse(localStorage.getItem("fp-completed") || "[]");
+      if (c.indexOf(moduleNum) === -1) { c.push(moduleNum); localStorage.setItem("fp-completed", JSON.stringify(c)); }
     } catch(e){}
   };
 })();
