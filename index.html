@@ -3,30 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FissionPoint — Nuclear Workforce Training Platform</title>
+  <title>Fission Point — Nuclear Workforce Training Platform</title>
   <style>
     :root {
       --navy: #0a1628;
       --blue: #1a3a5c;
-      --teal: #00b4d8;
-      --teal-light: #90e0ef;
+      --teal: #E8751A;
+      --teal-light: #FEF3E2;
       --gold: #f4a261;
       --white: #f8fafc;
       --gray: #94a3b8;
       --dark-card: #111f35;
       --success: #22c55e;
-      --border: rgba(0,180,216,0.2);
+      --border: rgba(232,117,26,0.2);
     }
 
     /* UToledo theme override */
     :root.utoledo {
       --navy: #001a3a;
       --blue: #002657;
-      --teal: #FFCE00;
-      --teal-light: #FFE066;
+      --teal: #E8751A;
+      --teal-light: #FEF3E2;
       --gold: #FFCE00;
       --dark-card: #001230;
-      --border: rgba(255,206,0,0.2);
+      --border: rgba(232,117,26,0.2);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -191,7 +191,7 @@
     .module-card:hover {
       border-color: var(--teal);
       transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(0,180,216,0.15);
+      box-shadow: 0 4px 20px rgba(232,117,26,0.15);
     }
     .module-card-header {
       display: flex;
@@ -211,7 +211,7 @@
       flex-shrink: 0;
     }
     .module-num.not-started {
-      background: rgba(0,180,216,0.1);
+      background: rgba(232,117,26,0.1);
       color: var(--teal);
       border: 1px solid var(--border);
     }
@@ -244,7 +244,7 @@
       color: var(--gray);
     }
     .meta-tag {
-      background: rgba(0,180,216,0.1);
+      background: rgba(232,117,26,0.1);
       color: var(--teal);
       padding: 0.2rem 0.6rem;
       border-radius: 999px;
@@ -313,7 +313,7 @@
     /* CTA */
     .cta-btn {
       display: inline-block;
-      background: linear-gradient(135deg, var(--teal), #0096c7);
+      background: linear-gradient(135deg, var(--teal), #D4680F);
       color: var(--navy);
       font-weight: 700;
       font-size: 1rem;
@@ -326,7 +326,7 @@
     }
     .cta-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(0,180,216,0.4);
+      box-shadow: 0 4px 20px rgba(232,117,26,0.4);
     }
     .cta-secondary {
       display: inline-block;
@@ -342,7 +342,7 @@
     }
     .cta-secondary:hover {
       border-color: var(--teal);
-      background: rgba(0,180,216,0.05);
+      background: rgba(232,117,26,0.05);
     }
 
     /* RESPONSIVE */
@@ -369,11 +369,11 @@
   <nav>
     <div class="nav-logo">
       <span class="atom">&#9883;</span>
-      FissionPoint
+      Fission Point
       <span class="nav-badge">DEMO</span>
     </div>
     <div class="nav-right">
-      <span id="progress-text">0 of 8 modules complete</span>
+      <span id="progress-text">0 of 9 modules complete</span>
     </div>
   </nav>
 
@@ -389,7 +389,7 @@
   <!-- STATS -->
   <div class="stats-bar">
     <div class="stat">
-      <span class="stat-number">8</span>
+      <span class="stat-number">9</span>
       <span class="stat-label">Training Modules</span>
     </div>
     <div class="stat">
@@ -410,7 +410,7 @@
   <div class="progress-section">
     <div class="progress-header">
       <span>Course Progress</span>
-      <strong id="progress-detail">0 / 8 complete</strong>
+      <strong id="progress-detail">0 / 9 complete</strong>
     </div>
     <div class="progress-track">
       <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
@@ -454,7 +454,7 @@
 
   <!-- FOOTER -->
   <footer>
-    <p>FissionPoint — Nuclear Workforce Training Platform</p>
+    <p>Fission Point — Nuclear Workforce Training Platform</p>
     <p style="margin-top: 0.5rem;">Content adapted from <a href="https://ocw.mit.edu/courses/22-01-introduction-to-nuclear-engineering-and-ionizing-radiation-fall-2016/" target="_blank">MIT OpenCourseWare 22.01</a> under Creative Commons BY-NC-SA 4.0</p>
     <p style="margin-top: 0.5rem;">&copy; 2026 NaNu Media LLC. All rights reserved.</p>
   </footer>
@@ -466,7 +466,7 @@
       var params = new URLSearchParams(window.location.search);
       if (params.get('theme') === 'utoledo') {
         document.documentElement.classList.add('utoledo');
-        document.title = 'FissionPoint — University of Toledo Nuclear Training';
+        document.title = 'Fission Point — University of Toledo Nuclear Training';
         themeParam = '?theme=utoledo';
       }
     })();
@@ -536,6 +536,14 @@
         file: "module-8-advanced-reactors.html",
         tags: ["Advanced", "SMR"],
         time: "20 min"
+      },
+      {
+        num: 9,
+        title: "Citations & References",
+        desc: "Complete source material, academic citations, and further reading for all modules in this course.",
+        file: "module-9-citations.html",
+        tags: ["Reference"],
+        time: "10 min"
       }
     ];
 
