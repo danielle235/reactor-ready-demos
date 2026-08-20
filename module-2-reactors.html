@@ -1175,6 +1175,17 @@
       neutrons=[]; fragments=[]; flashes=[]; fissionCount=0;
       initAtoms(); updateStatus();
     }
+    // Fresh-fuel replenishment: revive spent atoms so the core never runs empty.
+    // This keeps the control-rod effect continuously visible (no reset needed).
+    function replenishFuel(){
+      let alive = 0;
+      for(const a of atoms) if(a.alive) alive++;
+      if(alive >= atoms.length * 0.7) return;
+      let revived = 0;
+      for(const a of atoms){
+        if(!a.alive && a.flash <= 0){ a.alive = true; if(++revived >= 3) break; }
+      }
+    }
     function updateStatus(){
       document.getElementById('cr-status').textContent =
         'Fissions: ' + fissionCount + ' | Active neutrons: ' + neutrons.filter(n=>n.age<500).length;
@@ -1188,8 +1199,14 @@
     initAtoms();
     updateKLabel();
 
+    let frameCount = 0;
     function animate(){
       const k = getK();
+      // Keep fuel available and trickle in source neutrons so the rod slider
+      // continuously drives the reaction: subcritical fizzles, supercritical grows.
+      frameCount++;
+      if(frameCount % 4 === 0) replenishFuel();
+      if(frameCount % 40 === 0 && neutrons.length < 50) fire();
       // Physics
       for(let i=neutrons.length-1;i>=0;i--){
         const n=neutrons[i];

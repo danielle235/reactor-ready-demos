@@ -184,8 +184,7 @@
     .dose-bar-track { flex: 1; height: 24px; background: rgba(232,117,26,0.08); border-radius: 4px; overflow: hidden; position: relative; }
     .dose-bar-fill {
       height: 100%; border-radius: 4px; transition: width 0.8s ease;
-      display: flex; align-items: center; padding-left: 0.5rem;
-      font-size: 0.75rem; font-weight: 600; color: var(--navy); min-width: fit-content;
+      min-width: 2px;
     }
     .dose-value { font-size: 0.8rem; font-weight: 600; width: 90px; flex-shrink: 0; }
     .dose-detail {
@@ -854,13 +853,15 @@
     let openDetail = -1;
 
     doseData.forEach((d,i) => {
-      const pct = Math.max(1, (Math.log10(d.mrem+1)/Math.log10(maxMrem+1))*100);
+      // Bar length is LINEAR (proportional to the dose value), so a bigger number
+      // always means a longer bar. The numeric value is shown in the .dose-value column.
+      const pct = Math.min(100, Math.max(0.4, (d.mrem / maxMrem) * 100));
       const row = document.createElement('div');
       row.className = 'dose-row';
       row.innerHTML = `
         <div class="dose-label">${d.label}</div>
         <div class="dose-bar-track">
-          <div class="dose-bar-fill" style="width:${pct}%;background:${d.color};">${d.mrem>=1?d.mrem.toLocaleString():d.mrem}</div>
+          <div class="dose-bar-fill" style="width:${pct}%;background:${d.color};"></div>
         </div>
         <div class="dose-value" style="color:${d.color};">${d.mrem>=1?d.mrem.toLocaleString():d.mrem} mrem</div>
       `;

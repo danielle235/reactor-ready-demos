@@ -1290,7 +1290,9 @@
         ctx.fillText('UO₂ fuel melt (~4900°F)', margin.left + 5, meltY - 5);
       }
 
-      if (!scenario || !running) {
+      // Show the placeholder only when NO scenario is selected. When a scenario has
+      // finished (running === false but scenario set), keep the final curve on screen.
+      if (!scenario) {
         ctx.font = '16px system-ui';
         ctx.fillStyle = '#64748b';
         ctx.textAlign = 'center';

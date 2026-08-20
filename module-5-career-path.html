@@ -885,18 +885,23 @@
   // INTERACTIVE 3: Qualification Timeline
   // ───────────────────────────────────────────
   function updateTimeline() {
-    let done = 0;
     const total = 7;
+    // Qualification is a prerequisite chain: a step only counts once every step
+    // before it is also complete. This way, deselecting an earlier step correctly
+    // rolls progress back and keeps the percentage and flavor text in sync.
+    let done = 0;
+    let broken = false;
     for (let i = 0; i < total; i++) {
       const cb = document.getElementById('cb-' + i);
       const item = document.getElementById('tl-' + i);
-      if (cb.checked) {
+      if (cb.checked && !broken) {
         done++;
         item.classList.add('done');
         item.classList.remove('active-step');
       } else {
+        broken = true; // chain broken here; nothing after this counts as done
         item.classList.remove('done');
-        if (done === i) item.classList.add('active-step');
+        if (i === done) item.classList.add('active-step');
         else item.classList.remove('active-step');
       }
     }

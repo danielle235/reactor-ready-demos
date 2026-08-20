@@ -1039,9 +1039,12 @@ const edvData = {
   wind: { amount: '2.4', unit: 'MW-hours equiv.', height: 120, color: '#22c55e', insight: 'A single pellet produces as much energy as a large wind turbine generates in about 1.5 hours at full capacity. But the pellet works 24/7 for years. (Source: DOE)', label: 'Wind Equivalent' }
 };
 
+var edvOrder = ['coal', 'gas', 'oil', 'wind'];
 function edvSelect(fuel) {
-  document.querySelectorAll('.edv-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  var btns = document.querySelectorAll('.edv-btn');
+  btns.forEach(b => b.classList.remove('active'));
+  var idx = edvOrder.indexOf(fuel);
+  if (idx >= 0 && btns[idx]) btns[idx].classList.add('active');
   const d = edvData[fuel];
 
   document.getElementById('edv-visual').innerHTML =
@@ -1177,14 +1180,22 @@ function toggleApp(card) { card.classList.toggle('expanded'); }
 function checkAnswer(option, isCorrect, qNum) {
   var parent = option.parentElement;
   var fb = document.getElementById('fb-' + qNum);
+  // Immediate visual acknowledgment: clear prior marks, mark this selection now.
   Array.from(parent.children).forEach(function(opt) {
-    opt.style.pointerEvents = 'none';
-    if (opt === option) opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+    opt.classList.remove('correct', 'incorrect');
   });
+  option.classList.add(isCorrect ? 'correct' : 'incorrect');
+  fb.classList.remove('correct', 'incorrect');
   fb.classList.add('show', isCorrect ? 'correct' : 'incorrect');
-  fb.textContent = isCorrect
-    ? 'Correct!'
-    : 'Not quite. Review the content above and try again.';
+  if (isCorrect) {
+    // Lock the question once answered correctly.
+    Array.from(parent.children).forEach(function(opt) { opt.style.pointerEvents = 'none'; });
+    fb.textContent = 'Correct!';
+    if (window.rrMarkComplete) window.rrMarkComplete();
+  } else {
+    // Keep options clickable so the student can try again (never frozen).
+    fb.textContent = 'Not quite. Review the content above and try again.';
+  }
 }
 
 // ==============================
