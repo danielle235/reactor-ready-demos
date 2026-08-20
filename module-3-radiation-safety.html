@@ -682,6 +682,17 @@
         <div id="tutor-response"></div>
       </div>
 
+      <div class="sources-footer" style="margin-top:2.5rem;padding:1.25rem 1.5rem;background:var(--dark-card);border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:8px;">
+        <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--teal);margin-bottom:0.7rem;">Sources</div>
+        <ul style="list-style:none;margin:0;padding:0;font-size:0.82rem;color:var(--gray);line-height:1.6;">
+          <li style="margin-bottom:0.4rem;"><strong style="color:var(--white);">Occupational dose limits:</strong> U.S. NRC, 10 CFR Part 20 (Standards for Protection Against Radiation).</li>
+          <li style="margin-bottom:0.4rem;"><strong style="color:var(--white);">Background &amp; population dose:</strong> NCRP Report No. 160 (2009).</li>
+          <li style="margin-bottom:0.4rem;"><strong style="color:var(--white);">Comparison doses:</strong> ACR / RSNA (RadiologyInfo.org); U.S. EPA; Health Physics Society (banana equivalent dose).</li>
+          <li style="margin-bottom:0.4rem;"><strong style="color:var(--white);">Radiation physics &amp; shielding:</strong> Turner, <em>Atoms, Radiation, and Radiation Protection</em> (2007); DOE-HDBK-1019.</li>
+        </ul>
+        <div style="font-size:0.72rem;color:var(--gray);margin-top:0.85rem;opacity:0.85;">Full reference list: <a href="module-9-citations.html" style="color:var(--teal);text-decoration:none;">Module 9 &mdash; Sources &amp; Citations</a>. Statistics current as of 2024.</div>
+      </div>
+
       <div class="nav-buttons">
         <a href="module-2-reactors.html" class="nav-btn secondary">&larr; Back to Module 2</a>
         <a href="module-4-inside-reactor.html" class="nav-btn">Continue to Module 4 &rarr;</a>
@@ -837,7 +848,7 @@
   // ───────────────────────────────────────────
   (function(){
     const doseData = [
-      {label:'Eating a banana', mrem:0.01, color:'#22c55e', detail:'Bananas contain potassium-40, a naturally radioactive isotope. You\'d need to eat 100 million bananas at once for a lethal dose. (Source: Health Physics Society)'},
+      {label:'Eating a banana', mrem:0.01, color:'#22c55e', detail:'Bananas contain potassium-40, a naturally radioactive isotope. You\'d need to eat about 40 million bananas at once for a lethal dose. (Source: Health Physics Society)'},
       {label:'Living near a nuclear plant (annual)', mrem:0.1, color:'#22c55e', detail:'The NRC requires nuclear plants to limit public dose to well under 100 mrem/year. Actual doses are typically 0.01-0.1 mrem/year. (Source: NRC NUREG-1350)'},
       {label:'Chest X-ray', mrem:10, color:'#60a5fa', detail:'A single chest X-ray delivers about 10 mrem. Dental X-rays are about 1.5 mrem each. (Source: ACR/RSNA RadiologyInfo.org)'},
       {label:'Cross-country flight (NY-LA)', mrem:3.5, color:'#60a5fa', detail:'At 35,000 feet, you\'re above most of the atmosphere that shields cosmic radiation. Airline crews receive about 200-400 mrem/year from flights. (Source: FAA Civil Aerospace Medical Institute)'},

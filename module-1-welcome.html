@@ -776,12 +776,12 @@
           <div class="app-card" onclick="toggleApp(this)">
             <div class="app-card-title">&#9889; Power Generation</div>
             <div class="app-card-summary">Click to expand</div>
-            <div class="app-card-detail">94 reactors across the US generate ~20% of our electricity. Nuclear provides 24/7 baseload power. It doesn't depend on wind, sun, or fuel deliveries. When the grid needs reliable power, nuclear delivers. (Source: EIA, 2024)</div>
+            <div class="app-card-detail">94 reactors across the US generate nearly 20% of our electricity (about 18% in 2024). Nuclear provides 24/7 baseload power. It doesn't depend on wind, sun, or fuel deliveries. When the grid needs reliable power, nuclear delivers. (Source: EIA, 2024)</div>
           </div>
           <div class="app-card" onclick="toggleApp(this)">
             <div class="app-card-title">&#127973; Medical Imaging & Treatment</div>
             <div class="app-card-summary">Click to expand</div>
-            <div class="app-card-detail">PET scans use positron-emitting isotopes to image metabolic activity. Radiation therapy kills cancer tumors while sparing healthy tissue. The US performs ~40 million nuclear medicine procedures per year. (Source: SNMMI)</div>
+            <div class="app-card-detail">PET scans use positron-emitting isotopes to image metabolic activity. Radiation therapy kills cancer tumors while sparing healthy tissue. The US performs ~20 million nuclear medicine procedures per year. (Source: SNMMI)</div>
           </div>
           <div class="app-card" onclick="toggleApp(this)">
             <div class="app-card-title">&#127822; Food Safety</div>
@@ -816,10 +816,10 @@
             <button class="edv-btn active" onclick="edvSelect('coal')">vs Coal</button>
             <button class="edv-btn" onclick="edvSelect('gas')">vs Natural Gas</button>
             <button class="edv-btn" onclick="edvSelect('oil')">vs Oil</button>
-            <button class="edv-btn" onclick="edvSelect('wind')">vs Wind</button>
           </div>
           <div class="edv-visual" id="edv-visual"></div>
           <div class="edv-insight" id="edv-insight"></div>
+          <div style="font-size:0.72rem;color:var(--gray);margin-top:0.75rem;opacity:0.85;">Source: NEI, <em>Nuclear Fuel</em>; DOE Office of Nuclear Energy; World Nuclear Association.</div>
         </div>
       </div>
 
@@ -843,8 +843,8 @@
             <div class="stat-label">Skilled craft workers needed for new construction by 2030</div>
           </div>
           <div class="stat-box">
-            <div class="stat-number">$102,674</div>
-            <div class="stat-label">Nuclear electrician median salary (Texas)</div>
+            <div class="stat-number">$104,240</div>
+            <div class="stat-label">Median salary, nuclear technicians (US, BLS 2024)</div>
           </div>
         </div>
 
@@ -882,7 +882,7 @@
           <div class="quiz-options">
             <div class="quiz-option" onclick="checkAnswer(this, false, 2)"><div class="option-letter">A</div><div>About 400,000</div></div>
             <div class="quiz-option" onclick="checkAnswer(this, false, 2)"><div class="option-letter">B</div><div>About 4 million</div></div>
-            <div class="quiz-option" onclick="checkAnswer(this, true, 2)"><div class="option-letter">C</div><div>About 40 million</div></div>
+            <div class="quiz-option" onclick="checkAnswer(this, true, 2)"><div class="option-letter">C</div><div>About 20 million</div></div>
             <div class="quiz-option" onclick="checkAnswer(this, false, 2)"><div class="option-letter">D</div><div>About 400 million</div></div>
           </div>
           <div class="quiz-feedback" id="fb-2"></div>
@@ -933,6 +933,18 @@
         <div id="tutor-response"></div>
       </div>
 
+      <div class="sources-footer" style="margin-top:2.5rem;padding:1.25rem 1.5rem;background:var(--dark-card);border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:8px;">
+        <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--teal);margin-bottom:0.7rem;">Sources</div>
+        <ul style="list-style:none;margin:0;padding:0;font-size:0.82rem;color:var(--gray);line-height:1.6;">
+          <li style="margin-bottom:0.4rem;"><strong style="color:var(--white);">Industry &amp; electricity stats:</strong> U.S. Energy Information Administration (EIA), <em>Electric Power Monthly</em>; NEI, <em>Nuclear by the Numbers</em>.</li>
+          <li style="margin-bottom:0.4rem;"><strong style="color:var(--white);">Medical &amp; everyday applications:</strong> Society of Nuclear Medicine and Molecular Imaging (SNMMI); U.S. FDA and USDA FSIS (food irradiation); U.S. NRC.</li>
+          <li style="margin-bottom:0.4rem;"><strong style="color:var(--white);">Energy density:</strong> NEI, <em>Nuclear Fuel</em>; DOE Office of Nuclear Energy; World Nuclear Association.</li>
+          <li style="margin-bottom:0.4rem;"><strong style="color:var(--white);">Workforce &amp; wages:</strong> U.S. Bureau of Labor Statistics, <em>Occupational Outlook Handbook</em> (Nuclear Technicians, 2024); DOE <em>Pathways to Commercial Liftoff: Advanced Nuclear</em> (2024); NEI <em>2024 Nuclear Energy Workforce Report</em>.</li>
+          <li style="margin-bottom:0.4rem;"><strong style="color:var(--white);">Radiation comparison:</strong> Health Physics Society (banana equivalent dose).</li>
+        </ul>
+        <div style="font-size:0.72rem;color:var(--gray);margin-top:0.85rem;opacity:0.85;">Full reference list: <a href="module-9-citations.html" style="color:var(--teal);text-decoration:none;">Module 9 &mdash; Sources &amp; Citations</a>. Statistics current as of 2024.</div>
+      </div>
+
       <div class="nav-buttons">
         <button class="nav-btn" onclick="window.location.href='module-2-reactors.html'">
           Continue to Module 2 &#8594;
@@ -952,7 +964,7 @@ const itnItems = [
   { emoji: '&#129659;', name: 'PET Scan', nuclear: true, explain: 'PET scans use positron-emitting isotopes (typically F-18 produced in a cyclotron) to image metabolic activity in the body. About 2 million PET scans/year in the US. (Source: SNMMI)' },
   { emoji: '&#128690;', name: 'Exit Sign', nuclear: true, explain: 'Many self-luminous exit signs contain tritium (H-3), a radioactive isotope of hydrogen. They glow without electricity for 10-20 years. (Source: NRC)' },
   { emoji: '&#128747;', name: 'Airport Security Scanner', nuclear: false, explain: 'Airport body scanners use millimeter waves or backscatter X-rays. While X-rays involve radiation, they are generated electrically, not from nuclear reactions or radioactive materials.' },
-  { emoji: '&#127798;', name: 'Irradiated Spices', nuclear: true, explain: 'About 1/3 of dried spices sold in the US are irradiated with gamma rays (Co-60) to kill bacteria. FDA-approved since 1963. The food does NOT become radioactive. (Source: FDA)' },
+  { emoji: '&#127798;', name: 'Irradiated Spices', nuclear: true, explain: 'About 1/3 of dried spices sold in the US are irradiated with gamma rays (Co-60) to kill bacteria. FDA-approved for spices since 1983. The food does NOT become radioactive. (Source: FDA)' },
   { emoji: '&#128752;', name: 'Mars Rover', nuclear: true, explain: 'Curiosity and Perseverance rovers are powered by RTGs containing plutonium-238. The radioactive decay generates heat, converted to ~110 watts of electricity. No solar panels needed. (Source: NASA/DOE)' },
   { emoji: '&#128167;', name: 'Hydroelectric Dam', nuclear: false, explain: 'Hydroelectric power uses gravity and flowing water to spin turbines. No nuclear technology involved, though both are carbon-free energy sources.' },
   { emoji: '&#128297;', name: 'Pipeline Weld Inspection', nuclear: true, explain: 'Industrial radiography uses gamma sources (Ir-192, Co-60) to X-ray welds and detect flaws without cutting the pipe. This is nuclear NDT (Non-Destructive Testing). (Source: ASNT)' }
@@ -1035,11 +1047,10 @@ itnInit();
 const edvData = {
   coal: { amount: '1 ton', unit: '(~2,000 lbs)', height: 180, color: '#555', insight: 'One uranium pellet (~7g) = 1 ton of coal. A single fuel pellet the size of your pinky tip replaces a pickup truck full of coal. (Source: DOE Office of Nuclear Energy)', label: 'Coal' },
   gas: { amount: '17,000', unit: 'cubic feet', height: 160, color: '#4fb6df', insight: 'That tiny pellet replaces 17,000 cubic feet of natural gas, enough to heat an average US home for almost a year. (Source: NEI)', label: 'Natural Gas' },
-  oil: { amount: '149', unit: 'gallons', height: 140, color: '#a855f7', insight: '149 gallons of oil = about 3.5 barrels. One uranium pellet replaces almost 4 barrels of crude oil. (Source: WNA)', label: 'Oil' },
-  wind: { amount: '2.4', unit: 'MW-hours equiv.', height: 120, color: '#22c55e', insight: 'A single pellet produces as much energy as a large wind turbine generates in about 1.5 hours at full capacity. But the pellet works 24/7 for years. (Source: DOE)', label: 'Wind Equivalent' }
+  oil: { amount: '149', unit: 'gallons', height: 140, color: '#a855f7', insight: '149 gallons of oil = about 3.5 barrels. One uranium pellet replaces almost 4 barrels of crude oil. (Source: WNA)', label: 'Oil' }
 };
 
-var edvOrder = ['coal', 'gas', 'oil', 'wind'];
+var edvOrder = ['coal', 'gas', 'oil'];
 function edvSelect(fuel) {
   var btns = document.querySelectorAll('.edv-btn');
   btns.forEach(b => b.classList.remove('active'));
@@ -1203,12 +1214,12 @@ function checkAnswer(option, isCorrect, qNum) {
 // ==============================
 const tutorKB = {
   'ndt|non-destructive|radiography|weld inspection': 'NDT (Non-Destructive Testing) using radiation is one of nuclear technology\'s most direct connections to your trade. Radiographic testing (RT) uses gamma sources (Ir-192, Se-75, Co-60) or X-rays to image welds and components without cutting them open. At nuclear plants, every safety-related weld gets RT or UT inspection. ASNT Level II certification in RT is a valuable qualification. (Source: ASNT, NRC Reg Guide 1.58)',
-  'pet scan|medical|cancer|radiation therapy': 'Nuclear medicine is huge: ~40 million procedures per year in the US. PET scans use positron-emitting isotopes (usually F-18 from a cyclotron) to image metabolic activity. Radiation therapy kills cancer tumors with carefully aimed beams or implanted seeds. The isotopes often come from nuclear reactors. (Source: SNMMI, WHO)',
-  'food irradiation|spice|food safety': 'Food irradiation uses gamma rays (typically from Co-60) or electron beams to kill bacteria and pathogens without making food radioactive. FDA-approved since 1963 for spices, and now covers produce, poultry, and meat. (Source: FDA, CDC)',
+  'pet scan|medical|cancer|radiation therapy': 'Nuclear medicine is huge: ~20 million procedures per year in the US. PET scans use positron-emitting isotopes (usually F-18 from a cyclotron) to image metabolic activity. Radiation therapy kills cancer tumors with carefully aimed beams or implanted seeds. The isotopes often come from nuclear reactors. (Source: SNMMI, WHO)',
+  'food irradiation|spice|food safety': 'Food irradiation uses gamma rays (typically from Co-60) or electron beams to kill bacteria and pathogens without making food radioactive. FDA-approved for spices since 1983 (wheat and wheat flour were first, in 1963), and now covers produce, poultry, and meat. (Source: FDA, USDA FSIS)',
   'space|nasa|voyager|rtg|mars': 'RTGs use Pu-238 decay heat to generate electricity. Voyager 1 (launched 1977, now in interstellar space) is still powered by its RTG. Curiosity and Perseverance rovers on Mars each have an RTG producing ~110 watts. Built at Idaho National Laboratory. (Source: NASA/DOE)',
-  'workforce|jobs|salary|hiring|demand': 'The nuclear workforce shortage is real. 375,000 net new workers needed by 2050 (DOE Liftoff Report). 40% of the current workforce retiring. New construction (SMRs, Kairos, TerraPower) adding demand. Nuclear electricians in Texas earn a median of $102,674. (Source: DOE, BLS, NEI)',
+  'workforce|jobs|salary|hiring|demand': 'The nuclear workforce shortage is real. 375,000 net new workers needed by 2050 (DOE Liftoff Report). 40% of the current workforce retiring. New construction (SMRs, Kairos, TerraPower) adding demand. Nuclear technicians earn a median of $104,240 per year (US, BLS 2024). (Source: DOE, BLS, NEI)',
   'smoke detector|americium': 'Most ionization smoke detectors contain a tiny amount of americium-241 (Am-241). It emits alpha particles that ionize air between two plates. When smoke enters, it disrupts the current and triggers the alarm. The amount is so small it poses no health risk. (Source: NRC)',
-  'banana|potassium': 'Bananas contain potassium-40 (K-40), a naturally occurring radioactive isotope. You\'d need to eat about 10 million bananas at once to get a dangerous dose. The "banana equivalent dose" (BED) is an informal unit used in radiation education. (Source: Health Physics Society)',
+  'banana|potassium': 'Bananas contain potassium-40 (K-40), a naturally occurring radioactive isotope. You\'d need to eat about 40 million bananas at once to get a lethal dose. The "banana equivalent dose" (BED) is an informal unit used in radiation education. (Source: Health Physics Society)',
   'default': 'I can answer questions about nuclear technology applications, the workforce opportunity, or how your trade skills connect to nuclear work. Try asking about: NDT inspection, nuclear medicine, the workforce shortage, food irradiation, smoke detectors, or space applications.'
 };
 
